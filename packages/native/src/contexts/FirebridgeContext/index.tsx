@@ -37,15 +37,17 @@ const defaultValue = {
 
 export const FirebridgeContext = createContext(defaultValue)
 
-interface FirebridgeContextProviderProps {
+interface FirebridgeProviderProps {
   allowAnonymousSignIn?: boolean
   children?: ReactNode
   log?: FirebridgeLogger
 }
 
-export const FirebridgeContextProvider: FunctionComponent<
-  FirebridgeContextProviderProps
-> = ({ allowAnonymousSignIn, children, log = defaultLogger }) => {
+export const FirebridgeProvider: FunctionComponent<FirebridgeProviderProps> = ({
+  allowAnonymousSignIn,
+  children,
+  log = defaultLogger,
+}) => {
   const [user, setUser] = useState<FirebridgeContextUser>()
 
   const initialize = async () => {

@@ -5,7 +5,7 @@ import { useFirebridge } from '../contexts/FirebridgeContext'
 
 type DocumentReference = FirebaseFirestoreTypes.DocumentReference
 
-export const useAuthedDocument = <T = any>(
+export const useDocument = <T = any>(
   getRef:
     | DocumentReference
     | ((uid: string, ...pathParts: string[]) => DocumentReference)
