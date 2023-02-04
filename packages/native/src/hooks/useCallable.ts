@@ -1,7 +1,7 @@
 import functions from '@react-native-firebase/functions'
 import { useFirebridge } from '../contexts'
 
-export const makeCallable = <T, B = any>(name: string) => {
+export const useCallable = <B = undefined, T = void>(name: string) => {
   const { log } = useFirebridge()
   const callable = functions().httpsCallable(name)
   return async (body?: B): Promise<T> => {
