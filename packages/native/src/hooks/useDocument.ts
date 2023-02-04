@@ -3,7 +3,12 @@ import { FirebaseFirestoreTypes } from '@react-native-firebase/firestore'
 
 import { useFirebridge } from '../contexts/FirebridgeContext'
 
+interface DocumentListener {
+  unsubscribe?: () => void | undefined
+}
+
 type DocumentReference = FirebaseFirestoreTypes.DocumentReference
+type DocumentSnapshot = FirebaseFirestoreTypes.DocumentSnapshot
 
 export const useDocument = <T = any>(
   getRef:
@@ -13,7 +18,7 @@ export const useDocument = <T = any>(
   pathParts: (string | undefined)[] = [],
 ) => {
   const [value, setValue] = useState<T | null>()
-  const [listener, setListener] = useState<{ unsubscribe?: () => void }>({})
+  const [listener, setListener] = useState<DocumentListener>({})
 
   const { user, log } = useFirebridge()
 
@@ -38,9 +43,9 @@ export const useDocument = <T = any>(
     const unsubscribe = ref?.onSnapshot(onUpdate, onError)
     setListener({ unsubscribe })
     return unsubscribe
-  }, [user, pathParts])
+  }, [user, pathParts.join(',')])
 
-  const onUpdate = (doc: FirebaseFirestoreTypes.DocumentSnapshot | null) => {
+  const onUpdate = (doc: DocumentSnapshot | null) => {
     if (!doc) return
 
     const nextValue = !doc.exists ? null : { ...(doc.data() as T), id: doc.id }

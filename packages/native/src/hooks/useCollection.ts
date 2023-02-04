@@ -9,6 +9,7 @@ interface CollectionListener {
 
 type CollectionReference = FirebaseFirestoreTypes.CollectionReference
 type Query = FirebaseFirestoreTypes.Query
+type QuerySnapshot = FirebaseFirestoreTypes.QuerySnapshot
 
 export const useCollection = <T>(
   getRef:
@@ -44,11 +45,9 @@ export const useCollection = <T>(
     const unsubscribe = ref?.onSnapshot(onUpdate, onError)
     setListener({ unsubscribe })
     return unsubscribe
-  }, [user, pathParts])
+  }, [user, pathParts.join(',')])
 
-  const onUpdate = async (
-    querySnap: FirebaseFirestoreTypes.QuerySnapshot | null,
-  ) => {
+  const onUpdate = async (querySnap: QuerySnapshot | null) => {
     if (!querySnap) {
       return
     }
