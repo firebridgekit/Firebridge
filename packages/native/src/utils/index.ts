@@ -16,5 +16,5 @@ const errorCodeMessages: { [key: string]: any } = {
   },
 }
 
-export const describeErrorCode = (code: string) =>
+export const formErrorsForCode = (code: string) =>
   errorCodeMessages[code] || errorCodeMessages.unknown
