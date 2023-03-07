@@ -15,7 +15,11 @@ export const updateMetric = async (
   dates: Date[],
 ) => {
   const config = await getMetricConfig(noun)
-  if (!config?.units) throw new Error(`No units configured for ${noun}`)
+  const units = config?.units
+
+  if (!units) {
+    throw new Error(`No units found for metric ${noun}`)
+  }
 
   if (!dates.length) {
     throw new Error('dates must be a non-empty array')
@@ -24,18 +28,15 @@ export const updateMetric = async (
   const minDate = min(dates) as Date
   const maxDate = new Date()
 
-  for (const unit of config?.units) {
+  for (const unit of units) {
     let cursor = DateTime.fromJSDate(minDate)
 
     // We iterate accross blocks until the cursor reaches the current time.
     while (cursor.toMillis() < maxDate.getTime()) {
       const start = cursor.startOf(unit)
       const end = cursor.endOf(unit)
-      const count = getDatesInRange(
-        dates,
-        start.toJSDate(),
-        end.toJSDate(),
-      ).length
+      const count = getDatesInRange(dates, start.toJSDate(), end.toJSDate())
+        .length
 
       if (count) {
         await firestore()

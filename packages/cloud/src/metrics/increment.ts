@@ -16,9 +16,13 @@ export const incrementMetric = async (
   const increment = firestore.FieldValue.increment(value)
 
   const config = await getMetricConfig(noun)
-  if (!config?.units) throw new Error(`No units configured for ${noun}`)
+  const units = config?.units
 
-  for (const unit of config.units) {
+  if (!units) {
+    throw new Error(`No units found for metric ${noun}`)
+  }
+
+  for (const unit of units) {
     const start = DateTime.fromJSDate(now).startOf(unit)
     const end = DateTime.fromJSDate(now).endOf(unit)
 
