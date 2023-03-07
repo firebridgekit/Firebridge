@@ -27,11 +27,13 @@ const defaultLogger: FirebridgeLogger = {
 type FirebridgeContextValue = {
   user: FirebridgeContextUser
   signOut: () => Promise<void>
+  clearUser: () => void
   log: FirebridgeLogger
 }
 const defaultValue = {
   user: undefined,
   signOut: async () => {},
+  clearUser: () => {},
   log: defaultLogger,
 } as FirebridgeContextValue
 
@@ -71,13 +73,15 @@ export const FirebridgeProvider: FunctionComponent<FirebridgeProviderProps> = ({
     initialize()
   }, [])
 
+  const clearUser = () => setUser(undefined)
+
   const signOut = async () => {
-    setUser(null)
+    clearUser()
     return auth().signOut()
   }
 
   return (
-    <FirebridgeContext.Provider value={{ user, signOut, log }}>
+    <FirebridgeContext.Provider value={{ user, signOut, clearUser, log }}>
       {children}
     </FirebridgeContext.Provider>
   )

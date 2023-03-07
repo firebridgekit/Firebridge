@@ -11,6 +11,9 @@ const errorCodeMessages: { [key: string]: any } = {
   'auth/wrong-password': {
     password: "You've entered an incorrect password.",
   },
+  'auth/email-already-in-use': {
+    email: 'There is already an account with this email.',
+  },
   unknown: {
     email: 'Sorry, something went wrong.',
   },

@@ -25,13 +25,13 @@ const defaultLogger: FirebridgeLogger = {
 interface FirebridgeContextProps {
   auth: Auth
   children: ReactNode
-  log?: FirebridgeLogger
+  log: FirebridgeLogger
 }
 
 interface FirebridgeContextValue {
   user: User | null | undefined
   signOut: () => Promise<void>
-  log?: FirebridgeLogger
+  log: FirebridgeLogger
 }
 
 export const FirebridgeContext = createContext<FirebridgeContextValue>({

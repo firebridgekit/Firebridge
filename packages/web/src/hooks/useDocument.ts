@@ -1,5 +1,7 @@
 import { DocumentReference } from 'firebase/firestore'
+import { useMemo } from 'react'
 import { useDocument as useFirebaseHooksDocument } from 'react-firebase-hooks/firestore'
+
 import { useFirebridge } from '../contexts'
 import { WithId } from '../types'
 
@@ -33,31 +35,34 @@ export const useDocument = <T = any>(
   const { user } = useFirebridge()
   const uid = user?.uid
 
-  // If the user is not logged in, we don't attempt to fetch the collection.
-  // This is because Firebridge assumes all collections are private.
-  if (!uid) {
-    return undefined
-  }
-
-  // If any of the path parts are undefined, we don't attempt to fetch the
-  // collection. This is because we don't know what the path should be.
-  if (pathParts.includes(undefined)) {
-    return undefined
-  }
-
-  const ref =
-    typeof getRef === 'function'
-      ? getRef(uid, ...(pathParts as string[]))
-      : getRef
+  const ref = useMemo<DocumentReference | undefined>(() => {
+    if (!uid) {
+      // If the user is not logged in, we don't attempt to fetch the collection.
+      // This is because Firebridge assumes all collections are private.
+      return undefined
+    } else if (pathParts.includes(undefined)) {
+      // If any of the path parts are undefined, we don't attempt to fetch the
+      // collection. This is because we don't know what the path should be.
+      return undefined
+    } else {
+      return typeof getRef === 'function'
+        ? getRef(uid, ...(pathParts as string[]))
+        : getRef
+    }
+  }, [getRef, pathParts, uid])
 
   const [doc] = useFirebaseHooksDocument(ref)
 
-  // react-firebase-hooks will return undefined if the query is not ready.
-  // We want to preserve that behavior so that we can show a loading state.
-  if (doc === undefined) return undefined
+  const value = useMemo(() => {
+    // react-firebase-hooks will return undefined if the query is not ready.
+    // We want to preserve that behavior so that we can show a loading state.
+    if (doc === undefined) return undefined
 
-  // If the query is ready, but the document does not exist, we want to return
-  // null so that we can show a "not found" state.
-  const data = { ...doc.data(), id: doc.id } as WithId<T>
-  return doc.exists() ? data : null
+    // If the query is ready, but the document does not exist, we want to return
+    // null so that we can show a "not found" state.
+    const data = { ...doc.data(), id: doc.id } as WithId<T>
+    return doc.exists() ? data : null
+  }, [doc])
+
+  return value
 }
