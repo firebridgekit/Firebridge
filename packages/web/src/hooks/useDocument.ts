@@ -32,7 +32,7 @@ export const useDocument = <T = any>(
     | undefined,
   pathParts: (string | undefined)[] = [],
 ) => {
-  const { user } = useFirebridge()
+  const { user, log } = useFirebridge()
   const uid = user?.uid
 
   const ref = useMemo<DocumentReference | undefined>(() => {
@@ -51,9 +51,16 @@ export const useDocument = <T = any>(
     }
   }, [getRef, pathParts, uid])
 
-  const [doc] = useFirebaseHooksDocument(ref)
+  const [doc, _loading, error] = useFirebaseHooksDocument(ref)
 
   const value = useMemo(() => {
+    // If there is an error, we want to log it and return undefined so that we
+    // can clear the current value.
+    if (error) {
+      log.error(error)
+      return undefined
+    }
+
     // react-firebase-hooks will return undefined if the query is not ready.
     // We want to preserve that behavior so that we can show a loading state.
     if (doc === undefined) return undefined
@@ -62,7 +69,7 @@ export const useDocument = <T = any>(
     // null so that we can show a "not found" state.
     const data = { ...doc.data(), id: doc.id } as WithId<T>
     return doc.exists() ? data : null
-  }, [doc])
+  }, [doc, error])
 
   return value
 }

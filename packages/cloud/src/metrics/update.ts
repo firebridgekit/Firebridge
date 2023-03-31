@@ -1,5 +1,5 @@
 import { firestore } from 'firebase-admin'
-import { min } from 'lodash'
+import { chunk, min } from 'lodash'
 import { DateTime } from 'luxon'
 import { getDatesInRange } from './events'
 
@@ -34,6 +34,8 @@ export const updateMetric = async (
   // The end of the last block is the present time.
   const maxDate = new Date()
 
+  const updates: any[] = []
+
   for (const unit of units) {
     // We start the cursor at the start of the first block.
     let cursor = DateTime.fromJSDate(minDate)
@@ -52,24 +54,32 @@ export const updateMetric = async (
 
       // We only need to write to Firestore if there are events in the block.
       if (count) {
-        await firestore()
-          .collection('metrics')
-          .doc(noun)
-          .collection(verb)
-          .doc(id)
-          .collection(unit)
-          .doc(start.toJSON())
-          .set(
-            {
-              start: timestampFromDateTime(start),
-              end: timestampFromDateTime(end),
-              count,
-            },
-            { merge: true },
-          )
+        updates.push({
+          docRef: firestore()
+            .collection('metrics')
+            .doc(noun)
+            .collection(verb)
+            .doc(id)
+            .collection(unit)
+            .doc(start.toJSON()),
+          data: {
+            start: timestampFromDateTime(start),
+            end: timestampFromDateTime(end),
+            count,
+          },
+        })
       }
 
       cursor = cursor.plus({ [unit]: 1 })
     }
+  }
+
+  const batches = chunk(updates, 500)
+  for (const updateBatch of batches) {
+    const batch = firestore().batch()
+    for (const update of updateBatch) {
+      batch.set(update.docRef, update.data)
+    }
+    await batch.commit()
   }
 }

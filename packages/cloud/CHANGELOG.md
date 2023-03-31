@@ -1,25 +1,19 @@
-# @firebridge/web
+# @firebridge/cloud
 
-## 0.1.8
+## 0.1.3
 
 ### Patch Changes
 
 - Clears the value on an error in native
 
-## 0.1.7
+## 0.1.2
 
 ### Patch Changes
 
 - Clears value when there's an error
 
-## 0.1.6
+## 0.1.1
 
 ### Patch Changes
 
-- Adds clearUser fn
-
-## 0.1.5
-
-### Patch Changes
-
-- Fixes
+- 788f9af: Improves metrics reporting

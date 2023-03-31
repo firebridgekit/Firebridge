@@ -63,6 +63,9 @@ export const useCollection = <T>(
   }
 
   const onError = (error: Error) => {
+    // If there is an error, we want to log it and return undefined so that we
+    // can clear the current value.
+    setValue(undefined)
     log.error(error)
   }
 

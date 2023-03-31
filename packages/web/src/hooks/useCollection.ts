@@ -35,7 +35,7 @@ export const useCollection = <T = any>(
     | undefined,
   pathParts: (string | undefined)[] = [],
 ) => {
-  const { user } = useFirebridge()
+  const { user, log } = useFirebridge()
   const uid = user?.uid
 
   const ref = useMemo<CollectionReference | Query | undefined>(() => {
@@ -54,9 +54,16 @@ export const useCollection = <T = any>(
     }
   }, [getRef, pathParts, uid])
 
-  const [snap] = useFirebaseHooksCollection(ref)
+  const [snap, _loading, error] = useFirebaseHooksCollection(ref)
 
   const data = useMemo(() => {
+    // If there is an error, we want to log it and return undefined so that we
+    // can clear the current value.
+    if (error) {
+      log.error(error)
+      return undefined
+    }
+
     if (!snap) return undefined
 
     const data = (snap?.docs ?? []).map((doc) => ({
