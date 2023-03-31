@@ -18,18 +18,17 @@ export const useDocument = <T = any>(
   pathParts: (string | undefined)[] = [],
 ) => {
   const [value, setValue] = useState<T | null>()
-  const [listener, setListener] = useState<DocumentListener>({})
 
   const { user, log } = useFirebridge()
 
   useEffect(() => {
-    // if there's an existing listener, we should unsubscribe from it first
-    listener?.unsubscribe?.()
-
     // If the user is not logged in, we don't attempt to fetch the collection.
     // This is because Firebridge assumes all collections are private.
     const uid = user?.uid
-    if (!uid) return () => {}
+    if (!uid) {
+      setValue(undefined)
+      return
+    }
 
     // If any of the path parts are undefined, we don't attempt to fetch the
     // collection. This is because we don't know what the path should be.
@@ -40,9 +39,7 @@ export const useDocument = <T = any>(
         ? getRef(uid, ...(pathParts as string[]))
         : getRef
 
-    const unsubscribe = ref?.onSnapshot(onUpdate, onError)
-    setListener({ unsubscribe })
-    return unsubscribe
+    return ref?.onSnapshot(onUpdate, onError)
   }, [user, pathParts.join(',')])
 
   const onUpdate = (doc: DocumentSnapshot | null) => {

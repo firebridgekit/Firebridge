@@ -1,5 +1,11 @@
 # @firebridge/native
 
+## 0.1.16
+
+### Patch Changes
+
+- Clears value when the parts change to an invalid set
+
 ## 0.1.15
 
 ### Patch Changes
