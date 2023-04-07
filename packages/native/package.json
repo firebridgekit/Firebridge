@@ -1,6 +1,6 @@
 {
   "name": "@firebridge/native",
-  "version": "0.1.16",
+  "version": "0.1.17",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "license": "MIT",
@@ -16,9 +16,9 @@
     "build": "tsup index.ts --format cjs --dts"
   },
   "peerDependencies": {
-    "@react-native-firebase/auth": "^17.0.0",
-    "@react-native-firebase/firestore": "^17.0.0",
-    "@react-native-firebase/functions": "^17.0.0",
+    "@react-native-firebase/auth": ">=17",
+    "@react-native-firebase/firestore": ">=17",
+    "@react-native-firebase/functions": ">=17",
     "react": ">=18",
     "react-native": ">=0.70.4"
   },
