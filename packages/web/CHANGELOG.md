@@ -1,5 +1,11 @@
 # @firebridge/web
 
+## 0.4.0
+
+### Minor Changes
+
+- Ensures app is ready
+
 ## 0.3.0
 
 ### Minor Changes

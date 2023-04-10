@@ -53,12 +53,12 @@ export const FirebridgeProvider: FunctionComponent<FirebridgeContextProps> = ({
   useEffect(() => onAuthStateChanged(getAuth(app), setUser), [])
 
   useEffect(() => {
-    if (functionsEmulator) {
+    if (app && functionsEmulator) {
       const port =
         typeof functionsEmulator === 'number' ? functionsEmulator : 5001
       connectFunctionsEmulator(getFunctions(app), 'localhost', port)
     }
-  }, [functionsEmulator])
+  }, [app, functionsEmulator])
 
   const signOut = async () => {
     setUser(null)
