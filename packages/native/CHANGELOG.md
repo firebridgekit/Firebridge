@@ -1,5 +1,11 @@
 # @firebridge/native
 
+## 0.2.0
+
+### Minor Changes
+
+- Update to build step
+
 ## 0.1.16
 
 ### Patch Changes
