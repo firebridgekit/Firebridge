@@ -1,5 +1,11 @@
 # @firebridge/native
 
+## 0.3.0
+
+### Minor Changes
+
+- fixes issue with firebridge web
+
 ## 0.2.0
 
 ### Minor Changes

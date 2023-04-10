@@ -6,7 +6,8 @@ import {
   createContext,
   useContext,
 } from 'react'
-import { Auth, onAuthStateChanged, User } from 'firebase/auth'
+import { FirebaseApp } from 'firebase/app'
+import { getAuth, onAuthStateChanged, User } from 'firebase/auth'
 import { connectFunctionsEmulator, getFunctions } from 'firebase/functions'
 
 type FirebridgeLogger = {
@@ -24,7 +25,7 @@ const defaultLogger: FirebridgeLogger = {
 }
 
 interface FirebridgeContextProps {
-  auth: Auth
+  app: FirebaseApp
   children: ReactNode
   log: FirebridgeLogger
   functionsEmulator?: boolean | number
@@ -43,25 +44,25 @@ export const FirebridgeContext = createContext<FirebridgeContextValue>({
 })
 
 export const FirebridgeProvider: FunctionComponent<FirebridgeContextProps> = ({
-  auth,
+  app,
   children,
   log = defaultLogger,
   functionsEmulator,
 }) => {
   const [user, setUser] = useState<User | null>()
-  useEffect(() => onAuthStateChanged(auth, setUser), [])
+  useEffect(() => onAuthStateChanged(getAuth(app), setUser), [])
 
   useEffect(() => {
     if (functionsEmulator) {
       const port =
         typeof functionsEmulator === 'number' ? functionsEmulator : 5001
-      connectFunctionsEmulator(getFunctions(), 'localhost', port)
+      connectFunctionsEmulator(getFunctions(app), 'localhost', port)
     }
   }, [functionsEmulator])
 
   const signOut = async () => {
     setUser(null)
-    await auth.signOut()
+    await getAuth(app).signOut()
   }
 
   return (
