@@ -1,5 +1,11 @@
 # @firebridge/web
 
+## 0.6.0
+
+### Minor Changes
+
+- Adds auth arg back to context
+
 ## 0.5.0
 
 ### Minor Changes
