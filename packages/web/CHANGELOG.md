@@ -1,5 +1,11 @@
 # @firebridge/web
 
+## 0.5.0
+
+### Minor Changes
+
+- Fixes missing auth context
+
 ## 0.4.0
 
 ### Minor Changes
