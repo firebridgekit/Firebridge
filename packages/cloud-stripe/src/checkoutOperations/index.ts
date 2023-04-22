@@ -1,5 +1,4 @@
 import { firestore } from 'firebase-admin'
-import { config } from 'firebase-functions'
 import {
   firestoreSet,
   firestoreAdd,

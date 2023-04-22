@@ -1,16 +1,11 @@
 import * as yup from 'yup'
-import Stripe from 'stripe'
 import { firestore } from 'firebase-admin'
-import { config } from 'firebase-functions'
 import { sumBy } from 'lodash'
 import { callable } from '@firebridge/cloud'
 
 import { Quanitifed, Sellable } from '../types'
 import { setCheckout } from '../checkoutOperations'
-
-const stripe = new Stripe(config().stripe.secret, {
-  apiVersion: config().stripe.version,
-})
+import { stripe } from '../client'
 
 interface OnStripePaymentIntentBody {
   cart: {

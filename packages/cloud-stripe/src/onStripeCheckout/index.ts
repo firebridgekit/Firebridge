@@ -1,6 +1,4 @@
 import * as yup from 'yup'
-import Stripe from 'stripe'
-import { config } from 'firebase-functions'
 import { customAlphabet } from 'nanoid'
 import { auth, firestore } from 'firebase-admin'
 import { chunk } from 'lodash'
@@ -8,10 +6,7 @@ import { callable } from '@firebridge/cloud'
 
 import { Quanitifed, Sellable } from '../types'
 import { setCheckout } from '../checkoutOperations'
-
-const stripe = new Stripe(config().stripe.secret, {
-  apiVersion: config().stripe.version,
-})
+import { stripe } from '../client'
 
 interface OnStripeCheckoutBody {
   cart: {
@@ -36,10 +31,7 @@ export const onStripeCheckout = ({
       cart: yup.array(
         yup.object({
           id: yup.string().required(),
-          quantity: yup
-            .number()
-            .integer()
-            .required(),
+          quantity: yup.number().integer().required(),
         }),
       ),
     }),
@@ -67,7 +59,7 @@ export const onStripeCheckout = ({
 
       // turns XXXXXXXXXXXX into XXXX-XXXX-XXXX
       const chunkedReferenceCode = chunk(referenceCode.split(''), 4)
-        .map(part => part.join(''))
+        .map((part) => part.join(''))
         .join('-')
 
       const session = await stripe.checkout.sessions.create({

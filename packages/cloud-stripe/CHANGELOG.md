@@ -1,5 +1,11 @@
 # @firebridge/cloud-stripe
 
+## 0.1.3
+
+### Patch Changes
+
+- Simplifies imports
+
 ## 0.1.2
 
 ### Patch Changes
