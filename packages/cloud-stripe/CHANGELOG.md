@@ -1,5 +1,11 @@
 # @firebridge/cloud-stripe
 
+## 0.1.7
+
+### Patch Changes
+
+- Updates package.josn
+
 ## 0.1.6
 
 ### Patch Changes
