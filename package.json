@@ -22,7 +22,8 @@
     "node": ">=14.0.0"
   },
   "dependencies": {
-    "@changesets/cli": "^2.26.0"
+    "@changesets/cli": "^2.26.0",
+    "nanoid": "^3.3.4"
   },
   "packageManager": "yarn@1.22.19"
 }

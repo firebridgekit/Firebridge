@@ -1,5 +1,17 @@
 # @firebridge/cloud-stripe
 
+## 0.1.5
+
+### Patch Changes
+
+- Fixes nanoid import error
+
+## 0.1.4
+
+### Patch Changes
+
+- Better nanoid import
+
 ## 0.1.3
 
 ### Patch Changes
