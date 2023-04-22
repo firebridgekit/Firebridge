@@ -11,19 +11,17 @@ import {
 
 import { TimestampDates, WithId, Checkout } from '../types'
 
-const COLLECTION_PATH = config()?.checkouts?.collection_path ?? 'checkouts'
-
-export const getCheckout = firestoreGet<Checkout>(COLLECTION_PATH)
-export const addCheckout = firestoreAdd<Checkout>(COLLECTION_PATH)
-export const updateCheckout = firestoreUpdate<Checkout>(COLLECTION_PATH)
-export const setCheckout = firestoreSet<Checkout>(COLLECTION_PATH)
-export const deleteCheckout = firestoreDelete(COLLECTION_PATH)
+export const getCheckout = firestoreGet<Checkout>('checkouts')
+export const addCheckout = firestoreAdd<Checkout>('checkouts')
+export const updateCheckout = firestoreUpdate<Checkout>('checkouts')
+export const setCheckout = firestoreSet<Checkout>('checkouts')
+export const deleteCheckout = firestoreDelete('checkouts')
 
 export const getCheckoutBySession = async (
   session: string,
 ): Promise<WithId<Checkout>> => {
   const checkoutQuery = await firestore()
-    .collection(COLLECTION_PATH)
+    .collection('checkouts')
     .where('session', '==', session)
     .limit(1)
     .get()
@@ -47,7 +45,7 @@ export const getCheckouts = async ({
   sinceDate?: firestore.Timestamp
 }): Promise<WithId<Checkout>[]> => {
   let query = await firestore()
-    .collection(COLLECTION_PATH)
+    .collection('checkouts')
     .where('status', '==', 'completed')
 
   if (sinceDate) {
@@ -56,7 +54,7 @@ export const getCheckouts = async ({
 
   const snap = await query.get()
 
-  const docs = snap.docs.map(a => {
+  const docs = snap.docs.map((a) => {
     const data = a.data() as TimestampDates<
       Checkout,
       'dateCreated' | 'dateUpdated'
