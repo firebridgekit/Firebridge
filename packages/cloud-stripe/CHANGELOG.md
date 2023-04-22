@@ -1,5 +1,11 @@
 # @firebridge/cloud-stripe
 
+## 0.1.8
+
+### Patch Changes
+
+- Fixes path for main
+
 ## 0.1.7
 
 ### Patch Changes
