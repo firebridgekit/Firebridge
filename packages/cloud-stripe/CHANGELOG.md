@@ -1,5 +1,11 @@
 # @firebridge/cloud-stripe
 
+## 0.1.9
+
+### Patch Changes
+
+- Adds item ids to checkouts
+
 ## 0.1.8
 
 ### Patch Changes

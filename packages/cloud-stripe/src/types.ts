@@ -36,6 +36,7 @@ export interface Checkout {
   payment?: string
   uid: string
   items: (Sellable & Quanitifed)[]
+  itemIds: string[]
   status: CheckoutStatus
   meta?: any
   dateCreated: Date
@@ -44,8 +45,9 @@ export interface Checkout {
 
 export type FirestoreTimestamp = firestore.Timestamp
 
-export type TimestampDates<T, V extends string = 'date'> = Omit<T, V> &
-  { [Property in V]: FirestoreTimestamp }
+export type TimestampDates<T, V extends string = 'date'> = Omit<T, V> & {
+  [Property in V]: FirestoreTimestamp
+}
 
 export interface Identified {
   id: string

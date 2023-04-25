@@ -25,15 +25,11 @@ export const getCheckoutBySession = async (
     .limit(1)
     .get()
 
-  if (checkoutQuery.size === 0) {
-    throw new Error('checkout not found')
-  }
+  if (checkoutQuery.size === 0) throw new Error('checkout not found')
   const doc = checkoutQuery.docs[0]
 
   const checkout = readSnapshot<Checkout>(doc)
-  if (!checkout) {
-    throw new Error('checkout not found')
-  }
+  if (!checkout) throw new Error('checkout not found')
 
   return checkout
 }
@@ -47,10 +43,7 @@ export const getCheckouts = async ({
     .collection('checkouts')
     .where('status', '==', 'completed')
 
-  if (sinceDate) {
-    query = query.where('dateCreated', '>=', sinceDate)
-  }
-
+  if (sinceDate) query = query.where('dateCreated', '>=', sinceDate)
   const snap = await query.get()
 
   const docs = snap.docs.map((a) => {

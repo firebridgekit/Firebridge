@@ -88,6 +88,7 @@ export const onStripeCheckout = ({
         uid: ctx.auth.uid,
         status: 'created',
         items,
+        itemIds: items.map(({ id }) => id),
       })
 
       return { session }
