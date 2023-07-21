@@ -6,6 +6,7 @@ import {
   createContext,
   useContext,
   useRef,
+  useCallback,
 } from 'react'
 import {
   Auth,
@@ -58,21 +59,17 @@ export const FirebridgeProvider: FunctionComponent<FirebridgeContextProps> = ({
   persistence,
 }) => {
   const [user, setUser] = useState<User | null>()
-  const unsubscribe = useRef<() => void>()
+  const unsubscribeRef = useRef<Function>()
 
-  const initialize = async () => {
-    // Unsubscribe from previous auth state changes
-    unsubscribe.current?.()
+  useEffect(() => {
+    if (allowAnonymousSignIn && user === null) signInAnonymously(auth)
+  }, [user])
 
-    // Set persistence if provided
+  const initialize = useCallback(async () => {
+    if (unsubscribeRef.current) unsubscribeRef.current()
     if (persistence) await setPersistence(auth, persistence)
-
-    // Listen for auth state changes
-    unsubscribe.current = onAuthStateChanged(auth, (nextUser: User | null) => {
-      if (nextUser === null && allowAnonymousSignIn) signInAnonymously(auth)
-      else setUser(nextUser)
-    })
-  }
+    unsubscribeRef.current = onAuthStateChanged(auth, setUser)
+  }, [persistence])
 
   useEffect(() => {
     initialize()
