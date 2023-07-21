@@ -6,7 +6,12 @@ import {
   createContext,
   useContext,
 } from 'react'
-import { Auth, onAuthStateChanged, User } from 'firebase/auth'
+import {
+  Auth,
+  onAuthStateChanged,
+  User,
+  signInAnonymously,
+} from 'firebase/auth'
 
 type FirebridgeLogger = {
   error: (...args: any[]) => void
@@ -25,7 +30,8 @@ const defaultLogger: FirebridgeLogger = {
 interface FirebridgeContextProps {
   auth: Auth
   children: ReactNode
-  log: FirebridgeLogger
+  allowAnonymousSignIn?: boolean
+  log?: FirebridgeLogger
 }
 
 interface FirebridgeContextValue {
@@ -43,10 +49,19 @@ export const FirebridgeContext = createContext<FirebridgeContextValue>({
 export const FirebridgeProvider: FunctionComponent<FirebridgeContextProps> = ({
   auth,
   children,
+  allowAnonymousSignIn,
   log = defaultLogger,
 }) => {
   const [user, setUser] = useState<User | null>()
-  useEffect(() => onAuthStateChanged(auth, setUser), [])
+
+  useEffect(
+    () =>
+      onAuthStateChanged(auth, (nextUser: User | null) => {
+        if (nextUser === null && allowAnonymousSignIn) signInAnonymously(auth)
+        else setUser(nextUser)
+      }),
+    [],
+  )
 
   const signOut = async () => {
     setUser(null)
