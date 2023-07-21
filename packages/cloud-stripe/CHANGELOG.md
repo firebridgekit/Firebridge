@@ -1,5 +1,16 @@
 # @firebridge/cloud-stripe
 
+## 1.0.0
+
+### Minor Changes
+
+- Supports anonymous sign-in
+
+### Patch Changes
+
+- Updated dependencies
+  - @firebridge/cloud@0.4.0
+
 ## 0.1.9
 
 ### Patch Changes

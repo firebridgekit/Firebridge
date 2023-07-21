@@ -1,5 +1,11 @@
 # @firebridge/cloud
 
+## 0.4.0
+
+### Minor Changes
+
+- Supports anonymous sign-in
+
 ## 0.3.0
 
 ### Minor Changes

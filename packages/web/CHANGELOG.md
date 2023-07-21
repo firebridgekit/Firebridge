@@ -1,5 +1,11 @@
 # @firebridge/web
 
+## 0.7.0
+
+### Minor Changes
+
+- Supports anonymous sign-in
+
 ## 0.6.0
 
 ### Minor Changes
