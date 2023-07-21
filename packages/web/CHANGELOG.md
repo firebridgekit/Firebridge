@@ -1,5 +1,11 @@
 # @firebridge/web
 
+## 0.9.0
+
+### Minor Changes
+
+- 7120802: Fixes issue where the user is anonymously initialized twice
+
 ## 0.8.0
 
 ### Minor Changes
