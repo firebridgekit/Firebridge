@@ -4,6 +4,9 @@ import * as express from 'express'
 
 export type AuthenticatedContext = {
   auth: { uid: string }
+  // These are custom claims you can add to an API key.
+  // They are never used in a callable
+  claims?: Object
 }
 
 export type InvokableAction<Body, Response> = (

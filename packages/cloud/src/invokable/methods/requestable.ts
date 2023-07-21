@@ -26,34 +26,37 @@ import { getRunOptions } from '../utils/getRunOptions'
 //   * Performs validation on the body.
 //   * Performs any necessary logging.
 
-export const requestable = <Body, Response = void>(options: {
-  action: InvokableAction<Body, Response>
-  validation?: BodyValidationSchema
-  scope?: (args: Body) => string[]
-}): OnRequestHandler => async (req: https.Request, res: express.Response) => {
-  // Ensure that an x-api-key header was provided.
-  const keyHash = req.header('x-api-key')
-  if (!keyHash) {
-    throw new https.HttpsError(
-      'unauthenticated',
-      'You must provide an x-api-key header.',
-    )
+export const requestable =
+  <Body, Response = void>(options: {
+    action: InvokableAction<Body, Response>
+    validation?: BodyValidationSchema
+    scope?: (args: Body) => string[]
+  }): OnRequestHandler =>
+  async (req: https.Request, res: express.Response) => {
+    // Ensure that an x-api-key header was provided.
+    const keyHash = req.header('x-api-key')
+    if (!keyHash) {
+      throw new https.HttpsError(
+        'unauthenticated',
+        'You must provide an x-api-key header.',
+      )
+    }
+
+    // Ensure that the provided key can be found.
+    const key = await getKey(keyHash)
+    if (!key?.uid) {
+      throw new https.HttpsError('unauthenticated', 'API key not found.')
+    }
+
+    await validate(req.body, options.validation)
+    const response = invoke(options.action, req.body, {
+      auth: { uid: key.uid },
+      claims: key.claims,
+    })
+
+    res.send(response)
+    res.end()
   }
-
-  // Ensure that the provided key can be found.
-  const key = await getKey(keyHash)
-  if (!key?.uid) {
-    throw new https.HttpsError('unauthenticated', 'API key not found.')
-  }
-
-  await validate(req.body, options.validation)
-  const response = invoke(options.action, req.body, {
-    auth: { uid: key.uid },
-  })
-
-  res.send(response)
-  res.end()
-}
 
 export const onRequest = (
   onRequestHandler: OnRequestHandler,
