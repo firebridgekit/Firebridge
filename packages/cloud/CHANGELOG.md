@@ -1,5 +1,11 @@
 # @firebridge/cloud
 
+## 0.7.0
+
+### Minor Changes
+
+- Types claims as any on AuthenticatedContext
+
 ## 0.6.0
 
 ### Minor Changes
