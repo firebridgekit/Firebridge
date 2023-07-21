@@ -1,5 +1,11 @@
 # @firebridge/cloud
 
+## 0.5.0
+
+### Minor Changes
+
+- Allows api keys to include claims
+
 ## 0.4.0
 
 ### Minor Changes
