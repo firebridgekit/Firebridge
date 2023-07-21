@@ -1,5 +1,11 @@
 # @firebridge/cloud
 
+## 0.6.0
+
+### Minor Changes
+
+- Expands typing for claims to support any
+
 ## 0.5.0
 
 ### Minor Changes

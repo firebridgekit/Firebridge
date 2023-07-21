@@ -5,7 +5,7 @@ import { firestoreGet, firestoreSet } from '../actions'
 
 interface ApiKey {
   uid: string
-  claims?: Object
+  claims?: any
 }
 
 export const getKey = firestoreGet<ApiKey>('keys')
