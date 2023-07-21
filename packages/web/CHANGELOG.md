@@ -1,5 +1,11 @@
 # @firebridge/web
 
+## 0.8.0
+
+### Minor Changes
+
+- allows custom auth persistence on web
+
 ## 0.7.0
 
 ### Minor Changes
