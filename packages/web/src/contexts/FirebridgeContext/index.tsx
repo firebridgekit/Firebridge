@@ -5,12 +5,15 @@ import {
   FunctionComponent,
   createContext,
   useContext,
+  useRef,
 } from 'react'
 import {
   Auth,
   onAuthStateChanged,
   User,
   signInAnonymously,
+  setPersistence,
+  Persistence,
 } from 'firebase/auth'
 
 type FirebridgeLogger = {
@@ -32,6 +35,7 @@ interface FirebridgeContextProps {
   children: ReactNode
   allowAnonymousSignIn?: boolean
   log?: FirebridgeLogger
+  persistence?: Persistence
 }
 
 interface FirebridgeContextValue {
@@ -51,17 +55,28 @@ export const FirebridgeProvider: FunctionComponent<FirebridgeContextProps> = ({
   children,
   allowAnonymousSignIn,
   log = defaultLogger,
+  persistence,
 }) => {
   const [user, setUser] = useState<User | null>()
+  const unsubscribe = useRef<() => void>()
 
-  useEffect(
-    () =>
-      onAuthStateChanged(auth, (nextUser: User | null) => {
-        if (nextUser === null && allowAnonymousSignIn) signInAnonymously(auth)
-        else setUser(nextUser)
-      }),
-    [],
-  )
+  const initialize = async () => {
+    // Unsubscribe from previous auth state changes
+    unsubscribe.current?.()
+
+    // Set persistence if provided
+    if (persistence) await setPersistence(auth, persistence)
+
+    // Listen for auth state changes
+    unsubscribe.current = onAuthStateChanged(auth, (nextUser: User | null) => {
+      if (nextUser === null && allowAnonymousSignIn) signInAnonymously(auth)
+      else setUser(nextUser)
+    })
+  }
+
+  useEffect(() => {
+    initialize()
+  }, [])
 
   const signOut = async () => {
     setUser(null)
