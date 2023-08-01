@@ -1,5 +1,11 @@
 # @firebridge/cloud
 
+## 0.8.0
+
+### Minor Changes
+
+- Supports merge operations in firestore batches
+
 ## 0.7.0
 
 ### Minor Changes
