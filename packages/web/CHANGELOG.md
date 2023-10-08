@@ -1,5 +1,11 @@
 # @firebridge/web
 
+## 0.10.0
+
+### Minor Changes
+
+- includes app in web context
+
 ## 0.9.0
 
 ### Minor Changes
