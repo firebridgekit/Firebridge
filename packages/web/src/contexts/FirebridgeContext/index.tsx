@@ -8,6 +8,7 @@ import {
   useRef,
   useCallback,
 } from 'react'
+import { FirebaseApp } from 'firebase/app'
 import {
   Auth,
   onAuthStateChanged,
@@ -40,12 +41,14 @@ interface FirebridgeContextProps {
 }
 
 interface FirebridgeContextValue {
+  app: FirebaseApp | null | undefined
   user: User | null | undefined
   signOut: () => Promise<void>
   log: FirebridgeLogger
 }
 
 export const FirebridgeContext = createContext<FirebridgeContextValue>({
+  app: undefined,
   user: undefined,
   signOut: async () => {},
   log: defaultLogger,
@@ -81,7 +84,7 @@ export const FirebridgeProvider: FunctionComponent<FirebridgeContextProps> = ({
   }
 
   return (
-    <FirebridgeContext.Provider value={{ user, signOut, log }}>
+    <FirebridgeContext.Provider value={{ app: auth.app, user, signOut, log }}>
       {children}
     </FirebridgeContext.Provider>
   )
