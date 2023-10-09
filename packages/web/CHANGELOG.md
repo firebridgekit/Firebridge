@@ -1,5 +1,11 @@
 # @firebridge/web
 
+## 0.10.1
+
+### Patch Changes
+
+- Updates app type to remove null or undefined
+
 ## 0.10.0
 
 ### Minor Changes

@@ -41,14 +41,14 @@ interface FirebridgeContextProps {
 }
 
 interface FirebridgeContextValue {
-  app: FirebaseApp | null | undefined
+  app: FirebaseApp
   user: User | null | undefined
   signOut: () => Promise<void>
   log: FirebridgeLogger
 }
 
 export const FirebridgeContext = createContext<FirebridgeContextValue>({
-  app: undefined,
+  app: {} as FirebaseApp,
   user: undefined,
   signOut: async () => {},
   log: defaultLogger,
