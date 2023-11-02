@@ -13,6 +13,7 @@ interface OnStripeCheckoutBody {
     id: string
     quantity: number
   }[]
+  cancelUrl?: string
 }
 
 interface OnStripeCheckoutArgs {
@@ -28,6 +29,7 @@ export const onStripeCheckout = ({
 }: OnStripeCheckoutArgs) =>
   callable<OnStripeCheckoutBody, any>({
     validation: yup.object({
+      cancelUrl: yup.string().optional(),
       cart: yup.array(
         yup.object({
           id: yup.string().required(),
@@ -35,7 +37,7 @@ export const onStripeCheckout = ({
         }),
       ),
     }),
-    action: async ({ cart }, ctx) => {
+    action: async ({ cart, cancelUrl: overrideCancelUrl }, ctx) => {
       const user = await auth().getUser(ctx.auth.uid)
 
       const getSellableItem = async ({
@@ -59,7 +61,7 @@ export const onStripeCheckout = ({
 
       // turns XXXXXXXXXXXX into XXXX-XXXX-XXXX
       const chunkedReferenceCode = chunk(referenceCode.split(''), 4)
-        .map((part) => part.join(''))
+        .map(part => part.join(''))
         .join('-')
 
       const session = await stripe.checkout.sessions.create({
@@ -80,7 +82,7 @@ export const onStripeCheckout = ({
           typeof successUrl === 'function'
             ? successUrl(chunkedReferenceCode)
             : successUrl,
-        cancel_url: cancelUrl,
+        cancel_url: overrideCancelUrl ?? cancelUrl,
       })
 
       await setCheckout(chunkedReferenceCode, {

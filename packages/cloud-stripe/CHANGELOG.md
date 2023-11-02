@@ -1,5 +1,11 @@
 # @firebridge/cloud-stripe
 
+## 5.1.0
+
+### Minor Changes
+
+- A cancel URL can now be provided during checkout to override the default
+
 ## 5.0.0
 
 ### Patch Changes
