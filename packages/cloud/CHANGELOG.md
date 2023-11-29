@@ -1,5 +1,11 @@
 # @firebridge/cloud
 
+## 0.9.0
+
+### Minor Changes
+
+- 9fbc9cd: Removes unnecessary error catching on cloud
+
 ## 0.8.1
 
 ### Patch Changes
