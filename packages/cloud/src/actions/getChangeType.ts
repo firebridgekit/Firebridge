@@ -6,11 +6,7 @@ export const getChangeType = (change: {
   before: firestore.DocumentSnapshot
   after: firestore.DocumentSnapshot
 }): DocumentChangeType => {
-  if (!change.after.exists) {
-    return 'delete'
-  }
-  if (!change.before.exists) {
-    return 'create'
-  }
+  if (!change.after.exists) return 'delete'
+  if (!change.before.exists) return 'create'
   return 'update'
 }

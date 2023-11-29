@@ -14,26 +14,22 @@ export const firestoreSet =
     { addMetadata }: FirstoreSetOptions = {},
   ) =>
   async (id: string, item: Partial<T>, args?: A) => {
-    try {
-      const data = {
-        ...item,
-        ...(addMetadata && {
-          'metadata.timeCreated': firestore.Timestamp.now(),
-          'metadata.timeUpdated': firestore.Timestamp.now(),
-        }),
-      }
-
-      const ref = await firestore()
-        .collection(
-          typeof collectionPath === 'string'
-            ? collectionPath
-            : collectionPath({ ...(args as A), data }),
-        )
-        .doc(id)
-        .set(data)
-
-      return ref
-    } catch (error) {
-      throw error
+    const data = {
+      ...item,
+      ...(addMetadata && {
+        'metadata.timeCreated': firestore.Timestamp.now(),
+        'metadata.timeUpdated': firestore.Timestamp.now(),
+      }),
     }
+
+    const ref = await firestore()
+      .collection(
+        typeof collectionPath === 'string'
+          ? collectionPath
+          : collectionPath({ ...(args as A), data }),
+      )
+      .doc(id)
+      .set(data)
+
+    return ref
   }

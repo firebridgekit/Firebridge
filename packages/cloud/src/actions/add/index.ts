@@ -13,26 +13,22 @@ export const firestoreAdd =
     { addMetadata }: FirstoreCreateOptions = {},
   ) =>
   async (item: T, args?: A) => {
-    try {
-      const data = {
-        ...item,
-        ...(addMetadata && {
-          'metadata.timeCreated': firestore.Timestamp.now(),
-        }),
-      }
-
-      const ref = await firestore()
-        .collection(
-          typeof collectionPath === 'string'
-            ? collectionPath
-            : collectionPath({ ...(args as A), data }),
-        )
-        .add(data)
-
-      return ref
-    } catch (error) {
-      throw error
+    const data = {
+      ...item,
+      ...(addMetadata && {
+        'metadata.timeCreated': firestore.Timestamp.now(),
+      }),
     }
+
+    const ref = await firestore()
+      .collection(
+        typeof collectionPath === 'string'
+          ? collectionPath
+          : collectionPath({ ...(args as A), data }),
+      )
+      .add(data)
+
+    return ref
   }
 
 // SIMPLE EXAMPLE

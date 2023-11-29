@@ -14,25 +14,21 @@ export const firestoreMerge =
     { addMetadata }: FirstoreMergeOptions = {},
   ) =>
   async (id: string, item: Partial<T>, args?: A) => {
-    try {
-      const data = {
-        ...item,
-        ...(addMetadata && {
-          'metadata.timeUpdated': firestore.Timestamp.now(),
-        }),
-      }
-
-      const ref = await firestore()
-        .collection(
-          typeof collectionPath === 'string'
-            ? collectionPath
-            : collectionPath({ ...(args as A), data }),
-        )
-        .doc(id)
-        .set(data, { merge: true })
-
-      return ref
-    } catch (error) {
-      throw error
+    const data = {
+      ...item,
+      ...(addMetadata && {
+        'metadata.timeUpdated': firestore.Timestamp.now(),
+      }),
     }
+
+    const ref = await firestore()
+      .collection(
+        typeof collectionPath === 'string'
+          ? collectionPath
+          : collectionPath({ ...(args as A), data }),
+      )
+      .doc(id)
+      .set(data, { merge: true })
+
+    return ref
   }

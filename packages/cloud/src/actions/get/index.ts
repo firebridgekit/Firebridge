@@ -11,18 +11,14 @@ export const firestoreGet =
     collectionPath: string | ((args: A) => string),
   ) =>
   async (id: string, args?: A) => {
-    try {
-      const doc = await firestore()
-        .collection(
-          typeof collectionPath === 'string'
-            ? collectionPath
-            : collectionPath({ ...(args as A) }),
-        )
-        .doc(id)
-        .get()
+    const doc = await firestore()
+      .collection(
+        typeof collectionPath === 'string'
+          ? collectionPath
+          : collectionPath({ ...(args as A) }),
+      )
+      .doc(id)
+      .get()
 
-      return doc.exists ? readSnapshot<WithId<T>>(doc) : undefined
-    } catch (error) {
-      throw error
-    }
+    return doc.exists ? readSnapshot<WithId<T>>(doc) : undefined
   }

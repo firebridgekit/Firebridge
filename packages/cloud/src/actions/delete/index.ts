@@ -19,23 +19,19 @@ export const firestoreDelete =
     { recursive = false }: FirstoreDeleteOptions = {},
   ) =>
   async (id: string, args?: A) => {
-    try {
-      const ref = await firestore()
-        .collection(
-          typeof collectionPath === 'string'
-            ? collectionPath
-            : collectionPath({ ...(args as A) }),
-        )
-        .doc(id)
+    const ref = await firestore()
+      .collection(
+        typeof collectionPath === 'string'
+          ? collectionPath
+          : collectionPath({ ...(args as A) }),
+      )
+      .doc(id)
 
-      if (recursive) {
-        await firestore().recursiveDelete(ref)
-      } else {
-        await ref.delete()
-      }
-
-      return ref
-    } catch (error) {
-      throw error
+    if (recursive) {
+      await firestore().recursiveDelete(ref)
+    } else {
+      await ref.delete()
     }
+
+    return ref
   }
