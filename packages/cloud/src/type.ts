@@ -13,3 +13,10 @@ export interface Metadata {
 }
 
 export type WithMetadata<T> = T & Metadata
+
+export type SerializedFirestoreTimestamp = {
+  nanoseconds?: number
+  seconds?: number
+  _nanoseconds?: number
+  _seconds?: number
+}
