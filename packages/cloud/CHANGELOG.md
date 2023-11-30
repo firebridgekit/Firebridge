@@ -1,5 +1,11 @@
 # @firebridge/cloud
 
+## 0.10.0
+
+### Minor Changes
+
+- Adds tools for hydrating timestamps
+
 ## 0.9.0
 
 ### Minor Changes
