@@ -1,7 +1,6 @@
-import { firestore } from 'firebase-admin'
+import { Timestamp } from 'firebase-admin/firestore'
 
 import { SerializedFirestoreTimestamp } from '../type'
-import { Timestamp } from 'firebase-admin/firestore'
 
 export const timestampToDate = (timestamp?: SerializedFirestoreTimestamp) => {
   const seconds = timestamp?.seconds ?? timestamp?._seconds
@@ -12,7 +11,7 @@ export const timestampToDate = (timestamp?: SerializedFirestoreTimestamp) => {
 export const hydrateTimestamp = (timestamp?: SerializedFirestoreTimestamp) => {
   const seconds = timestamp?.seconds ?? timestamp?._seconds
   if (!seconds) throw new Error('Invalid timestamp')
-  return firestore.Timestamp.fromMillis(seconds * 1000)
+  return Timestamp.fromMillis(seconds * 1000)
 }
 
 type HydratedObject<T, K extends keyof T> = {
