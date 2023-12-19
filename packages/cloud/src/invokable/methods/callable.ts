@@ -10,7 +10,11 @@ import {
 import { getRunOptions } from '../utils/getRunOptions'
 import { invoke } from '../utils/invoke'
 import { validate } from '../utils/validate'
-import { userHasPermission } from '../../permissions'
+import {
+  UserPermissions,
+  getUserPermissions,
+  userHasPermission,
+} from '../../permissions'
 
 // CALLABLE
 // --------
@@ -26,38 +30,50 @@ import { userHasPermission } from '../../permissions'
 //   * Performs validation on the body.
 //   * Performs any necessary logging.
 
-export const callable = <Body, Response = void>(options: {
-  action: InvokableAction<Body, Response>
-  validation?: BodyValidationSchema
-  scope?: string | ((args: Body) => string[])
-}): OnCallHandler => async (
-  body: Body,
-  context: AuthenticatedContext & any,
-) => {
-  if (!context.auth) {
-    throw new https.HttpsError('unauthenticated', 'user is not authenticated')
-  }
-
-  await validate(body, options?.validation)
-
-  if (options?.scope) {
-    const scope =
-      typeof options?.scope === 'string'
-        ? [options?.scope]
-        : options?.scope(body)
-
-    const permission = await userHasPermission(context.auth.uid, ...scope)
-    if (!permission) {
-      throw new https.HttpsError(
-        'permission-denied',
-        'user does not have the required permissions',
-      )
+export const callable =
+  <Body, Response = void>(options: {
+    action: InvokableAction<Body, Response>
+    validation?: BodyValidationSchema
+    scope?: string | ((args: Body) => string[])
+    checkHasPermission?: <T extends UserPermissions>(permissions: T) => boolean
+  }): OnCallHandler =>
+  async (body: Body, context: AuthenticatedContext & any) => {
+    if (!context.auth) {
+      throw new https.HttpsError('unauthenticated', 'user is not authenticated')
     }
-  }
 
-  const response = await invoke(options.action, body, context)
-  return response
-}
+    await validate(body, options?.validation)
+
+    if (options?.scope) {
+      const scope =
+        typeof options?.scope === 'string'
+          ? [options?.scope]
+          : options?.scope(body)
+
+      const permission = await userHasPermission(context.auth.uid, ...scope)
+      if (!permission) {
+        throw new https.HttpsError(
+          'permission-denied',
+          'user does not have the required permissions',
+        )
+      }
+    }
+
+    if (options?.checkHasPermission) {
+      const userPermissions = await getUserPermissions(context.auth.uid)
+      const hasPermission =
+        userPermissions && options?.checkHasPermission(userPermissions)
+      if (!hasPermission) {
+        throw new https.HttpsError(
+          'permission-denied',
+          'user does not have the required permissions',
+        )
+      }
+    }
+
+    const response = await invoke(options.action, body, context)
+    return response
+  }
 
 export const onCall = (
   onCallHandler: OnCallHandler,
