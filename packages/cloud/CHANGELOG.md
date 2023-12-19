@@ -1,5 +1,11 @@
 # @firebridge/cloud
 
+## 0.13.0
+
+### Minor Changes
+
+- Adds body as an arg to checkHasPermissions
+
 ## 0.12.0
 
 ### Minor Changes
