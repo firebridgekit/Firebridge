@@ -1,5 +1,11 @@
 # @firebridge/cloud
 
+## 0.12.0
+
+### Minor Changes
+
+- allows custom permissions checks
+
 ## 0.11.0
 
 ### Minor Changes
