@@ -35,7 +35,10 @@ export const callable =
     action: InvokableAction<Body, Response>
     validation?: BodyValidationSchema
     scope?: string | ((args: Body) => string[])
-    checkHasPermission?: <T extends UserPermissions>(permissions: T) => boolean
+    checkHasPermission?: <T extends UserPermissions>(
+      permissions: T,
+      data: Body,
+    ) => boolean
   }): OnCallHandler =>
   async (body: Body, context: AuthenticatedContext & any) => {
     if (!context.auth) {
@@ -62,7 +65,7 @@ export const callable =
     if (options?.checkHasPermission) {
       const userPermissions = await getUserPermissions(context.auth.uid)
       const hasPermission =
-        userPermissions && options?.checkHasPermission(userPermissions)
+        userPermissions && options?.checkHasPermission(userPermissions, body)
       if (!hasPermission) {
         throw new https.HttpsError(
           'permission-denied',
