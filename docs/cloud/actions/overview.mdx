@@ -1,0 +1,88 @@
+---
+title: 'Actions Overview'
+description: 'Cloud actions make it simple to define a set of database operations with consistent names and parameters. They also provide type safety to common actions like creating or updadating a document.'
+---
+
+## Goals
+
+- 👩‍💻 Managing documents should be a great developer experience with simple implementations and TypeScript hints and warnings.
+- 🔒 Data should be structured so that it's easy to secure, but we shouldn't have to constantly constuct long paths to the data we wish to manage.
+- 🔎 Metadata like the date a post was created should be managed in the database for easy sorting and querying.
+
+## Implementation
+
+The action utilities provided by `@firebridge/cloud` make it easy to create your own simple actions for performing database operations. For example:
+
+```ts
+// Create a function for adding a blog post.
+const addPost = firestoreAdd<Post>('posts')
+const myPost = await addPost({ title: 'Hello World' })
+```
+
+We provide utilities for all of the common database operations. You can select one below to learn more:
+
+- [`firestoreAdd` for adding documents](./firestoreAdd)
+- [`firestoreDelete` for deleting documents](./firestoreDelete)
+- [`firestoreGet` for reading documents](./firestoreGet)
+- [`firestoreSet` for setting documents](./firestoreSet)
+- [`firestoreUpdate` for updating documents](./firestoreUpdate)
+- [`firestoreMerge` for merging documents](./firestoreMerge)
+
+## Purpose
+
+The purpose of our cloud actions is to enable a cleaner and more consistent developer experience when working with the database. They allow you to easily wrap Firestore's already simple API with some additional functionality.
+
+### Adding Data
+
+Let's say we have a blog app where users can create posts. What is the simplest function we could provide developers to add a post to the database?
+
+```ts
+// Posts are stored at /posts/{postId}.
+const myPost = await addPost({
+  title: 'Hello World',
+  body: 'This is my first post',
+  authorId: '123',
+})
+```
+
+Nice and simple, and it's typesafe too! We'll get a warning if we try to add a post without a title, or if we try to add a post with a property that doesn't exist.
+
+Now, let's add a comment to our post. You can already imagine how this might work from the example above.
+
+```ts
+// Comments are stored at /posts/{postId}/comments/{commentId}.
+const myComment = await addComment({
+  postId: myPost.id, // The ID of the post we want to comment on.
+  authorId: '456', // The ID of the user who wrote the comment.
+  body: "What a great post! I can't wait to read more. 👍",
+})
+```
+
+### Reading Data
+
+Next, let's say we want to read a single post or comment. We should be able to do this with a single function call.
+
+```ts
+// It should be simple to read a single post.
+const myPost = await getPost(myPost.id)
+console.log(myPost.title) // "Hello World"
+```
+
+If we want to perform more complex queries, we should be able to do that too using the standard calls provided by the Firestore Admin SDK. In this case, let's query some of the metadata our functions automatically added to our documents.
+
+```ts
+// Get the 10 most recent comments on a post.
+const recentComments = await firestore()
+  .collection(`posts/${myPost.id}/comments`)
+  .orderBy('metadata.timeCreated', 'desc')
+  .limit(10)
+  .get()
+```
+
+### Deleting Data
+
+Finally, we should be able to delete a post with a single function call. Since posts have subcollections and child documents, we should automatically delete those too.
+
+```ts
+await deletePost(myPost.id)
+```

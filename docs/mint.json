@@ -1,0 +1,94 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "Firebridge",
+  "logo": {
+    "dark": "/logo/dark.svg",
+    "light": "/logo/light.svg"
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#063bcd",
+    "light": "#85c7ff",
+    "dark": "#063bcd",
+    "anchors": {
+      "from": "#063bcd",
+      "to": "#85c7ff"
+    }
+  },
+  "topbarCtaButton": {
+    "name": "Github",
+    "url": "https://github.com/firebridgekit/Firebridge"
+  },
+  "navigation": [
+    {
+      "group": "Introduction",
+      "pages": ["introduction", "get-started"]
+    },
+    {
+      "group": "React",
+      "pages": [
+        "/react/installation",
+        {
+          "group": "Hooks",
+          "pages": [
+            "react/hooks/useCollection",
+            "react/hooks/useDocument",
+            "react/hooks/useDocumentState",
+            "react/hooks/useCallable",
+            "react/hooks/useCallableResponse"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "Cloud",
+      "pages": [
+        "/cloud/installation",
+        {
+          "group": "Invokeables",
+          "pages": [
+            "cloud/invokeables/requestable",
+            "cloud/invokeables/callable"
+          ]
+        },
+        {
+          "group": "Execution",
+          "pages": ["cloud/execution/batch", "cloud/execution/parallel"]
+        },
+        {
+          "group": "Actions",
+          "pages": [
+            "cloud/actions/firestoreAdd",
+            "cloud/actions/firestoreDelete",
+            "cloud/actions/firestoreGet",
+            "cloud/actions/firestoreSet",
+            "cloud/actions/firestoreUpdate",
+            "cloud/actions/firestoreMerge"
+          ]
+        },
+        {
+          "group": "Snapshots",
+          "pages": [
+            "cloud/snapshots/getChangeType",
+            "cloud/snapshots/readSnapshot",
+            "cloud/snapshots/readQuerySnapshot"
+          ]
+        },
+        {
+          "group": "Timestamps",
+          "pages": [
+            "cloud/timestamps/maxTimestamp",
+            "cloud/timestamps/hydrateAllTimestamps",
+            "cloud/timestamps/hydrateTimestamp",
+            "cloud/timestamps/minTimestamp",
+            "cloud/timestamps/sortTimestamps",
+            "cloud/timestamps/timestampToDate"
+          ]
+        }
+      ]
+    }
+  ],
+  "footerSocials": {
+    "github": "https://github.com/firebridgekit/Firebridge"
+  }
+}

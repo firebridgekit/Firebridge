@@ -1,0 +1,58 @@
+---
+title: 'Cloud Installation'
+description: 'Get started with Firebridge on React.'
+icon: 'cloud'
+---
+
+## Install the package
+
+In order to use the cloud utils, you must install the `@firebridge/cloud` package. You must also have the firebase admin SDK installed.
+
+```bash
+yarn add @firebridge/cloud
+# OR
+npm install @firebridge/cloud
+```
+
+## Usage
+
+You can browse the sidebar to see the different utilities available. Below are just a few ideas that will help you get started.
+
+### Define Actions
+
+In many cases, you will want to define some actions that can be performed on your database. You can use the `firestoreSet`, `firestoreUpdate`, and `firestoreDelete` utilities to create these actions. These might be stored in `@/actions/...`.
+
+```ts
+import { firestoreSet, firestoreUpdate } from '@firebridge/cloud'
+
+type Profile = {
+  name: string
+  bio?: string
+}
+
+export const setProfile = firestoreSet<Profile>('profiles')
+export const updateProfile = firestoreUpdate<Profile>('profiles')
+export const deleteProfile = firestoreDelete('profiles')
+```
+
+### Create Callables
+
+You can use the `callable` utility to define invokeable actions. These actions can be invoked from the client using the `invoke` utility. These could be stored in `@/callables/...`.
+
+```ts
+import { onCall, callable } from '@firebridge/cloud'
+
+const onUpdateProfile = onCall<Profile>(
+  callable({
+    action: async ({ name, bio }, { auth }) => {
+      // Check if bio is explicit
+      const isExplicit = await checkIsExplicit(bio)
+      if (isExplicit) throw new Error('bio is explicit.')
+
+      await updateProfile(auth.uid, { name, bio })
+    },
+  }),
+)
+```
+
+### Explore Utils

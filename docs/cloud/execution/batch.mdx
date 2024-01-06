@@ -1,0 +1,72 @@
+---
+title: 'Batch Execution'
+description: 'The `executeFirestoreBatch` utility streamlines the process of executing multiple Firestore operations in a batch. This is crucial for ensuring atomic transactions across different documents in Firestore, where either all operations succeed or none at all.'
+icon: 'code'
+---
+
+## Introduction
+
+Handling multiple operations on Firestore documents in a single atomic transaction can be challenging. The `executeFirestoreBatch` function simplifies this by batching operations, ensuring consistency and integrity of your Firestore data.
+
+### Key Features
+
+- **Atomic Transactions**: Executes a series of Firestore operations as a single atomic transaction.
+- **Supports Multiple Operations**: Handles 'set', 'update', and 'merge' operations on Firestore documents.
+- **Error Handling**: Ensures all operations in a batch either succeed together or fail without committing any changes.
+
+### Utilization
+
+#### Defining Firestore Operations
+
+Create an array of `FirestoreOperation` objects, specifying the operation type, document reference, and data for each operation:
+
+```ts
+import {
+  FirestoreOperation,
+  executeFirestoreBatch,
+} from 'path-to-your-utilities'
+
+// Example operations
+const operations: FirestoreOperation[] = [
+  {
+    type: 'set',
+    ref: firestore().doc('path/to/doc1'),
+    data: {
+      /* your data */
+    },
+  },
+  {
+    type: 'update',
+    ref: firestore().doc('path/to/doc2'),
+    data: {
+      /* your data */
+    },
+  },
+  // Add more operations as needed
+]
+```
+
+#### Executing the Batch
+
+Pass the array of operations to `executeFirestoreBatch` to perform them as an atomic transaction:
+
+```ts
+// Execute batch operations
+await executeFirestoreBatch(operations)
+```
+
+## Handling Large Batches
+
+For batches with more than 500 operations, `executeFirestoreBatch` automatically chunks them into smaller groups, adhering to Firestore's limitations on batch size.
+
+## Best Practices
+
+- Structure your data and operations to minimize the need for large transactions.
+- Test your batch operations thoroughly to ensure they behave as expected.
+- Implement error handling to gracefully manage any issues during batch execution.
+
+<Warning>
+  While batching operations can be powerful, it's important to use this utility
+  judiciously to maintain performance and avoid exceeding Firestore's
+  operational limits.
+</Warning>

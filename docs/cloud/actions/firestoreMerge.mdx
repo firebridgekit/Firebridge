@@ -1,0 +1,98 @@
+---
+title: 'firestoreMerge'
+description: 'The `firestoreMerge` function is a higher-order function that returns a function specifically designed for merging updates into a document in a collection.'
+icon: 'code'
+---
+
+## Usage
+
+The `firestoreMerge` function allows for merging updates to a document within a Firestore collection. The primary use case is to update fields in a document without overwriting the entire document. This is especially useful for partial updates.
+
+Usage is straightforward:
+
+```ts
+// Define a function to merge updates into a post
+const mergePost = firestoreMerge('posts')
+
+// Use the function to merge updates into a post
+const postId = 'post-id-1'
+await mergePost(postId, { title: 'Updated title' })
+```
+
+### Subcollections
+
+`firestoreMerge` can also handle subcollections. To update a document in a subcollection, the collection path must include the subcollection path:
+
+```ts
+// Define a function to merge updates into a post for a specific user
+const userId = 'user-id-1'
+const mergePostForUser = firestoreMerge(`users/${userId}/posts`)
+
+const postId = 'post-id-1'
+await mergePostForUser(postId, { title: 'Updated title' })
+```
+
+### Dynamic Paths
+
+For more dynamic use cases, you can use a function to determine the collection path:
+
+```ts
+// Define a function to merge updates into a post for a user
+const mergePostForUser = firestoreMerge(({ userId }) => `users/${userId}/posts`)
+
+const postId = 'post-id-1'
+const userId = 'user-id-1'
+await mergePostForUser(postId, { title: 'Updated title' }, { userId })
+```
+
+## Return Value
+
+The `firestoreMerge` function returns a Promise that resolves to a `DocumentReference` of the merged document:
+
+```ts
+const postId = 'post-id-1'
+const ref = await mergePost(postId, { title: 'Updated title' })
+
+// The value returned is a DocumentReference
+console.log(ref.path) // outputs the path of the updated document
+```
+
+## Type Safety
+
+When a type parameter is provided, the function ensures type safety for the data being merged:
+
+```ts
+type Post = {
+  title: string
+  content: string
+}
+
+const mergePost = firestoreMerge<Post>('posts')
+
+const postId = 'post-id-1'
+
+// This merge is allowed as it matches the Post type
+await mergePost(postId, { title: 'Updated title' })
+
+// This merge is not allowed as 'views' is not part of the Post type
+await mergePost(postId, { views: 100 })
+```
+
+<Warning>
+  Although type definitions help prevent mistakes, they are not a guarantee
+  against invalid data. Ensure proper usage of the function for accurate data
+  updates.
+</Warning>
+
+## Options
+
+You can also include metadata when merging data by using the `addMetadata` option.
+
+```ts
+// The mergePost function will now include metadata.
+const mergePost = firestoreMerge<Post>('posts', { addMetadata: true })
+
+await mergePost('post-id-1', { title: 'My Merged Post' })
+
+// The post will have an updated 'metadata.timeUpdated' field.
+```

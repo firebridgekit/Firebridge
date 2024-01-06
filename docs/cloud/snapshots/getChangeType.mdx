@@ -1,0 +1,80 @@
+---
+title: 'Change Types'
+description: 'Detecting document changes within Firestore Cloud Functions is essential for real-time data handling. The `getChangeType` utility facilitates this by categorizing document changes, making it easier to implement responsive and efficient cloud functions.'
+icon: 'code'
+---
+
+## Overview
+
+Firestore Cloud Functions allow you to run backend code in response to events triggered by Firestore operations. The `getChangeType` utility is designed to work seamlessly within this environment, identifying whether a document in Firestore has been created, updated, or deleted. This enables precise and effective event handling in cloud functions.
+
+### Change Types
+
+- `create`: Indicates a new document was added.
+- `update`: Represents updates to an existing document.
+- `delete`: Occurs when a document is removed.
+
+### Usage in Cloud Functions
+
+#### Setting up a Firestore Trigger
+
+To use `getChangeType` in a Firestore Cloud Function:
+
+```ts
+import * as functions from 'firebase-functions'
+import { firestore } from 'firebase-admin'
+import { getChangeType } from '@firebridge/cloud'
+
+// Cloud Function listening to changes in a specific collection
+export const onDocumentChange = functions.firestore
+  .document('/your-collection/{docId}')
+  .onWrite((change, context) => {
+    // Determine the type of change
+    const changeType = getChangeType(change)
+
+    switch (changeType) {
+      case 'create':
+        // Handle creation logic
+        console.log(`New document created: ${context.params.docId}`)
+        break
+      case 'update':
+        // Handle update logic
+        console.log(`Document updated: ${context.params.docId}`)
+        break
+      case 'delete':
+        // Handle deletion logic
+        console.log(`Document deleted: ${context.params.docId}`)
+        break
+    }
+  })
+```
+
+## `DocumentChangeType` Explanation
+
+The `DocumentChangeType` type alias simplifies working with Firestore changes in TypeScript, ensuring you always handle the correct type of document change.
+
+```ts
+type DocumentChangeType = 'create' | 'update' | 'delete'
+```
+
+## Practical Applications
+
+- **Data Validation**: Validate or transform data when a new document is created or updated.
+- **Notification Systems**: Trigger notifications on data changes, such as sending an email when a new document is added.
+- **Data Synchronization**: Sync data with other systems or databases on document changes.
+
+<Warning>
+  When working with Cloud Functions, it's important to handle each type of
+  document change correctly to maintain data integrity and ensure the desired
+  workflow.
+</Warning>
+
+## Best Practices
+
+- Thoroughly test your Cloud Functions to ensure they behave as expected for each type of document change.
+- Optimize your function's execution time and resource usage, especially if your Firestore operations are frequent and large in scale.
+- Document the purpose and expected behavior of your Cloud Functions for future reference and maintenance.
+
+---
+
+With these guidelines, you can effectively integrate `getChangeType` into your Firestore Cloud Functions, enhancing your application's responsiveness and efficiency in handling real-time data changes.

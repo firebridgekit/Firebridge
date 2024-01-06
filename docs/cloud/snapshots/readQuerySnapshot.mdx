@@ -1,0 +1,57 @@
+---
+title: 'readQuerySnapshot'
+description: 'The `readQuerySnapshot` utility efficiently processes Firestore query snapshots, converting them into an array of document data objects, each paired with its corresponding document ID. It filters out non-existent documents, ensuring clean and reliable data arrays.'
+icon: 'code'
+---
+
+## Introduction
+
+Retrieving multiple documents from a Firestore query typically involves processing a query snapshot. The `readQuerySnapshot` function streamlines this process by transforming a query snapshot into an easily manageable array of document data objects, each including the document ID.
+
+### Key Features
+
+- **Simplified Data Extraction**: Converts query snapshots into an array of data objects with document IDs.
+- **Excludes Non-Existent Documents**: Automatically filters out documents that do not exist, ensuring data integrity.
+- **Type Safety with Generics**: Supports generic typing for document data, enhancing type safety and reducing errors.
+
+### Utilization
+
+#### Preparing for Query Snapshot Reads
+
+Import `readQuerySnapshot` to handle Firestore query snapshot processing:
+
+```ts
+import { firestore } from 'firebase-admin'
+import { readQuerySnapshot } from 'path-to-your-utilities'
+
+// Assuming 'querySnapshot' is obtained from a Firestore query
+const querySnapshot: firestore.QuerySnapshot = firestore()
+  .collection('path/to/collection')
+  .get()
+```
+
+#### Extracting Data Array from a Query Snapshot
+
+Use `readQuerySnapshot` to process the query snapshot into an array of document data objects:
+
+```ts
+// Process the query snapshot
+const documentsArray = readQuerySnapshot(querySnapshot)
+
+// 'documentsArray' contains an array of objects, each with document data and ID
+```
+
+## Handling Empty or Non-Existent Documents
+
+`readQuerySnapshot` ensures that only existing documents are included in the returned array, skipping any documents that are not found in the database.
+
+## Best Practices
+
+- Utilize `readQuerySnapshot` for batch data retrieval from Firestore to ensure consistent data handling.
+- Leverage the generic typing feature to maintain type safety across your Firestore data processing.
+- Always verify the returned array, especially in cases where the query might return no documents.
+
+<Warning>
+  Be mindful of Firestore's performance and rate limits when handling large
+  query snapshots. Optimize your queries to fetch only necessary data.
+</Warning>

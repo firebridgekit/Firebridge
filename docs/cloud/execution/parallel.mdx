@@ -1,0 +1,72 @@
+---
+title: 'Parallel Execution'
+description: 'The `executeFirestoreParallel` utility facilitates the execution of multiple Firestore operations concurrently. This function is ideal for scenarios where several independent document manipulations need to occur simultaneously, significantly improving performance by parallelizing operations.'
+icon: 'code'
+---
+
+## Introduction
+
+Performing multiple Firestore operations sequentially can be time-consuming, especially when dealing with a large number of documents. `executeFirestoreParallel` addresses this challenge by executing operations in parallel, enhancing the efficiency of your Firestore interactions.
+
+### Key Features
+
+- **Concurrent Operations**: Executes Firestore operations simultaneously, rather than one after another.
+- **Chunking for Performance**: Splits operations into manageable chunks to optimize performance and avoid overloading Firestore's limits.
+- **Comprehensive Error Handling**: In case of a failure in any operation, the function rejects with an error, ensuring robust error handling.
+
+### Utilization
+
+#### Defining Firestore Operations
+
+Prepare an array of `FirestoreOperation` objects, each specifying the operation type, target document reference, and necessary data:
+
+```ts
+import {
+  FirestoreOperation,
+  executeFirestoreParallel,
+} from 'path-to-your-utilities'
+
+// Example Firestore operations
+const operations: FirestoreOperation[] = [
+  {
+    type: 'set',
+    ref: firestore().doc('path/to/doc1'),
+    data: {
+      /* your data */
+    },
+  },
+  {
+    type: 'update',
+    ref: firestore().doc('path/to/doc2'),
+    data: {
+      /* your data */
+    },
+  },
+  // Add more operations as needed
+]
+```
+
+#### Executing Operations in Parallel
+
+Invoke `executeFirestoreParallel` with the array of operations. Operations are automatically chunked for optimal performance:
+
+```ts
+// Execute operations in parallel
+await executeFirestoreParallel(operations, 25) // 25 is the chunk size
+```
+
+## Handling Large Operation Sets
+
+For handling a large number of operations, `executeFirestoreParallel` splits them into smaller groups (chunks) to maintain efficient performance and conform to Firestore's limitations.
+
+## Best Practices
+
+- Adjust the chunk size based on the complexity and number of operations to balance performance and resource usage.
+- Ensure all operations are independent of each other to avoid conflicts during parallel execution.
+- Implement comprehensive error handling to manage partial failures in operation sets.
+
+<Warning>
+  Parallel execution is powerful but should be used judiciously. Consider
+  Firestore's rate limits and quotas to avoid potential issues with large-scale
+  operations.
+</Warning>

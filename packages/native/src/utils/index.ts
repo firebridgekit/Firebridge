@@ -1,4 +1,7 @@
-const errorCodeMessages: { [key: string]: any } = {
+/**
+ * A mapping of error codes to their corresponding error messages.
+ */
+const errorCodeMessages = {
   'auth/invalid-email': {
     email: 'Sorry, that email is invalid.',
   },
@@ -17,7 +20,19 @@ const errorCodeMessages: { [key: string]: any } = {
   unknown: {
     email: 'Sorry, something went wrong.',
   },
-}
+} as const
 
-export const formErrorsForCode = (code: string) =>
+/**
+ * Type representing the keys of the errorCodeMessages object.
+ */
+type ErrorCode = keyof typeof errorCodeMessages
+
+/**
+ * @function formErrorsForCode
+ * Returns the error messages corresponding to a given error code.
+ *
+ * @param {ErrorCode} code - The error code.
+ * @returns {Object} The error messages for the given code, or the default error messages if the code is not found.
+ */
+export const formErrorsForCode = (code: ErrorCode) =>
   errorCodeMessages[code] || errorCodeMessages.unknown

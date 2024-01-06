@@ -1,0 +1,57 @@
+---
+title: 'readSnapshot'
+description: "The `readSnapshot` utility simplifies the process of extracting data from Firestore document snapshots. It neatly packages the document's data along with its ID, or returns undefined if the document does not exist, streamlining Firestore document reads."
+icon: 'code'
+---
+
+## Introduction
+
+Working with Firestore document snapshots often requires extracting data and document IDs. The `readSnapshot` function automates this process, making it more efficient and error-proof, especially when dealing with non-existent documents.
+
+### Key Features
+
+- **Convenience**: Automatically extracts data and ID from a Firestore document snapshot.
+- **Safety**: Returns undefined for non-existent documents, avoiding null reference errors.
+- **Generic Typing**: Supports generic typing for document data, ensuring type safety.
+
+### Utilization
+
+#### Preparing for Document Reads
+
+Import `readSnapshot` and use it to read data from a Firestore document snapshot:
+
+```ts
+import { firestore } from 'firebase-admin'
+import { readSnapshot } from 'path-to-your-utilities'
+
+// Assuming 'docSnapshot' is a Firestore document snapshot
+const docSnapshot: firestore.DocumentSnapshot = firestore()
+  .doc('path/to/doc')
+  .get()
+```
+
+#### Extracting Data from a Snapshot
+
+Invoke `readSnapshot` with a document snapshot to get the document's data and ID:
+
+```ts
+// Read data from the snapshot
+const docData = readSnapshot(docSnapshot)
+
+// docData contains the document's data and ID, or is undefined if the document doesn't exist
+```
+
+## Handling Non-Existent Documents
+
+`readSnapshot` gracefully handles non-existent documents by returning undefined, allowing for easy checking and preventing errors due to null or undefined values.
+
+## Best Practices
+
+- Use `readSnapshot` in Firestore read operations to standardize how you handle document data extraction.
+- Combine `readSnapshot` with other Firestore utilities to create a cohesive data handling workflow.
+- Always check for undefined returns when dealing with optional or non-existent documents.
+
+<Warning>
+  Ensure that you handle the undefined case in your code to gracefully manage
+  scenarios where the document does not exist.
+</Warning>

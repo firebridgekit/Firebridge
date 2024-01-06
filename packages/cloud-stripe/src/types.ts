@@ -53,4 +53,4 @@ export interface Identified {
   id: string
 }
 
-export type WithCreationMetadata<T> = T & { createdAt: FirestoreTimestamp }
+export type WithCreationMetadata<T> = T & { timeCreated: FirestoreTimestamp }

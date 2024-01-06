@@ -1,22 +1,39 @@
 import { firestore } from 'firebase-admin'
 
-interface FirstoreCreateOptions {
+/**
+ * Options for creating a Firestore document.
+ * @typedef {Object} FirestoreCreateOptions
+ * @property {boolean} [addMetadata=false] - If true, automatically adds metadata to the document.
+ */
+type FirestoreCreateOptions = {
   addMetadata?: boolean
 }
 
+/**
+ * @function firestoreAdd
+ * @template Data - The type of the document data.
+ * @template Args - The type of the arguments object. Defaults to a record of string keys and any values if not provided.
+ * @description A higher-order function that returns a function for adding a Firestore document.
+ * @param {string | ((args: Args & { data: Data }) => string)} collectionPath - The path to the Firestore collection where the document will be added, or a function that returns the path. The function is passed an object containing the arguments and the document data.
+ * @param {FirestoreCreateOptions} [options={}] - An object containing options for the add operation. If not provided, defaults to an empty object.
+ * @returns {(item: Data, args?: Args) => Promise<firestore.DocumentReference>} - A function that adds a Firestore document and returns a Promise that resolves with a DocumentReference to the added document. The function takes the document data and an optional arguments object.
+ */
 export const firestoreAdd =
-  <T, A = Record<string, any>>(
-    // The collection path to add the document to.
-    // This can be a string or a function that returns a string based on the parts
-    // passed into the action.
-    collectionPath: string | ((args: A & { data: T }) => string),
-    { addMetadata }: FirstoreCreateOptions = {},
+  <Data, Args = Record<string, any>>(
+    collectionPath: string | ((args: Args & { data: Data }) => string),
+    { addMetadata }: FirestoreCreateOptions = {},
   ) =>
-  async (item: T, args?: A) => {
+  /**
+   * @param {Data} item - The document data.
+   * @param {Args} [args] - The arguments object.
+   * @returns {Promise<firebase.firestore.DocumentReference>} - A Promise that resolves with a DocumentReference to the newly created document.
+   */
+  async (item: Data, args?: Args) => {
     const data = {
       ...item,
       ...(addMetadata && {
         'metadata.timeCreated': firestore.Timestamp.now(),
+        'metadata.timeUpdated': firestore.Timestamp.now(),
       }),
     }
 
@@ -24,28 +41,9 @@ export const firestoreAdd =
       .collection(
         typeof collectionPath === 'string'
           ? collectionPath
-          : collectionPath({ ...(args as A), data }),
+          : collectionPath({ ...(args as Args), data }),
       )
       .add(data)
 
     return ref
   }
-
-// SIMPLE EXAMPLE
-
-// For example, you can use this to create a function that adds a post to a
-// collection of posts:
-// const addPost = firestoreAdd<Post>('posts')
-
-// which you can then use like this:
-// const post = await addPost({ title: 'My post' })
-
-// ADVANCED EXAMPLE
-
-// Or you could use it to create a function that adds a post to a collection of
-// posts for a specific user:
-// const addPostForUser = firestoreAdd<Post, { userId: string }>(
-//   (args) => `users/${args.userId}/posts`
-// )
-// which you can then use like this:
-// const post = await addPostForUser({ title: 'My post' }, { userId: '123' })

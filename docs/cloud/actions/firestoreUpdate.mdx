@@ -1,0 +1,125 @@
+---
+title: 'firestoreUpdate'
+description: 'The `firestoreUpdate` function is a higher-order function that returns a function that updates a document in a collection.'
+icon: 'code'
+---
+
+## Usage
+
+You can use the `firestoreUpdate` function to update a document from a collection. The first argument is the slash-separated path of the collection.
+
+```ts
+// Define a function to update a post
+const updatePost = firestoreUpdate('posts')
+
+// Use the function to update a post
+const postId = 'post-id-1'
+await updatePost(postId, { title: 'My updated post' })
+```
+
+### Subcollections
+
+Collections don't have to be at the top level of the Firestore, adding slashes will update the document in a subcollection. For example, if you want to update a post in a collection of posts for a specific user:
+
+```ts
+// Define a function to update a post
+const userId = 'user-id-1'
+const updatePostForUser = firestoreUpdate<Post>(`users/${userId}/posts`)
+
+const postId = 'post-id-1'
+await updatePostForUser(postId, { title: 'My post' })
+```
+
+### Dynamic Paths
+
+Using subcollections is a common pattern in Firestore since it makes writing security rules much easier. To make our function more reusable, we can use a function that takes an arguments object and returns a string representing the path:
+
+```ts
+// Define a function to update a post
+const updatePostForUser = firestoreUpdate<Post>(
+  ({ userId }) => `users/${userId}/posts`,
+)
+
+const postId = 'post-id-1'
+const userId = 'user-id-1'
+
+await updatePostForUser(postId, { title: 'My post' }, { userId })
+```
+
+Even more convenient is to pull the userId from the post itself, assuming the post contains it. This can be done by using the `data` property of the arguments object which contains the data that will be written to the document:
+
+```ts
+type Post = {
+  title: string
+  authorId: string
+}
+
+// Define a function to update a post
+const updatePostForUser = firestoreUpdate<Post>(
+  ({ data }) => `users/${data.authorId}/posts`,
+)
+
+const postId = 'post-id-1'
+const authorId = 'user-id-1'
+
+await updatePostForUser(postId, { title: 'My post', authorId })
+```
+
+## Return Value
+
+The function returns a Promise that resolves with a `DocumentReference` to the newly created document.
+
+```ts
+const postId = 'post-id-1'
+const ref = await updatePost(postId, { title: 'My updated post' })
+
+// The value returned is a DocumentReference
+await ref.delete()
+```
+
+## Type Safety
+
+If a type parameter is provided, the returned function will be typesafe. It will allow any `Partial` of the provided type to be passed as the second argument. It will not allow any other type to be passed as the second argument.
+
+```ts
+type Post = {
+  title: string
+  body: string
+}
+
+const updatePost = firestoreUpdate<Post>('posts')
+
+const postId = 'post-id-1'
+
+// This update is allowed because it is a Partial<Post>
+await updatePost(postId, { title: 'My updated post' })
+
+// This update is not allowed because it is not a Partial<Post>
+await updatePost(postId, { title: 'My updated post', coverImageSrc: '...' })
+```
+
+<Warning>
+  The provided type definitions will help you to avoid common mistakes, but they
+  are not realtime validation. You can still write invalid data to Firestore if
+  you don't use the provided functions correctly.
+</Warning>
+
+## Options
+
+The second argument to `firestoreUpdate` is an optional object allowing for additional configuration. This object can have a property `addMetadata` which, if true, adds metadata to the document.
+
+```ts
+// The updatePost function will include metadata to the new document.
+const updatePost = firestoreUpdate<Post>('posts', { addMetadata: true })
+
+await updatePost('post-id-1', { title: 'First Post' })
+await updatePost('post-id-2', { title: 'Second Post' })
+await updatePost('post-id-3', { title: 'Third Post' })
+
+// The posts will be ordered by the time they were updated.
+const recentPosts = await firestore
+  .collection('posts')
+  .orderBy('metadata.timeUpdated', 'asc')
+  .limit(10)
+  .get()
+```

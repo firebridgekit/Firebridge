@@ -1,0 +1,57 @@
+---
+title: 'useCallableResponse'
+description: 'The `useCallableResponse` custom hook is designed for React applications that require automatic fetching of data from Firebase Cloud Functions upon component initialization. This hook simplifies the process of making cloud function calls and managing their responses within the component state.'
+icon: 'code'
+---
+
+## Introduction
+
+Fetching data from Firebase Cloud Functions is a common requirement in many React applications. The `useCallableResponse` hook automates this process by calling a specified cloud function when a component mounts and storing the response in the component's state. This is particularly useful for initial data fetching in component lifecycle.
+
+### Key Features
+
+- **Automated Function Invocation**: Calls a specified Firebase Cloud Function automatically upon component mounting.
+- **Stateful Response Management**: Stores the function response in the component's state for easy access and re-rendering.
+- **Customizable Function Arguments**: Allows passing arguments to the cloud function for flexible data fetching.
+
+### Utilization
+
+#### Setting Up an Automated Cloud Function Call
+
+Import `useCallableResponse` and use it to automatically call a cloud function and store its response:
+
+```ts
+import { functions } from 'path-to-your-firebase-config'
+import { useCallableResponse } from 'path-to-your-hooks'
+
+// Example: Fetching user settings
+const userId = 'someUserId'
+const userSettings = useCallableResponse<UserSettings>(
+  functions,
+  'getUserSettings',
+  { userId },
+)
+```
+
+#### Accessing the Function Response
+
+The response from the cloud function is automatically stored in the state and updated upon receiving new data:
+
+```ts
+// The 'userSettings' state will contain the response from 'getUserSettings' cloud function
+```
+
+## Handling the Function Lifecycle
+
+The hook handles the lifecycle of the cloud function call, ensuring that the function is called once when the component mounts and the response is updated in the state.
+
+## Best Practices
+
+- Use `useCallableResponse` for scenarios where data needs to be fetched once upon component initialization.
+- Ensure that the arguments passed to the cloud function are correct and relevant to the data being fetched.
+- Implement error handling to manage any exceptions or issues during the cloud function call.
+
+<Warning>
+  Be mindful of the network and performance implications of automatic cloud
+  function calls, especially in components that mount frequently.
+</Warning>

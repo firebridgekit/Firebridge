@@ -1,0 +1,60 @@
+---
+title: 'useCollection'
+description: "The `useCollection` custom hook provides a seamless way to fetch realtime Firestore collections in scenarios where collection paths are dynamic or partially unknown. It's especially useful in React applications that require data fetching based on runtime values like user IDs or route parameters."
+icon: 'code'
+---
+
+## Introduction
+
+Fetching collections from Firestore can often depend on dynamic factors, such as user IDs or parameters extracted from URLs. The `useCollection` hook simplifies this process by allowing developers to construct Firestore collection references dynamically and fetch data in real time.
+
+### Key Features
+
+- **Dynamic Collection Paths**: Handles Firestore collection paths that are built dynamically based on runtime values.
+- **Realtime Data Subscription**: Subscribes to the collection and updates the component with the latest data in real time.
+- **User Authentication Dependent**: Ensures data fetching occurs only when the user is logged in and all path parts are defined.
+
+### Utilization
+
+#### Fetching User-Dependent Collections
+
+Use `useCollection` to fetch collections where the path includes a user ID:
+
+```ts
+import { useCollection } from 'path-to-your-hooks'
+
+// Example use case: Fetching user connections
+const userId = 'someUserId'
+const userConnections = useCollection<Connection>(
+  uid => collection(firestore, 'users', uid, 'connections'),
+  [userId],
+)
+```
+
+#### Fetching Collections Based on Route Parameters
+
+`useCollection` is also adept for fetching collections based on URL parameters:
+
+```ts
+// Assuming 'topicId' is obtained from a URL parameter
+const topicId = 'someTopicId'
+const topicPosts = useCollection<Post>(
+  (_uid, topic) => collection(firestore, 'topics', topic, 'posts'),
+  [topicId],
+)
+```
+
+## Handling Undefined Paths and Authentication
+
+The hook smartly manages situations where path parts are undefined or the user is not authenticated, avoiding unnecessary data fetches.
+
+## Best Practices
+
+- Leverage `useCollection` in scenarios where Firestore collection paths depend on dynamic or runtime values.
+- Implement null and undefined value checks for cases where collections might be empty or when users are unauthenticated.
+- Integrate `useCollection` with other React hooks and components for creating dynamic, data-driven user interfaces.
+
+<Warning>
+  Ensure careful handling of user data and dynamic collection paths to maintain
+  data security and integrity, especially in applications with variable content.
+</Warning>

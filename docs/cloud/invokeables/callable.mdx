@@ -1,0 +1,106 @@
+---
+title: 'Callables'
+description: "The `callable` utility provides a robust approach to managing Firebase Cloud Functions, ensuring user authentication, request validation, and permission management. It's designed to secure and simplify handling callable Cloud Functions in Firebase."
+icon: 'code'
+---
+
+## Introduction
+
+When working with Firebase Cloud Functions, security and efficiency are paramount. The `callable` utility is engineered to fortify callable Cloud Functions, offering features like user authentication, body validation, and permission checks, enhancing the security and functionality of your serverless architecture.
+
+### Key Features
+
+- **User Authentication**: Verifies that each request is made by an authenticated user.
+- **Request Validation**: Ensures the integrity of request data using validation schemas.
+- **Permission Management**: Checks if the user has the necessary permissions to perform the requested action.
+- **Custom Action Execution**: Facilitates the execution of specified actions with authenticated and validated inputs.
+
+### Utilization
+
+#### Creating a Secure Callable Function
+
+Using `callable` enhances your Cloud Function with pre-configured security and validation checks:
+
+```ts
+import { callable, onCall } from 'path-to-your-utilities'
+
+// Define your action
+const yourAction = async (body, context) => {
+  // Your logic here
+}
+
+// Setup your callable Cloud Function
+export const yourCallableFunction = onCall(
+  callable({
+    action: yourAction,
+    validation: {
+      /* your validation schema */
+    },
+  }),
+  {
+    /* runtime modes */
+  },
+)
+```
+
+#### Implementing User Authentication
+
+Every request is authenticated, ensuring secure function execution:
+
+```ts
+// Inside your action
+// User authentication is automatically handled by `callable`
+```
+
+#### Enforcing Request Body Validation
+
+Define and apply a schema to validate incoming data:
+
+```ts
+// Define your validation schema
+const yourValidationSchema = {
+  /* your schema */
+}
+
+// Include it in the callable setup
+export const yourCallableFunction = onCall(
+  callable({
+    action: yourAction,
+    validation: yourValidationSchema,
+  }),
+  {
+    /* runtime modes */
+  },
+)
+```
+
+#### Managing User Permissions
+
+Specify permission requirements for executing the action:
+
+```ts
+// Define your permission requirements
+const yourPermissionScope = 'required-permission'
+
+// Include it in the callable setup
+export const yourCallableFunction = onCall(
+  callable({
+    action: yourAction,
+    scope: yourPermissionScope,
+  }),
+  {
+    /* runtime modes */
+  },
+)
+```
+
+## Best Practices
+
+- Regularly update your validation schemas to align with your data structure.
+- Ensure all actions are well-tested for various scenarios and user permissions.
+- Document the purpose and functionality of each Cloud Function for future reference and team understanding.
+
+<Warning>
+  Security is key in serverless architectures. Always validate inputs and manage
+  permissions diligently to safeguard your functions.
+</Warning>

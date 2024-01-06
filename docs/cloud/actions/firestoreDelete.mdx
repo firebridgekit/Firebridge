@@ -1,0 +1,40 @@
+---
+title: 'firestoreDelete'
+description: 'The `firestoreDelete` function is a higher-order function that returns a function that deletes a document from a collection.'
+icon: 'code'
+---
+
+## Usage
+
+You can use the `firestoreDelete` function to delete a document from a collection. The only required parameter is a function returning the `path` to the document you want to delete.
+
+```ts
+const deletePost = firestoreDelete('posts')
+
+// Delete the document
+const postId = 'post-id-1'
+await deletePost(postId)
+```
+
+## Return Value
+
+The return value of `firestoreDelete` is a function that returns a `Promise` that resolves to `void`.
+
+## Recursion
+
+When you delete a document, all subcollections are not automatically deleted. You can use the `firestoreDelete` function to delete a document and all of its subcollections.
+
+```ts
+// Recursively delete all subcollections
+const deletePost = firestoreDelete('posts', { recursive: true })
+
+const postId = 'post-id-1'
+await deletePost(postId)
+```
+
+This can be useful if posts have comments and you want to delete all comments when a post is deleted.
+
+## Related Links
+
+- You can see the implementation of `firestoreDelete` [here](https://github.com/firebridgekit/Firebridge/blob/main/packages/cloud/src/actions/deted/index.ts).
+- Review more information on deleting data from Firestore [here](https://firebase.google.com/docs/firestore/manage-data/delete-data#node.js).

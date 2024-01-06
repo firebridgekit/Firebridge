@@ -1,0 +1,52 @@
+---
+title: 'sortTimestamps'
+description: 'The `sortTimestamps` function is a tailored utility for sorting Firestore timestamps. It compares two timestamps and determines their chronological order, making it invaluable for organizing time-based data in Firestore.'
+icon: 'code'
+---
+
+## Introduction
+
+Organizing and comparing time-based data often requires sorting timestamps. The `sortTimestamps` function provides a reliable and straightforward way to compare and sort Firestore timestamps, accommodating possibly missing values to ensure robust and error-free operations.
+
+### Key Features
+
+- **Chronological Sorting**: Compares two Firestore timestamps and sorts them chronologically.
+- **Handles Missing Timestamps**: Gracefully manages scenarios where one or both timestamps may be missing (`null` or `undefined`).
+- **Versatile Application**: Ideal for use in array sorting methods or when manually comparing timestamps.
+
+### Utilization
+
+#### Comparing Two Timestamps
+
+Import `sortTimestamps` and use it as a comparator function when sorting timestamps:
+
+```ts
+import { firestore } from 'firebase-admin'
+import { sortTimestamps } from 'path-to-your-utilities'
+
+// Example Firestore timestamps
+const timestamp1: firestore.Timestamp = firestore.Timestamp.now()
+const timestamp2: firestore.Timestamp = firestore.Timestamp.fromDate(
+  new Date('2020-01-01'),
+)
+
+// Comparing two timestamps
+const comparisonResult = sortTimestamps(timestamp1, timestamp2)
+
+// 'comparisonResult' will be 1, -1, or 0, depending on the chronological order of the timestamps
+```
+
+## Handling Missing Timestamps
+
+`sortTimestamps` is designed to deal with missing timestamps effectively, ensuring that arrays of timestamps are sorted correctly even when some values are missing.
+
+## Best Practices
+
+- Integrate `sortTimestamps` into array sorting operations when dealing with Firestore timestamp data.
+- Use `sortTimestamps` for manual timestamp comparisons to maintain consistency and reliability in your time-based logic.
+- Be cautious when sorting large arrays of timestamps and consider performance implications.
+
+<Warning>
+  When working with timestamps from various sources, consider potential
+  inconsistencies due to time zone differences or clock synchronization issues.
+</Warning>

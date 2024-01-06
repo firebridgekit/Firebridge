@@ -1,0 +1,137 @@
+---
+title: 'firestoreSet'
+description: 'The `firestoreSet` function is a higher-order function that takes a collection path and an options object, and returns a function that can be used to set a documents at a specific address.'
+icon: 'code'
+---
+
+## Usage
+
+You can use the `firestoreSet` function to set a document at a specified path. The first argument is the slash-separated path of the collection containing the document.
+
+```ts
+// Define a function to add a post
+const setPost = firestoreSet('posts')
+
+// Use the function to set a post
+const postId = 'post-id-1'
+await setPost(postId, { title: 'My updated post' })
+```
+
+### Subcollections
+
+Collections don't have to be at the top level of the Firestore, adding slashes will set the document in a subcollection. For example, if you want to set a post in a collection of posts for a specific user:
+
+```ts
+// Define a function to set a post
+const postId = 'post-id-1'
+const setComment = firestoreSet<Comment>(`posts/${postId}/comments`)
+
+const commentId = 'comment-id-1'
+const authorId = 'user-id-2'
+
+await setComment(commentId, {
+  body: 'On a second read, that was fantastic!',
+  authorId,
+})
+```
+
+### Dynamic Paths
+
+Using subcollections is a common pattern in Firestore since it makes writing security rules much easier. To make our function more reusable, we can use a function that takes an arguments object and returns a string representing the path:
+
+```ts
+// Define a function to add a post
+const setComment = firestoreSet<Comment>(
+  ({ postId }) => `posts/${postId}/comments`,
+)
+
+const postId = 'post-id-1'
+const commentId = 'comment-id-1'
+const commentAuthorId = 'user-id-2'
+
+await setComment(
+  commentId,
+  {
+    body: 'On a second read, that was fantastic!',
+    authorId: commentAuthorId,
+  },
+  { postId },
+)
+```
+
+Even more convenient is to pull the postId from the comment itself, assuming the comment contains it. This can be done by using the `data` property of the arguments object which contains the data that will be written to the document:
+
+```ts
+type Comment = {
+  body: string
+  postId: string
+}
+
+// Define a function to add a post
+const setComment = firestoreSet<Post>(
+  ({ data }) => `posts/${data.postId}/comments`,
+)
+
+const postId = 'post-id-1'
+const commentId = 'comment-id-1'
+const commentAuthorId = 'user-id-2'
+
+await setComment(commentId, {
+  body: 'On a second read, that was fantastic!',
+  authorId: commentAuthorId,
+  postId,
+})
+```
+
+## Return Value
+
+The function returns a Promise that resolves with a `DocumentReference` to the newly created document.
+
+```ts
+const ref = await setPost(postId, { title: 'My updated post' })
+
+// The value returned is a DocumentReference
+await ref.delete()
+```
+
+## Type Safety
+
+If a type parameter is provided, the returned function will be typesafe. It will allow any object of the provided type to be passed as the second argument.
+
+```ts
+type Post = {
+  title: string
+  body: string
+}
+
+const setPost = firestoreSet<Post>('posts')
+
+// This set will throw a type error since the post doesn't have a body.
+await setPost(postId, { title: 'My updated post' })
+```
+
+<Warning>
+  The provided type definitions will help you to avoid common mistakes, but they
+  are not realtime validation. You can still write invalid data to Firestore if
+  you don't use the provided functions correctly.
+</Warning>
+
+## Options
+
+The second argument to `firestoreSet` is an optional object allowing for additional configuration. This object can have a property `addMetadata` which, if true, adds metadata to the document.
+
+```ts
+// The setPost function will include metadata to the new document.
+const setPost = firestoreSet<Post>('posts', { addMetadata: true })
+
+await setPost('post_id_1', { title: 'First Post' })
+await setPost('post_id_2', { title: 'Second Post' })
+await setPost('post_id_3', { title: 'Third Post' })
+
+// The posts will be ordered by the time they were created.
+const recentPosts = await firestore
+  .collection('posts')
+  .orderBy('metadata.timeCreated', 'asc')
+  .limit(10)
+  .get()
+```

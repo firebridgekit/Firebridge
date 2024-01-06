@@ -17,7 +17,6 @@
   },
   "peerDependencies": {
     "firebase": ">=9",
-    "react-firebase-hooks": ">=5",
     "react": ">=18",
     "react-dom": ">=18"
   },
@@ -29,10 +28,11 @@
     "firebase": "^9.17.0",
     "react": "*",
     "react-dom": "*",
-    "react-firebase-hooks": "^5.1.1",
     "tsconfig": "*",
     "tsup": "^6.7.0",
     "typescript": "^4.5.2"
   },
-  "dependencies": {}
+  "dependencies": {
+    "react-firebase-hooks": "^5.1.1"
+  }
 }

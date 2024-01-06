@@ -1,0 +1,92 @@
+---
+title: 'firestoreGet'
+description: 'The `firestoreGet` function is a higher-order function that takes a collection path and an options object, and returns a function that can be used to get a documents from a specified address.'
+icon: 'code'
+---
+
+## Usage
+
+You can use the `firestoreGet` function to get a document from a specified path. The first argument is the slash-separated path of the collection containing the document.
+
+```ts
+// Define a function to add a post
+const getPost = firestoreGet('posts')
+
+// Use the function to get a post
+const postId = 'post-id-1'
+const myPost = await getPost(postId)
+
+console.log(myPost.title) // 'My First Post'
+```
+
+### Subcollections
+
+Collections don't have to be at the top level of the Firestore, adding slashes will set the document in a subcollection. For example, if you want to set a post in a collection of posts for a specific user:
+
+```ts
+// Define a function to set a post
+const postId = 'post-id-1'
+const getComment = firestoreGet<Comment>(`posts/${postId}/comments`)
+
+const commentId = 'comment-id-1'
+const myComment = await getComment(commentId)
+
+console.log(myComment.body) // 'What a great post!'
+```
+
+### Dynamic Paths
+
+Using subcollections is a common pattern in Firestore since it makes writing security rules much easier. To make our function more reusable, we can use a function that takes an arguments object and returns a string representing the path:
+
+```ts
+// Define a function to add a post
+const getComment = firestoreGet<Comment>(
+  ({ postId }) => `posts/${postId}/comments`,
+)
+
+const postId = 'post-id-1'
+const commentId = 'comment-id-1'
+
+await getComment(commentId, { postId })
+
+console.log(myComment.body) // 'What a great post!'
+```
+
+## Return Value
+
+The function returns a Promise that resolves with either the expanded document data or `undefined` if the document does not exist. The document data will be expanded to include the document ID as a property `id`.
+
+```ts
+const post = await getPost('post-id-1')
+
+// If the post doesn't exist, post will be undefined.
+const doesPostExist = post !== undefined
+
+// If the post exists, post will be an object with the post data.
+console.log(post.title) // 'My First Post'
+
+// The post object will also have an id property.
+console.log(post.id) // 'post-id-1'
+```
+
+## Type Safety
+
+If a type parameter is provided, the returned function will be typesafe. Its return type will be a Promise that resolves with the provided type or `undefined`.
+
+```ts
+type Post = {
+  title: string
+  body: string
+}
+
+const getPost = firestoreGet<Post>('posts')
+
+// This return type will be Promise<Post | undefined>
+const myPost = await getPost(postId)
+```
+
+<Warning>
+  The provided type definitions will help you to avoid common mistakes, but they
+  are not realtime validation. You can still retrieve invalid data to Firestore
+  if you don't use the provided functions correctly.
+</Warning>

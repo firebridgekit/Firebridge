@@ -1,0 +1,80 @@
+---
+title: 'API Key Management'
+description: 'Efficient management of API keys is crucial for secure and streamlined user authentication. Our suite of utilities for API key management includes functions for generating, retrieving, and storing API keys in Firestore.'
+icon: 'code'
+---
+
+## Overview
+
+API key management is an essential aspect of modern web and mobile applications, ensuring secure access and user authentication. Our utilities simplify the process of creating, retrieving, and storing API keys, leveraging Firestore's robust infrastructure.
+
+### Key Functions
+
+- `getKey`: Retrieves an API key from the 'keys' collection in Firestore.
+- `setKey`: Stores an API key in the 'keys' collection in Firestore.
+- `generateKey`: Generates a unique API key for a specific user.
+
+### Usage
+
+#### Retrieving an API Key
+
+To fetch an existing API key from Firestore:
+
+```ts
+const apiKeyId = 'your-api-key-id'
+const apiKey = await getKey(apiKeyId)
+```
+
+#### Storing an API Key
+
+To store a new API key in Firestore:
+
+```ts
+const apiKeyId = 'new-api-key-id'
+const apiKeyDetails = {
+  uid: 'user-id',
+  claims: {
+    /* user claims */
+  },
+}
+await setKey(apiKeyId, apiKeyDetails)
+```
+
+#### Generating a New API Key
+
+To generate and store a new API key:
+
+```ts
+const userId = 'user-unique-id'
+const newApiKey = generateKey(userId)
+console.log('Generated API Key:', newApiKey)
+```
+
+## API Key Model
+
+The `ApiKey` type defines the structure of an API key in our system:
+
+```ts
+type ApiKey = {
+  uid: string
+  claims?: any
+}
+```
+
+## Security Considerations
+
+- API keys are hashed using MD5 before being stored in Firestore to enhance security.
+- It's crucial to ensure that API keys are kept secure and are not exposed in client-side code.
+- Regularly rotate and update API keys to maintain security integrity.
+
+## Best Practices
+
+- Limit the permissions and claims associated with each API key according to the principle of least privilege.
+- Monitor the usage of API keys and implement rate limiting where appropriate to prevent abuse.
+- Implement logging and auditing mechanisms to track the usage of API keys.
+
+<Warning>
+  Handle API keys with the utmost care as they provide privileged access to your
+  application. Always follow best security practices when dealing with sensitive
+  data.
+</Warning>

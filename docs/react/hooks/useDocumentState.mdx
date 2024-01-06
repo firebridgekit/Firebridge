@@ -1,0 +1,61 @@
+---
+title: 'useDocumentState'
+description: 'The `useDocumentState` custom hook is designed for React Native applications to seamlessly manage the state of a Firestore document. It enables reading, updating, and deleting a Firestore document while automatically syncing changes with the local component state.'
+icon: 'code'
+---
+
+## Introduction
+
+Effectively managing the state of a Firestore document in React Native applications can be challenging, especially when dealing with real-time updates. The `useDocumentState` hook provides a comprehensive solution, allowing you to read, update, and delete Firestore documents and reflect these changes in the local state of your components.
+
+### Key Features
+
+- **Real-time State Synchronization**: Keeps the local state in sync with the Firestore document in real time.
+- **Dynamic Document Reference**: Supports dynamic construction of Firestore document references based on runtime values.
+- **Update and Delete Capabilities**: Offers functions to update or delete the corresponding Firestore document and update the local state accordingly.
+
+### Utilization
+
+#### Setting Up Document State Management
+
+Import `useDocumentState` and use it to manage the state of a Firestore document:
+
+```ts
+import { firestore } from '@react-native-firebase/firestore'
+import { useDocumentState } from 'path-to-your-hooks'
+
+// Example: Managing user profile state
+const userId = 'someUserId'
+const [userProfile, setUserProfile] = useDocumentState<UserProfile>(
+  uid => firestore().doc(`users/${uid}`),
+  [userId],
+)
+```
+
+#### Updating and Deleting the Document
+
+The hook provides a function to update or delete the Firestore document:
+
+```ts
+// Update the user profile
+await setUserProfile(updatedProfile)
+
+// Delete the user profile
+await setUserProfile(null)
+```
+
+## Handling Real-time Updates and Errors
+
+The hook subscribes to Firestore document changes and automatically updates the local state. It also handles any errors that occur during Firestore operations.
+
+## Best Practices
+
+- Use `useDocumentState` for components that require real-time interaction with Firestore documents.
+- Implement proper error handling and state management patterns to handle Firestore document updates and deletions.
+- Be mindful of the component lifecycle and Firestore subscription management to prevent memory leaks and ensure efficient performance.
+
+<Warning>
+  Ensure that the Firestore document references are correctly constructed and
+  that user authentication is appropriately handled to maintain data security
+  and integrity.
+</Warning>

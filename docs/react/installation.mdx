@@ -1,0 +1,150 @@
+---
+title: 'React Installation'
+description: 'Get started with Firebridge on React.'
+icon: 'react'
+---
+
+## Install The Package
+
+All of the Firebridge packages are available on npm. You can install them with your package manager of choice.
+
+<CodeGroup>
+
+```bash Web
+# for React (web)
+# NOTE: the project must have the firebase web SDK installed.
+yarn add @firebridge/web
+# OR
+npm install @firebridge/web
+```
+
+```bash Native
+# for React Native
+# NOTE: that the project must have react-native-firebase installed.
+yarn add @firebridge/native
+# OR
+npm install @firebridge/native
+```
+
+</CodeGroup>
+
+## Wrap Your Application
+
+You'll need to wrap your project in a `FirebridgeProvider`. This allows us to track the auth state and provide it to the rest of the app.
+
+Since Firebase for the web uses a modular SDK, you'll need to provide the auth instance to the provider. Generally, this will be done in a separate file, but we've included it here for completeness. On native, the auth instance is not needed since one is provided by `react-native-firebase`. Simply wrapping the app in the provider is enough.
+
+<CodeGroup>
+
+```tsx Web
+import { initializeApp } from 'firebase/app'
+import { getAuth } from 'firebase/auth'
+import { FirebridgeProvider } from '@firebridge/web'
+
+// You must provide a firebase auth instance.
+const firebaseApp = initializeApp(YOUR_FIREBASE_OPTIONS)
+const auth = getAuth(firebaseApp)
+
+const App = () => (
+  <FirebridgeProvider auth={auth}>
+    {/* the rest of your application */}
+  </FirebridgeProvider>
+)
+```
+
+```tsx Native
+import { FirebridgeProvider } from '@firebridge/native'
+
+const App = () => (
+  <FirebridgeProvider>{/* the rest of your application */}</FirebridgeProvider>
+)
+```
+
+</CodeGroup>
+
+## Use the Hooks
+
+Now that your app is wrapped in the provider, you can use the hooks to access the auth state. You now have everything you need to build a clean developer experience for real time connections to collections and documents in Firestore.
+
+```tsx
+// Listen to a book in the database at /books/{bookId}
+// This book will be updated in real time, and will change when bookId changes.
+export const useBook = (bookId: string) =>
+  // Documents and collections can be typed for convenience.
+  useDocument<Book>(doc(firestore, 'books', bookId))
+
+// Create a real time listener a user's own review for a book.
+// this is stored at /books/{bookId}/reviews/{uid}
+export const useOwnReviewForBook = (bookId: string) =>
+  // The first argument to the path function is the uid of the current user.
+  useDocument<Review>(uid => doc(firestore, 'books', bookId, 'reviews', uid))
+
+// For something more complex, let's listen to the 10 most recent reviews for a
+// book, excluding the current user's review.
+export const useRecentReviewsForBook = (bookId: string) =>
+  useCollection<BookReview>(uid =>
+    query(
+      collection(firestore, 'books', bookId, 'reviews'),
+      where('authorId', '!=', uid),
+      orderBy('metadata.timeCreated', 'desc'),
+      limit(10),
+    ),
+  )
+
+// Now, let's say we need to check reviews on the server for explicit content.
+// For that, we can use a callable function.
+export const useOnReviewBook = useCallable<{ bookId: string; body: string }>(
+  functions,
+  'onReviewBook',
+)
+```
+
+You can now see what the hooks look like in action. Everything is secure, it's all typed, and the developer experience is clean and descriptive. Once you're used to thinking in terms of real time data and hooks, you'll never want to go back.
+
+```tsx
+import { useBook, useBookHighlights, useOnReviewBook } from '@/features/books'
+
+const BookLayout: FC<{ bookId: string }> = ({ bookId }) => {
+  const book = useBook(bookId)
+  const ownReview = useOwnReviewForBook(bookId)
+  const recentReviews = useRecentReviewsForBook(bookId)
+  const onReviewBook = useOnReviewBook()
+
+  // Local State
+  const [isLoading, setIsLoading] = useState(false)
+  const [draftReviewBody, setDraftReviewBody] = useState('')
+
+  // Update our local draft review body when the user's review changes.
+  useEffect(() => {
+    if (ownReview) setDraftReviewBody(ownReview.body)
+  }, [ownReview])
+
+  // When the user submits a review, call the callable function.
+  handleSubmitReview = async () => {
+    setIsLoading(true)
+    await onReviewBook({ bookId, body: draftReviewBody })
+    setIsLoading(false)
+  }
+
+  return isLoading ? (
+    <div>Loading...</div>
+  ) : (
+    <div>
+      <h1>{book.title}</h1>
+      <p>{book.author}</p>
+      <p>{book.description}</p>
+      <input
+        type="text"
+        value={draftReviewBody}
+        onChange={e => setDraftReviewBody(e.target.value)}
+      />
+      <button onClick={handleSubmitReview}>Submit Review</button>
+      <ul>
+        {recentReviews?.map(review => (
+          <li key={review.id}>{review.body}</li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+```

@@ -1,0 +1,130 @@
+---
+title: 'firestoreAdd'
+description: 'The `firestoreAdd` function is a higher-order function that takes a collection path and an options object, and returns a function that can be used to add documents to the specified collection.'
+icon: 'code'
+---
+
+## Usage
+
+You can use this to create a function that adds a post to a collection of posts. The first argument is the slash-separated path of the collection.
+
+```ts
+// Define a function to add a post
+const addPost = firestoreAdd('posts')
+
+// Use the function to add a post
+await addPost({ title: 'My post' })
+```
+
+### Subcollections
+
+Collections don't have to be at the top level of the Firestore, adding slashes will add the document to a subcollection. For example, if you want to add a post to a collection of posts for a specific user:
+
+```ts
+// Define a function to add a comment to a post
+const postId = 'post-id-1'
+const addComment = firestoreAdd<Comment>(`posts/${postId}/comments`)
+
+// Now we can add a comment to the post
+const authorId = 'user-id-2'
+await addComment({ body: 'This is a great post!', authorId })
+```
+
+### Dynamic Paths
+
+Using subcollections is a common pattern in Firestore since it makes writing security rules much easier. To make our function more reusable, we can use a function that takes an arguments object and returns a string representing the path:
+
+```ts
+// Define a function to add a post
+const addComment = firestoreAdd<Comment>(
+  ({ postId }) => `posts/${postId}/comments`,
+)
+
+const postId = 'post-id-1'
+await addComment({ body: 'That was a great read!' }, { postId })
+```
+
+Even more convenient is to pull the userId from the post itself, assuming the post contains it. This can be done by using the `data` property of the arguments object which contains the data that will be written to the document:
+
+```ts
+type Comment = {
+  body: string
+  postId: string // The id of the post this comment belongs to
+}
+
+// Define a function to add a comment to a post
+const addComment = firestoreAdd<Comment>(
+  ({ data }) => `posts/${data.postId}/comments`,
+)
+
+const postId = 'post-id-1'
+await addComment({ body: 'That was a great read!', postId })
+```
+
+## Return Value
+
+The function returns a Promise that resolves with a `DocumentReference` to the newly created document.
+
+```ts
+const ref = await addPost({ title: 'My post' })
+
+// The value returned is a DocumentReference
+await ref.update({ body: 'My post body' })
+```
+
+## Type Safety
+
+If a type parameter is provided, the returned function will be typesafe:
+
+```ts
+type Post = {
+  title: string
+  body: string
+}
+
+const addPost = firestoreAdd<Post>('posts')
+
+// Throws a type error because the body property is missing.
+await addPost({ title: 'My post' })
+```
+
+<Warning>
+  The provided type definitions will help you to avoid common mistakes, but they
+  are not realtime validation. You can still write invalid data to Firestore if
+  you don't use the provided functions correctly.
+</Warning>
+
+## Options
+
+The second argument to `firestoreAdd` is an optional object allowing for additional configuration. This object can have a property `addMetadata` which, if true, adds metadata to the document.
+
+```ts
+// The addPost function will include metadata to the new document.
+const addPost = firestoreAdd<Post>('posts', { addMetadata: true })
+
+await addPost({ title: 'Post 1' })
+await addPost({ title: 'Post 2' })
+await addPost({ title: 'Post 3' })
+
+// The posts will be ordered by the time they were created.
+const recentPosts = await firestore
+  .collection('posts')
+  .orderBy('metadata.timeCreated', 'asc')
+  .limit(10)
+  .get()
+```
+
+If the `addMetadata` option is not specified, the function will operate without adding any additional metadata to the document. This default behavior is suitable for scenarios where metadata is not required, offering flexibility based on your needs.
+
+## ⚠️ Troubleshooting
+
+Here are some common issues you may encounter when using `firestoreAdd`:
+
+- **Invalid Paths**: Ensure your collection and document paths are correctly formatted and exist in Firestore.
+- **Type Errors**: If you encounter type errors, verify that the data passed matches the defined type schema.
+- **Promise Rejection**: Network issues, permission errors, or invalid data can cause promise rejections. Ensure you have appropriate error handling in place.
+
+## 🔗 Related Links
+
+- You can see the implementation of `firestoreAdd` [here](https://github.com/firebridgekit/Firebridge/blob/main/packages/cloud/src/actions/add/index.ts).
+- Review more information on adding data to Firestore [here](https://firebase.google.com/docs/firestore/manage-data/add-data#node.js).

@@ -1,0 +1,60 @@
+---
+title: 'useDocument'
+description: 'The `useDocument` custom hook is designed to fetch realtime Firestore documents in scenarios where document paths are dynamic or partially unknown. This hook is particularly useful in React applications where document paths depend on runtime values like user IDs or route parameters.'
+icon: 'code'
+---
+
+## Introduction
+
+In many React applications, especially those using Firestore, there is a need to fetch documents whose paths are not static but depend on runtime values such as user IDs or URL parameters. The `useDocument` hook addresses this need by providing a way to dynamically construct Firestore document references and fetch data in real time.
+
+### Key Features
+
+- **Dynamic Document Paths**: Handles Firestore document paths that are constructed dynamically based on runtime values.
+- **Realtime Updates**: Subscribes to the document and updates the component with the latest data in real time.
+- **User Authentication Dependent**: Fetches data only when the user is logged in, ensuring secure data access.
+
+### Utilization
+
+#### Fetching User-Dependent Documents
+
+Use `useDocument` to fetch documents where the path includes a user ID:
+
+```ts
+import { useDocument } from 'path-to-your-hooks'
+
+// Example use case: Fetching a user profile
+const userId = 'someUserId'
+const userProfile = useDocument<UserProfile>(
+  uid => doc(firestore, 'users', uid),
+  [userId],
+)
+```
+
+#### Fetching Documents Based on Route Parameters
+
+`useDocument` is also useful for fetching documents based on URL parameters:
+
+```ts
+// Assuming 'topicId' is obtained from a URL parameter
+const topicId = 'someTopicId'
+const topicDetails = useDocument<Topic>(
+  (_uid, topic) => doc(firestore, 'topics', topic),
+  [topicId],
+)
+```
+
+## Handling Undefined Paths and Authentication
+
+The hook intelligently handles cases where path parts are undefined or the user is not authenticated, ensuring that document fetches only occur when all conditions are met.
+
+## Best Practices
+
+- Employ `useDocument` in scenarios where Firestore document paths are dependent on dynamic or runtime values.
+- Ensure proper handling of null and undefined values for missing documents or unauthenticated users.
+- Combine `useDocument` with other React hooks and components to create responsive and data-driven user interfaces.
+
+<Warning>
+  Be cautious with user data and document paths to maintain data security and
+  integrity, especially in applications with dynamic content.
+</Warning>

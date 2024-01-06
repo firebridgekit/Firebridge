@@ -1,0 +1,60 @@
+---
+title: 'minTimestamp'
+description: "The `minTimestamp` utility efficiently finds the earliest timestamp from an array of Firestore timestamps. It's essential for applications where tracking the initial occurrence of an event or the first update is crucial."
+icon: 'code'
+---
+
+## Introduction
+
+In various applications, particularly those involving time-based data analysis or event logging, pinpointing the earliest timestamp is a frequent necessity. The `minTimestamp` function streamlines this process by evaluating an array of Firestore Timestamps and returning the earliest one.
+
+### Key Features
+
+- **Earliest Timestamp Retrieval**: Determines the first timestamp from a given array of Firestore Timestamps.
+- **Simplicity and Efficiency**: Directly sorts and retrieves the earliest timestamp, ensuring a quick and straightforward operation.
+- **Handles Undefined Values**: Appropriately deals with arrays containing `undefined` or missing timestamps.
+
+### Utilization
+
+#### Preparing Timestamps for Evaluation
+
+First, import `minTimestamp` and prepare an array of Firestore Timestamps:
+
+```ts
+import { firestore } from 'firebase-admin'
+import { minTimestamp } from 'path-to-your-utilities'
+
+// Example array of Firestore timestamps
+const timestamps: PossiblyMissing<firestore.Timestamp>[] = [
+  firestore.Timestamp.fromDate(new Date('2020-01-01')),
+  firestore.Timestamp.now(),
+  // More timestamps
+]
+```
+
+#### Finding the Earliest Timestamp
+
+Use `minTimestamp` to identify the earliest timestamp from the array:
+
+```ts
+// Determine the earliest timestamp
+const earliestTimestamp = minTimestamp(timestamps)
+
+// 'earliestTimestamp' will be the earliest timestamp, or undefined if the array is empty
+```
+
+## Handling Arrays with Missing or No Timestamps
+
+When provided with an array that is either empty or contains only missing (null/undefined) timestamps, `minTimestamp` returns `undefined`, allowing for clean handling of such cases.
+
+## Best Practices
+
+- Employ `minTimestamp` when you need to ascertain the first occurrence or the initiation of an event in your application.
+- Verify that the array of timestamps is correctly populated to ensure accurate identification of the earliest timestamp.
+- Be aware of potential discrepancies in timestamps due to time zone differences or inconsistent time settings across data sources.
+
+<Warning>
+  Time comparisons can be affected by variations in time zones and clock
+  synchronization. Ensure consistency in your timestamp data to achieve reliable
+  results.
+</Warning>

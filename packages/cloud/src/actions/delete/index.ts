@@ -1,29 +1,38 @@
-import 'firebase-admin'
 import { firestore } from 'firebase-admin'
 
-interface FirstoreDeleteOptions {
+/**
+ * Options for deleting a Firestore document.
+ * @typedef {Object} FirestoreDeleteOptions
+ * @property {boolean} [recursive=false] - If true, recursively deletes all documents and subcollections at and under the specified level.
+ */
+type FirestoreDeleteOptions = {
   recursive?: boolean
 }
 
 /**
- * Utility for deletion of a firestore document
- * @param recursive Recursively delete all documents and subcollections at and under the specified level. If false, the document will not be deleted if it contains nested documents
+ * @function firestoreDelete
+ * @template Args - The type of the arguments object. Defaults to a record of string keys and any values if not provided.
+ * @description A higher-order function that returns a function for deleting a Firestore document.
+ * @param {string | ((args: Args) => string)} collectionPath - The path to the Firestore collection containing the document, or a function that returns the path. The function is passed the arguments object.
+ * @param {FirestoreDeleteOptions} [options={}] - An object containing options for the delete operation. If not provided, defaults to an empty object.
+ * @returns {(id: string, args?: Args) => Promise<firestore.DocumentReference>} - A function that deletes a Firestore document and returns a Promise that resolves with a DocumentReference to the deleted document. The function takes the ID of the document and an optional arguments object.
  */
 export const firestoreDelete =
-  <A = Record<string, any>>(
-    // The collection path to add the document to.
-    // This can be a string or a function that returns a string based on the parts
-    // passed into the action.
-    // (see the advanced example in src/actions/add/index.ts)
-    collectionPath: string | ((args: A) => string),
-    { recursive = false }: FirstoreDeleteOptions = {},
+  <Args = Record<string, any>>(
+    collectionPath: string | ((args: Args) => string),
+    { recursive = false }: FirestoreDeleteOptions = {},
   ) =>
-  async (id: string, args?: A) => {
+  /**
+   * @param {string} id - The ID of the document to delete.
+   * @param {Args} [args] - The arguments object.
+   * @returns {Promise<firebase.firestore.DocumentReference>} - A Promise that resolves with a DocumentReference to the deleted document.
+   */
+  async (id: string, args?: Args) => {
     const ref = await firestore()
       .collection(
         typeof collectionPath === 'string'
           ? collectionPath
-          : collectionPath({ ...(args as A) }),
+          : collectionPath({ ...(args as Args) }),
       )
       .doc(id)
 

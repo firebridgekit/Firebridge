@@ -1,0 +1,46 @@
+---
+title: 'timestampToDate'
+description: 'The `timestampToDate` utility adeptly converts serialized Firestore timestamps into JavaScript Date objects. This function is crucial for applications that require manipulating Firestore timestamp data in standard JavaScript date formats.'
+icon: 'code'
+---
+
+## Introduction
+
+Working with Firestore often involves managing timestamps. The `timestampToDate` function is designed to convert serialized Firestore timestamps, commonly used in data interchange and storage, back into JavaScript Date objects for easy manipulation and display in applications.
+
+### Key Features
+
+- **Seamless Conversion**: Transforms serialized Firestore timestamps into JavaScript Date objects.
+- **Error Validation**: Checks for the presence and validity of the input timestamp, throwing an error for any inconsistencies.
+- **Compatibility**: Adapts to different serialized timestamp formats for conversion.
+
+### Utilization
+
+#### Converting Serialized Timestamps to Dates
+
+Use `timestampToDate` to convert a serialized Firestore timestamp into a JavaScript Date object:
+
+```ts
+import { timestampToDate } from 'path-to-your-utilities'
+
+// Example of a serialized Firestore timestamp
+const serializedTimestamp = { seconds: 1234567890 }
+
+// Convert it to a JavaScript Date object
+const date = timestampToDate(serializedTimestamp)
+```
+
+## Handling Invalid Timestamps
+
+`timestampToDate` ensures robust error handling by throwing an error for invalid or undefined serialized timestamps, safeguarding against improper conversions.
+
+## Best Practices
+
+- Utilize `timestampToDate` for converting Firestore timestamps when displaying dates in your application.
+- Implement error handling around `timestampToDate` to gracefully manage potential conversion errors.
+- Be mindful of the timestamp format in your data to ensure successful conversion.
+
+<Warning>
+  Accurate timestamp conversion is crucial for data integrity. Validate your
+  serialized timestamps and handle conversion errors appropriately.
+</Warning>

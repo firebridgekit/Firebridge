@@ -1,0 +1,62 @@
+---
+title: 'maxTimestamp'
+description: 'The `maxTimestamp` utility function efficiently identifies the most recent timestamp from an array of Firestore timestamps. This tool is particularly useful in scenarios where determining the latest event or update time is essential.'
+icon: 'code'
+---
+
+## Introduction
+
+In applications where time tracking is crucial, such as logging events or updates, identifying the latest timestamp is a common requirement. The `maxTimestamp` function simplifies this task by evaluating an array of Firestore Timestamps and returning the most recent one.
+
+### Key Features
+
+- **Latest Timestamp Identification**: Extracts the most recent timestamp from an array of Firestore Timestamps.
+- **Handles Missing Values**: Skips over `null` or `undefined` values to focus on valid timestamps.
+- **Robust and Efficient**: Utilizes efficient sorting to determine the latest timestamp quickly.
+
+### Utilization
+
+#### Preparing Timestamps for Evaluation
+
+```ts
+Import `maxTimestamp` and use it to find the latest timestamp from an array:
+
+typescript
+import { firestore } from 'firebase-admin'
+import { maxTimestamp } from 'path-to-your-utilities'
+
+// Example array of Firestore timestamps
+const timestamps: PossiblyMissing<firestore.Timestamp>[] = [
+  firestore.Timestamp.now(),
+  null,
+  firestore.Timestamp.fromDate(new Date('2020-01-01')),
+  // More timestamps
+]
+```
+
+#### Finding the Latest Timestamp
+
+Invoke `maxTimestamp` with the array of timestamps to identify the most recent:
+
+```ts
+// Determine the latest timestamp
+const latestTimestamp = maxTimestamp(timestamps)
+
+// 'latestTimestamp' will be the most recent timestamp, or undefined if all values are missing or the array is empty
+```
+
+## Handling Arrays with Missing or No Timestamps
+
+`maxTimestamp` is designed to return `undefined` when faced with an array that is either empty or contains only missing (null/undefined) timestamps, enabling seamless handling of such scenarios.
+
+## Best Practices
+
+- Use `maxTimestamp` when you need to determine the most recent event or data update timestamp in your application.
+- Ensure that the array of timestamps is accurately populated to avoid incorrect evaluations.
+- Consider the implications of time zones and clock skew when working with timestamps from different sources.
+
+<Warning>
+  Timestamp comparisons can be impacted by time zone differences and clock
+  synchronization issues. Ensure that all timestamps are comparable and sourced
+  reliably.
+</Warning>

@@ -1,0 +1,108 @@
+---
+title: 'Requestables'
+description: "The `requestable` utility offers a sophisticated approach to managing Firebase HTTPS triggers, providing key functionalities like API key validation, request body validation, and custom action invocation. It's designed to streamline and secure HTTP request handling in Firebase Cloud Functions."
+icon: 'code'
+---
+
+## Introduction
+
+In the realm of serverless architectures, Firebase HTTPS triggers are pivotal for handling HTTP requests. The `requestable` utility enriches these triggers with additional layers of security, validation, and functionality, making your cloud functions more robust and reliable.
+
+### Key Features
+
+- API Key Validation: Ensures each request contains a valid `x-api-key`.
+- Strong Typing: Safeguards `context.auth.uid` as a string for consistent authentication handling.
+- Request Body Validation: Leverages schemas to validate incoming request data.
+- Custom Action Invocation: Facilitates the execution of specified actions with validated inputs.
+
+### Utilization
+
+#### Setting Up HTTPS Triggers
+
+`requestable` wraps around your core logic, enhancing it with pre-configured functionalities. Here's how to set it up:
+
+```ts
+import { requestable, onRequest } from 'path-to-your-utilities'
+
+// Define your action
+const yourAction = async (body, context) => {
+  // Your logic here
+}
+
+// Set up your HTTPS trigger
+export const yourHttpsTrigger = onRequest(
+  requestable({
+    action: yourAction,
+    validation: {
+      /* your validation schema */
+    },
+  }),
+  {
+    /* runtime modes */
+  },
+)
+```
+
+#### API Key Validation
+
+Every incoming request is checked for an `x-api-key` header, ensuring only authenticated requests are processed.
+
+```ts
+// Inside your action
+// The API key validation is automatically handled by `requestable`
+```
+
+#### Request Body Validation
+
+Define a validation schema to ensure the request body meets your application's requirements.
+
+```ts
+// Define your validation schema
+const yourValidationSchema = {
+  /* your schema */
+}
+
+// Include it in the requestable setup
+export const yourHttpsTrigger = onRequest(
+  requestable({
+    action: yourAction,
+    validation: yourValidationSchema,
+  }),
+  {
+    /* runtime modes */
+  },
+)
+```
+
+#### Custom Action Execution
+
+Pass your business logic as an action to `requestable`, and it will be invoked with a validated body and context.
+
+```ts
+// Define your custom action
+const yourAction = async (body, context) => {
+  // Your business logic
+}
+
+// Include it in the requestable setup
+export const yourHttpsTrigger = onRequest(
+  requestable({
+    action: yourAction,
+    // ...other options
+  }),
+  {
+    /* runtime modes */
+  },
+)
+```
+
+## Best Practices
+
+- Regularly update your validation schemas to match your evolving data requirements.
+- Monitor API key usage and implement rate limiting if necessary.
+- Ensure all actions are well-tested to handle various request scenarios effectively.
+
+<Warning>
+  Pay special attention to the security aspects of your HTTPS triggers. Validate
+  all inputs and handle API keys securely to prevent unauthorized access.
+</Warning>

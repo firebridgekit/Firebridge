@@ -1,0 +1,65 @@
+---
+title: 'hydrateAllTimestamps'
+description: 'The `hydrateAllTimestamps` function is a powerful tool for converting all serialized Firestore timestamps within an object back into Firestore Timestamp objects. It is ideal for rehydrating timestamp data in complex objects, ensuring proper timestamp representation in Firestore.'
+icon: 'code'
+---
+
+## Introduction
+
+Dealing with serialized Firestore timestamp data in complex objects often necessitates a comprehensive approach to convert them back to Firestore's native Timestamp format. `hydrateAllTimestamps` fulfills this need by systematically transforming every specified serialized timestamp within an object.
+
+### Key Features
+
+- **Bulk Timestamp Conversion**: Converts all specified serialized timestamps within an object to Firestore Timestamp objects.
+- **Selective Hydration**: Allows for specifying which fields in an object should be treated as serialized timestamps.
+- **Error Handling**: Throws an error for any invalid serialized timestamp encountered during conversion.
+
+### Utilization
+
+#### Preparing Data for Hydration
+
+First, import `hydrateAllTimestamps` and prepare your object containing serialized timestamps:
+
+```ts
+import { hydrateAllTimestamps } from 'path-to-your-utilities'
+
+// Example object with serialized timestamps
+const dataWithSerializedTimestamps = {
+  createdAt: { seconds: 1234567890 },
+  updatedAt: { seconds: 9876543210 },
+  // Other data fields
+}
+```
+
+#### Hydrating Timestamps
+
+Use `hydrateAllTimestamps` to convert the serialized timestamps within the object:
+
+```ts
+// Specify the keys that are serialized timestamps
+const timestampKeys = ['createdAt', 'updatedAt']
+
+// Convert serialized timestamps to Firestore Timestamp objects
+const hydratedData = hydrateAllTimestamps(
+  dataWithSerializedTimestamps,
+  timestampKeys,
+)
+
+// 'hydratedData' now contains Firestore Timestamp objects in place of serialized timestamps
+```
+
+## Handling Invalid Timestamps
+
+The function checks for the validity of each serialized timestamp and throws an error if any are found to be invalid, ensuring that only correct data is processed.
+
+## Best Practices
+
+- Utilize `hydrateAllTimestamps` when dealing with objects that mix serialized timestamps with other data types to maintain consistency.
+- Clearly identify and specify which fields in your object are serialized timestamps to avoid incorrect conversions.
+- Implement comprehensive error handling around the hydration process to manage potential conversion issues.
+
+<Warning>
+  Accurate timestamp conversion is essential for data integrity. Validate your
+  serialized timestamps and ensure that they are in the correct format before
+  using `hydrateAllTimestamps`.
+</Warning>

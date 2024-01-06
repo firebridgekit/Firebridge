@@ -1,0 +1,46 @@
+---
+title: 'hydrateTimestamp'
+description: 'The `hydrateTimestamp` utility is essential for converting serialized Firestore timestamps back into Firestore Timestamp objects. This function ensures that timestamps stored in serialized formats are correctly restored to their original Firestore Timestamp representation.'
+icon: 'code'
+---
+
+## Introduction
+
+Handling timestamps in Firestore often involves serializing and deserializing them, especially when working with external systems or storing data in formats like JSON. `hydrateTimestamp` simplifies the process of converting serialized timestamps back into Firestore's native Timestamp format.
+
+### Key Features
+
+- **Restores Firestore Timestamps**: Converts serialized timestamp representations back into Firestore Timestamp objects.
+- **Error Handling**: Validates the input and throws an error for invalid or missing serialized timestamps.
+- **Flexible Input Support**: Accepts different serialized timestamp formats for conversion.
+
+### Utilization
+
+#### Converting Serialized Timestamps
+
+Use `hydrateTimestamp` to convert a serialized timestamp into a Firestore Timestamp object:
+
+```ts
+import { hydrateTimestamp } from 'path-to-your-utilities'
+
+// Example of a serialized Firestore timestamp
+const serializedTimestamp = { seconds: 1234567890 }
+
+// Convert it back to a Firestore Timestamp
+const timestamp = hydrateTimestamp(serializedTimestamp)
+```
+
+## Handling Invalid Timestamps
+
+If the serialized timestamp is invalid or not provided, `hydrateTimestamp` throws an error, ensuring that only valid timestamps are processed.
+
+## Best Practices
+
+- Use `hydrateTimestamp` when dealing with serialized Firestore timestamp data to maintain data consistency and integrity.
+- Always handle potential errors when converting serialized timestamps to avoid unexpected crashes or data issues.
+- Be aware of the format of your serialized timestamps to ensure compatibility with `hydrateTimestamp`.
+
+<Warning>
+  Proper error handling is crucial when using `hydrateTimestamp` to prevent
+  issues with invalid or missing timestamp data.
+</Warning>

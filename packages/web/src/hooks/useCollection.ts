@@ -1,10 +1,3 @@
-import { CollectionReference, Query } from 'firebase/firestore'
-import { useMemo } from 'react'
-import { useCollection as useFirebaseHooksCollection } from 'react-firebase-hooks/firestore'
-
-import { useFirebridge } from '../contexts'
-import { WithId } from '../types'
-
 // Use Collection
 // --------------
 // Returns a realtime collection from Firestore when the user is logged in with
@@ -27,7 +20,36 @@ import { WithId } from '../types'
 //   collection(firestore, 'profiles', uid, 'connections')
 // )
 
-export const useCollection = <T = any>(
+import { CollectionReference, Query } from 'firebase/firestore'
+import { useMemo } from 'react'
+import { useCollection as useFirebaseHooksCollection } from 'react-firebase-hooks/firestore'
+
+import { useFirebridge } from '../context'
+import { WithId } from '../types'
+
+/**
+ * @function useCollection
+ * Custom hook to fetch a realtime Firestore collection.
+ *
+ * This hook is useful for situations where the path to the collection in Firestore
+ * is dynamically determined and may include parts that are unknown at runtime.
+ * It ensures that data is fetched only when the user is logged in and all path parts are defined.
+ *
+ * @template Data The expected type of the documents in the collection.
+ * @param getRef A reference to the Firestore collection or query, or a function returning such a reference.
+ *               This function can use the current user's UID and optional path parts to build the reference.
+ * @param pathParts An array of path parts that are used to construct the collection or query reference dynamically.
+ *                  If any path part is undefined, the hook does not attempt to fetch the collection.
+ * @returns An array of documents from the collection, each augmented with its document ID, or undefined if the collection
+ *          cannot be fetched due to missing path parts or user authentication status.
+ *
+ * @example
+ * const topicPosts = useCollection<Post>(
+ *   (_uid, topicId) => collection(firestore, 'topics', topicId, 'posts'),
+ *   [topicId]
+ * );
+ */
+export const useCollection = <Data = any>(
   getRef:
     | CollectionReference
     | Query
@@ -38,14 +60,10 @@ export const useCollection = <T = any>(
   const { user, log } = useFirebridge()
   const uid = user?.uid
 
+  // Memoize the Firestore reference.
   const ref = useMemo<CollectionReference | Query | undefined>(() => {
-    if (!uid) {
-      // If the user is not logged in, we don't attempt to fetch the collection.
-      // This is because Firebridge assumes all collections are private.
-      return undefined
-    } else if (pathParts.includes(undefined)) {
-      // If any of the path parts are undefined, we don't attempt to fetch the
-      // collection. This is because we don't know what the path should be.
+    // Guard clauses for user authentication and path validation.
+    if (!uid || pathParts.includes(undefined)) {
       return undefined
     } else {
       return typeof getRef === 'function'
@@ -54,11 +72,11 @@ export const useCollection = <T = any>(
     }
   }, [getRef, pathParts, uid])
 
+  // Use the Firebase hooks to subscribe to the Firestore collection.
   const [snap, _loading, error] = useFirebaseHooksCollection(ref)
 
+  // Process the snapshot data.
   const data = useMemo(() => {
-    // If there is an error, we want to log it and return undefined so that we
-    // can clear the current value.
     if (error) {
       log.error(error)
       return undefined
@@ -66,11 +84,12 @@ export const useCollection = <T = any>(
 
     if (!snap) return undefined
 
-    const data = (snap?.docs ?? []).map((doc) => ({
+    // Map the documents to include their IDs.
+    const data = (snap?.docs ?? []).map(doc => ({
       ...doc.data(),
       id: doc.id,
     }))
-    return data as WithId<T>[]
+    return data as WithId<Data>[]
   }, [snap])
 
   return data
