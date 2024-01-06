@@ -27,7 +27,7 @@
     {
       "group": "React",
       "pages": [
-        "/react/installation",
+        "/react/react-installation",
         {
           "group": "Hooks",
           "pages": [
@@ -43,7 +43,7 @@
     {
       "group": "Cloud",
       "pages": [
-        "/cloud/installation",
+        "/cloud/cloud-installation",
         {
           "group": "Invokeables",
           "pages": [
@@ -58,6 +58,7 @@
         {
           "group": "Actions",
           "pages": [
+            "cloud/actions/actions-overview",
             "cloud/actions/firestoreAdd",
             "cloud/actions/firestoreDelete",
             "cloud/actions/firestoreGet",
