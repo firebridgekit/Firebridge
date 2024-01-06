@@ -1,5 +1,7 @@
 # Firebridge
 
+### 💡 Find the full docs at [firebridge.dev](https://firebridge.dev)
+
 Firebridge is a set of patterns that will help you build powerful and consistent developer experiences with Firebase on React Web and Native.
 
 - 🤌 Just the right amount of abstraction.
