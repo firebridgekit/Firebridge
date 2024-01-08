@@ -45,8 +45,8 @@
         {
           "group": "Invokeables",
           "pages": [
-            "cloud/invokeables/requestable",
-            "cloud/invokeables/callable"
+            "cloud/invokeables/callable",
+            "cloud/invokeables/requestable"
           ]
         },
         {

@@ -87,18 +87,22 @@ It's also common to include the user's ID as part of the path to a document. Thi
 <CodeGroup>
 
 ```tsx Web
-const useOwnReviewForBook = () =>
-  useDocument<BookReview>(uid =>
-    // Reviews are stored at `books/{bookId}/reviews/{userId}`.
-    doc(firestore, 'books', BOOK_ID, 'reviews', uid),
+const useOwnReviewForBook = (bookId: string) =>
+  useDocument<BookReview>(
+    uid =>
+      // Reviews are stored at `books/{bookId}/reviews/{userId}`.
+      doc(firestore, 'books', bookId, 'reviews', uid),
+    [bookId],
   )
 ```
 
 ```tsx Native
-const useOwnReviewForBook = () =>
-  useDocument<BookReview>(uid =>
-    // Reviews are stored at `books/{bookId}/reviews/{userId}`.
-    firestore.collection('books').doc(BOOK_ID).collection('reviews').doc(uid),
+const useOwnReviewForBook = (bookId: string) =>
+  useDocument<BookReview>(
+    uid =>
+      // Reviews are stored at `books/{bookId}/reviews/{userId}`.
+      firestore.collection('books').doc(bookId).collection('reviews').doc(uid),
+    [bookId],
   )
 ```
 
