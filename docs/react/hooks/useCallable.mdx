@@ -4,55 +4,44 @@ description: 'The `useCallable` custom hook streamlines the process of invoking 
 icon: 'code'
 ---
 
-## Introduction
-
-Interacting with Firebase Cloud Functions often requires a straightforward yet flexible approach, especially in React applications. The `useCallable` hook offers a convenient way to invoke cloud functions, complete with automatic logging and response handling.
-
 ### Key Features
 
 - **Easy Cloud Function Invocation**: Facilitates calling Firebase Cloud Functions with minimal setup.
 - **Automatic Logging**: Integrates logging for each function call, improving debugging and monitoring.
 - **Type-Safe Requests and Responses**: Supports generic typing for request bodies and expected responses, enhancing type safety.
 
-### Utilization
-
-#### Setting Up a Callable Function
+## Usage
 
 Import `useCallable` and create a callable function for your specific cloud function:
 
-```ts
-import { functions } from 'path-to-your-firebase-config'
-import { useCallable } from 'path-to-your-hooks'
+<CodeGroup>
 
-// Example: Creating a callable function for 'myFunction'
-const myFunction = useCallable<{ input: string }, { result: string }>(
+```ts Web
+import { useCallable } from '@firebridge/web'
+
+const useOnReviewBook = useCallable<OnReviewBookBody, OnReviewBookResult>(
   functions,
-  'myFunction',
+  'onReviewBook',
 )
+
+// Now, we can use this hook to post reviews.
+// For example:
+const onReviewBook = useOnReviewBook()
+onReviewBook({ bookId, body: 'This book is great!' })
 ```
 
-#### Invoking the Cloud Function
+```ts Native
+import { useCallable } from '@firebridge/native'
 
-Invoke the cloud function with the necessary request body and handle the response:
+const useOnReviewBook = useCallable<OnReviewBookBody, OnReviewBookResult>(
+  functions,
+  'onReviewBook',
+)
 
-```ts
-// Call 'myFunction' with a request body
-const response = await myFunction({ input: 'Hello' })
-
-// 'response' contains the data returned from the cloud function
+// Now, we can use this hook to post reviews.
+// For example:
+const onReviewBook = useOnReviewBook()
+onReviewBook({ bookId, body: 'This book is great!' })
 ```
 
-## Handling Function Responses
-
-The hook automatically handles the response from the cloud function, providing it in the expected format as specified in the generic types.
-
-## Best Practices
-
-- Utilize `useCallable` for all Firebase Cloud Function invocations to maintain consistency and ease of use across your application.
-- Leverage the generic typing to ensure that request bodies and responses are handled correctly and predictably.
-- Implement error handling around the cloud function invocation to manage any exceptions or unexpected responses.
-
-<Warning>
-  Be cautious with the data sent to and received from cloud functions,
-  especially when dealing with sensitive or user-specific information.
-</Warning>
+</CodeGroup>

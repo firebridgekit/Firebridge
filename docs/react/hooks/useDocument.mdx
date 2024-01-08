@@ -1,60 +1,100 @@
 ---
 title: 'useDocument'
-description: 'The `useDocument` custom hook is designed to fetch realtime Firestore documents in scenarios where document paths are dynamic or partially unknown. This hook is particularly useful in React applications where document paths depend on runtime values like user IDs or route parameters.'
+description: 'The `useDocument` hook makes it simple to connect with realtime Firestore documents, even when paths are dynamic or depend on the ID of the current user. This hook is particularly useful in React applications where document paths depend on runtime values like user IDs or route parameters.'
 icon: 'code'
 ---
 
-## Introduction
+## Basic Usage
 
-In many React applications, especially those using Firestore, there is a need to fetch documents whose paths are not static but depend on runtime values such as user IDs or URL parameters. The `useDocument` hook addresses this need by providing a way to dynamically construct Firestore document references and fetch data in real time.
+The simplest usage of `useDocument` is to provide a `DocumentReference` to the hook. This will fetch the document and return its data. The hook will also automatically update the component with the latest data whenever the document changes.
 
-### Key Features
+<CodeGroup>
 
-- **Dynamic Document Paths**: Handles Firestore document paths that are constructed dynamically based on runtime values.
-- **Realtime Updates**: Subscribes to the document and updates the component with the latest data in real time.
-- **User Authentication Dependent**: Fetches data only when the user is logged in, ensuring secure data access.
+```ts Web
+import { useDocument } from '@firebridge/web'
+import { doc } from 'firebase/firestore'
 
-### Utilization
+// Your local Firestore instance
+import firestore from '@/services/firestore'
 
-#### Fetching User-Dependent Documents
-
-Use `useDocument` to fetch documents where the path includes a user ID:
-
-```ts
-import { useDocument } from 'path-to-your-hooks'
-
-// Example use case: Fetching a user profile
-const userId = 'someUserId'
+// Example use case: Fetching a user's profile
 const userProfile = useDocument<UserProfile>(
-  uid => doc(firestore, 'users', uid),
-  [userId],
+  doc(firestore, 'users', 'some-user-id'),
 )
 ```
 
-#### Fetching Documents Based on Route Parameters
+```ts Native
+import { useDocument } from '@firebridge/native'
+import firestore from '@react-native-firebase/firestore'
 
-`useDocument` is also useful for fetching documents based on URL parameters:
-
-```ts
-// Assuming 'topicId' is obtained from a URL parameter
-const topicId = 'someTopicId'
-const topicDetails = useDocument<Topic>(
-  (_uid, topic) => doc(firestore, 'topics', topic),
-  [topicId],
+// Example use case: Fetching a user's profile
+const userProfile = useDocument<UserProfile>(
+  firestore.collection('users').doc('some-user-id'),
 )
 ```
 
-## Handling Undefined Paths and Authentication
+</CodeGroup>
 
-The hook intelligently handles cases where path parts are undefined or the user is not authenticated, ensuring that document fetches only occur when all conditions are met.
+## Dynamic Paths
 
-## Best Practices
+It's very common in Firebase applications to include the user's ID in the path to a document. This makes it simple to write Firestore security rules that restrict access to documents based on the user's ID. However, this also means that we need to know the user's ID before we can fetch the document.
 
-- Employ `useDocument` in scenarios where Firestore document paths are dependent on dynamic or runtime values.
-- Ensure proper handling of null and undefined values for missing documents or unauthenticated users.
-- Combine `useDocument` with other React hooks and components to create responsive and data-driven user interfaces.
+To connect to a document at a dynamic path, we can provide a function instead of a `DocumentReference`. The function should return a `DocumentReference` and its first argument will be the user ID of the active user.
 
-<Warning>
-  Be cautious with user data and document paths to maintain data security and
-  integrity, especially in applications with dynamic content.
-</Warning>
+For example, here's how we can fetch the active user's own profile:
+
+<CodeGroup>
+
+```ts Web
+// Example use case: Fetching the active user's own profile
+const ownUserProfile = useDocument<UserProfile>(uid =>
+  doc(firestore, 'users', uid),
+)
+```
+
+```ts Native
+// Example use case: Fetching the active user's own profile
+const ownUserProfile = useDocument<UserProfile>(uid =>
+  firestore.collection('users').doc(uid),
+)
+```
+
+</CodeGroup>
+
+## Custom Route Parameters
+
+We can also include other string parameters in the document path, and ensure they exist before fetching the document. This is a common pattern in Firebase applications on React where document paths might depend on other dynamic values (e.g., route parameters). Firebridge makes it easy to manage these dependencies with a similar syntax to the `useEffect` hook.
+
+For example, we might want to display a `User` and their current `Company` on the same page. In this case, the company document we want to connect to depends on the user document. This is a great use case for `useDocument`:
+
+<CodeGroup>
+
+```ts Web
+// Let's connect to the user document first.
+const user = useDocument<User>(uid => doc(firestore, 'users', uid))
+const companyId = user?.companyId
+
+// Here, we'll pull in the company document.
+const company = useDocument<Company>(
+  (_uid, c) => doc(firestore, 'companies', c),
+  [companyId],
+)
+```
+
+```ts Native
+// Let's connect to the user document first.
+const user = useDocument<User>(uid => firestore.collection('users').doc(uid))
+const companyId = user?.companyId
+
+// Here, we'll pull in the company document.
+const company = useDocument<Company>(
+  (_uid, c) => firestore.collection('companies').doc(c),
+  [companyId],
+)
+```
+
+</CodeGroup>
+
+In this example, Firebridge will first create the user reference and fetch the user document. Once the user document is fetched, and their `companyId` is defined, Firebridge will create the company reference and fetch the company document.
+
+Whether the user changes, or the company changes, or the user switches companies, Firebridge will automatically update the component with the latest data.

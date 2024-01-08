@@ -1,60 +1,89 @@
 ---
 title: 'useCollection'
-description: "The `useCollection` custom hook provides a seamless way to fetch realtime Firestore collections in scenarios where collection paths are dynamic or partially unknown. It's especially useful in React applications that require data fetching based on runtime values like user IDs or route parameters."
+description: 'The `useCollection` hook makes it simple to connect with realtime Firestore collections, even when paths are dynamic or depend on the ID of the current user. This hook is particularly useful in React applications where collection paths depend on runtime values like user IDs or route parameters.'
 icon: 'code'
 ---
 
-## Introduction
+## Basic Usage
 
-Fetching collections from Firestore can often depend on dynamic factors, such as user IDs or parameters extracted from URLs. The `useCollection` hook simplifies this process by allowing developers to construct Firestore collection references dynamically and fetch data in real time.
+The simplest usage of `useCollection` is to provide a `CollectionReference` or `QueryReference` to the hook. This will fetch the documents and return their data. The hook will also automatically update the component with the latest data whenever a document changes.
 
-### Key Features
+First, let's connect to all of the books in our Firestore database:
 
-- **Dynamic Collection Paths**: Handles Firestore collection paths that are built dynamically based on runtime values.
-- **Realtime Data Subscription**: Subscribes to the collection and updates the component with the latest data in real time.
-- **User Authentication Dependent**: Ensures data fetching occurs only when the user is logged in and all path parts are defined.
+<CodeGroup>
 
-### Utilization
+```ts Web
+import { useCollection } from '@fiebridge/web'
+import { collection, query, where } from 'firebase/firestore'
 
-#### Fetching User-Dependent Collections
+// Your local Firestore instance
+import firestore from '@/services/firestore'
 
-Use `useCollection` to fetch collections where the path includes a user ID:
+const books = useCollection<Book>(collection(firestore, 'books'))
+```
 
-```ts
-import { useCollection } from 'path-to-your-hooks'
+```ts Native
+import { useCollection } from '@firebridge/native'
+import firestore from '@react-native-firebase/firestore'
 
-// Example use case: Fetching user connections
-const userId = 'someUserId'
-const userConnections = useCollection<Connection>(
-  uid => collection(firestore, 'users', uid, 'connections'),
-  [userId],
+const books = useCollection<Book>(firestore.collection('books'))
+```
+
+</CodeGroup>
+
+## Dynamic Paths
+
+It's very common in Firebase applications to include the user's ID inside a document. This makes it simple to write Firestore security rules that restrict access to documents based on the user's ID. However, this also means that we need to know the user's ID before we can fetch the document.
+
+Instead of providing a function instead of a `CollectionReference` or `QueryReference` directly, we'll need to provide a function which can produce one. This function's first argument will be the user ID of the active user.
+
+<CodeGroup>
+
+```ts Web
+const ownBooks = useCollection<Book>(uid =>
+  query(collection(firestore, 'books'), where('authorId', '==', uid)),
 )
 ```
 
-#### Fetching Collections Based on Route Parameters
-
-`useCollection` is also adept for fetching collections based on URL parameters:
-
-```ts
-// Assuming 'topicId' is obtained from a URL parameter
-const topicId = 'someTopicId'
-const topicPosts = useCollection<Post>(
-  (_uid, topic) => collection(firestore, 'topics', topic, 'posts'),
-  [topicId],
+```ts Native
+const ownBooks = useCollection<Book>(uid =>
+  firestore.collection('books').where('authorId', '==', uid),
 )
 ```
 
-## Handling Undefined Paths and Authentication
+</CodeGroup>
 
-The hook smartly manages situations where path parts are undefined or the user is not authenticated, avoiding unnecessary data fetches.
+## Custom Route Parameters
 
-## Best Practices
+We can also include other string parameters in the document path, and ensure they exist before fetching the document. This is a common pattern in Firebase applications on React where document paths might depend on other dynamic values (e.g., route parameters). Firebridge makes it easy to manage these dependencies with a similar syntax to the `useEffect` hook.
 
-- Leverage `useCollection` in scenarios where Firestore collection paths depend on dynamic or runtime values.
-- Implement null and undefined value checks for cases where collections might be empty or when users are unauthenticated.
-- Integrate `useCollection` with other React hooks and components for creating dynamic, data-driven user interfaces.
+For example, we might want to display a set of `Book` documents that share the same `authorId` as a the book we're currently displaying. In this case, the query we want to connect to depends on the book document.
 
-<Warning>
-  Ensure careful handling of user data and dynamic collection paths to maintain
-  data security and integrity, especially in applications with variable content.
-</Warning>
+<CodeGroup>
+
+```ts Web
+const BOOK_ID = 'some-book-id'
+const book = useDocument<Book>(doc(firestore, 'books', BOOK_ID))
+const authorId = book?.authorId
+
+// Now, we'll pull in the books by the same author.
+const booksByTheSameAuthor = useCollection<Book>(
+  (_uid, a) =>
+    query(collection(firestore, 'books'), where('authorId', '==', a)),
+  [authorId],
+)
+```
+
+```ts Native
+const BOOK_ID = 'some-book-id'
+const book = useDocument<Book>(firestore.collection('books').doc(BOOK_ID))
+const authorId = book?.authorId
+
+// Now, we'll pull in the books by the same author.
+const booksByTheSameAuthor = useCollection<Book>(
+  (_uid, a) => firestore.collection('books').where('authorId', '==', a),
+  [authorId],
+)
+```
+
+</CodeGroup>

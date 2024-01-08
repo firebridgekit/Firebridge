@@ -31,11 +31,9 @@
         {
           "group": "Hooks",
           "pages": [
-            "react/hooks/useCollection",
             "react/hooks/useDocument",
-            "react/hooks/useDocumentState",
-            "react/hooks/useCallable",
-            "react/hooks/useCallableResponse"
+            "react/hooks/useCollection",
+            "react/hooks/useCallable"
           ]
         }
       ]
