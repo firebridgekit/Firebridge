@@ -17,14 +17,38 @@ description: 'Firebridge is a set of patterns that will help you build powerful 
 
 Firebridge mixes the power of Firebase's Cloud Firestore and React hooks to help you express realtime platform logic in a very simple format. We give you a simple format for defining typed realtime connections to Cloud Firestore.
 
-```tsx
-import { doc } from 'firebase/firestore'
-import { useDocument } from '@firebridge/web'
+<CodeGroup>
 
-const useBook = (bookId: string) =>
+```tsx Web
+import { useDocument } from '@firebridge/web'
+import { doc } from 'firebase/firestore'
+
+// Your local Firestore instance
+import firestore from '@/services/firestore'
+
+const BOOK_ID = 'some-book-id'
+
+const book = useDocument<Book>(
   // Books are stored at `books/{bookId}`.
-  useDocument<Book>(doc(firestore, 'books', bookId))
+  doc(firestore, 'books', BOOK_ID),
+)
 ```
+
+```tsx Native
+import { useDocument } from '@firebridge/native'
+import firestore from '@react-native-firebase/firestore'
+
+const BOOK_ID = 'some-book-id'
+
+const book = useDocument<Book>(
+  // Books are stored at `books/{bookId}`.
+  firestore.collection('books').doc(BOOK_ID),
+)
+```
+
+</CodeGroup>
+
+<br />
 
 <Note>
   This format might look familiar. Under the hood on `@firebridge/web`, we're
@@ -36,30 +60,56 @@ const useBook = (bookId: string) =>
 
 Since we assume that all connections will be done on behalf of a user, we can easily perform user-specitic queries. This hook will maintain a realtime connection with the current user's review for the book.
 
-```tsx
-const useOwnReviewForBook = (bookId: string) =>
-  useDocument<BookReview>(uid =>
-    // Reviews are stored at `books/{bookId}/reviews/{userId}`.
-    doc(firestore, 'books', bookId, 'reviews', uid),
-  )
+<CodeGroup>
+
+```tsx Web
+const ownReviewForBook = useDocument<BookReview>(uid =>
+  // Reviews are stored at `books/{bookId}/reviews/{userId}`.
+  doc(firestore, 'books', BOOK_ID, 'reviews', uid),
+)
 ```
+
+```tsx Native
+const ownReviewForBook = useDocument<BookReview>(uid =>
+  // Reviews are stored at `books/{bookId}/reviews/{userId}`.
+  firestore.collection('books').doc(BOOK_ID).collection('reviews').doc(uid),
+)
+```
+
+</CodeGroup>
 
 To shake things up, let's maintain a realtime connection with the book's three most recent reviews. Since we're creating reviews on the server, we can ask Firebridge to automatically include metadata like `timeCreated` in the documents. This makes sorting by creation date very easy.
 
-```ts
+<CodeGroup>
+
+```ts Web
 import { query, collection, orderBy, limit } from 'firebase/firestore'
 import { useCollection } from '@firebridge/web'
 
-const useRecentReviewsForBook = (bookId: string, maxCount = 3) =>
-  useCollection<BookReview>(
-    query(
-      collection(firestore, 'books', bookId, 'reviews'),
-      // Metadata can be included automatically by Firebridge.
-      orderBy('metadata.timeCreated', 'desc'),
-      limit(maxCount),
-    ),
-  )
+const recentReviewsForBook = useCollection<BookReview>(
+  query(
+    collection(firestore, 'books', bookId, 'reviews'),
+    // Metadata can be included automatically by Firebridge.
+    orderBy('metadata.timeCreated', 'desc'),
+    limit(maxCount),
+  ),
+)
 ```
+
+```ts Native
+import { useCollection } from '@firebridge/native'
+
+const recentReviewsForBook = useCollection<BookReview>(
+  firestore
+    .collection('books')
+    .doc(bookId)
+    .collection('reviews')
+    .orderBy('metadata.timeCreated', 'desc')
+    .limit(maxCount),
+)
+```
+
+</CodeGroup>
 
 ## 2 — Cloud Callables
 
