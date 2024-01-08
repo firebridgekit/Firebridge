@@ -54,11 +54,11 @@ const book = useDocument<Book>(
   This format might look familiar. Under the hood on `@firebridge/web`, we're
   using
   [`react-firebase-hooks`](https://www.npmjs.com/package/react-firebase-hooks)
-  with a few samll extensions on the syntax. We've also implemented the same
+  with a few small extensions on the syntax. We've also implemented the same
   hooks for `@firebridge/native`.
 </Note>
 
-We can also use dependencies to build our own custom hooks. This will make for a great developer experience when we go to build our book page.
+We can also build our own custom hooks from this pattern. This makes it easy to share code throughout your application. For example, we can create a hook that will maintain a realtime connection to a book given its ID.
 
 <CodeGroup>
 
@@ -104,7 +104,9 @@ const useOwnReviewForBook = () =>
 
 </CodeGroup>
 
-To shake things up, let's maintain a realtime connection with the book's three most recent reviews. Since we're creating reviews on the server, we can ask Firebridge to automatically include metadata like `timeCreated` in the documents. This makes sorting by creation date very easy.
+We can serve fairly complex reqirements by mixing this pattern with Firstore queries. For example, let's maintain a realtime connection with the book's three most recent reviews.
+
+Since we're creating reviews on the server, we can ask Firebridge to automatically include metadata like `timeCreated` in the documents. This makes sorting by creation date very easy.
 
 <CodeGroup>
 
