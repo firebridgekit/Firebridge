@@ -1,5 +1,5 @@
 // Function to chunk an array into smaller arrays of a given size
-const chunk = <Item>(array: Item[], size: number) => {
+export const chunk = <Item>(array: Item[], size: number) => {
   // Initialize an empty array to hold the chunks
   const chunks = []
 
@@ -13,5 +13,3 @@ const chunk = <Item>(array: Item[], size: number) => {
   // Return the array of chunks
   return chunks
 }
-
-export default chunk

@@ -1,6 +1,6 @@
-import { firestore } from 'firebase-admin'
+import { getFirestore } from 'firebase-admin/firestore'
 
-import chunk from '../../utils/chunk'
+import { chunk } from '../../utils/chunk'
 import { FirestoreOperation } from '../type'
 
 /**
@@ -19,7 +19,7 @@ export const executeFirestoreBatch = async (
   // Process each chunk of operations.
   for (const operationsChunk of chunks) {
     // Start a new batch operation.
-    const batch = firestore().batch()
+    const batch = getFirestore().batch()
 
     // Add each operation in the chunk to the batch.
     operationsChunk.forEach(({ type, ref, data }) => {

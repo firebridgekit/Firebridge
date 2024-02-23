@@ -1,4 +1,4 @@
-import { firestore } from 'firebase-admin'
+import { getFirestore } from 'firebase-admin/firestore'
 
 import { WithId } from '../../type'
 import { readSnapshot } from '../../snapshots'
@@ -21,7 +21,7 @@ export const firestoreGet =
    * @returns {Promise<WithId<Data> | undefined>} - A Promise that resolves with the document data or undefined if the document does not exist.
    */
   async (id: string, args?: Args) => {
-    const doc = await firestore()
+    const doc = await getFirestore()
       .collection(
         typeof collectionPath === 'string'
           ? collectionPath

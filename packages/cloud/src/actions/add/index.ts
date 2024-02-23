@@ -1,4 +1,4 @@
-import { firestore } from 'firebase-admin'
+import { getFirestore, Timestamp } from 'firebase-admin/firestore'
 
 /**
  * Options for creating a Firestore document.
@@ -16,7 +16,7 @@ type FirestoreCreateOptions = {
  * @description A higher-order function that returns a function for adding a Firestore document.
  * @param {string | ((args: Args & { data: Data }) => string)} collectionPath - The path to the Firestore collection where the document will be added, or a function that returns the path. The function is passed an object containing the arguments and the document data.
  * @param {FirestoreCreateOptions} [options={}] - An object containing options for the add operation. If not provided, defaults to an empty object.
- * @returns {(item: Data, args?: Args) => Promise<firestore.DocumentReference>} - A function that adds a Firestore document and returns a Promise that resolves with a DocumentReference to the added document. The function takes the document data and an optional arguments object.
+ * @returns {(item: Data, args?: Args) => Promise<DocumentReference>} - A function that adds a Firestore document and returns a Promise that resolves with a DocumentReference to the added document. The function takes the document data and an optional arguments object.
  */
 export const firestoreAdd =
   <Data, Args = Record<string, any>>(
@@ -26,18 +26,18 @@ export const firestoreAdd =
   /**
    * @param {Data} item - The document data.
    * @param {Args} [args] - The arguments object.
-   * @returns {Promise<firebase.firestore.DocumentReference>} - A Promise that resolves with a DocumentReference to the newly created document.
+   * @returns {Promise<firebase.DocumentReference>} - A Promise that resolves with a DocumentReference to the newly created document.
    */
   async (item: Data, args?: Args) => {
     const data = {
       ...item,
       ...(addMetadata && {
-        'metadata.timeCreated': firestore.Timestamp.now(),
-        'metadata.timeUpdated': firestore.Timestamp.now(),
+        'metadata.timeCreated': Timestamp.now(),
+        'metadata.timeUpdated': Timestamp.now(),
       }),
     }
 
-    const ref = await firestore()
+    const ref = await getFirestore()
       .collection(
         typeof collectionPath === 'string'
           ? collectionPath

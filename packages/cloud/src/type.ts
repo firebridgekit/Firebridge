@@ -1,4 +1,4 @@
-import { firestore } from 'firebase-admin'
+import { Timestamp } from 'firebase-admin/firestore'
 
 /**
  * @typedef WithId
@@ -12,18 +12,18 @@ export type WithId<T> = T & { id: string }
  * @typedef Metadata
  * @description Represents the metadata of a Firestore document.
  * @property {string} [createdBy] - The ID of the user who created the document.
- * @property {firestore.Timestamp} timeCreated - The time when the document was created.
+ * @property {Timestamp} timeCreated - The time when the document was created.
  * @property {string} [updatedBy] - The ID of the user who last updated the document.
- * @property {firestore.Timestamp} [timeUpdated] - The time when the document was last updated.
+ * @property {Timestamp} [timeUpdated] - The time when the document was last updated.
  */
 export type Metadata = {
   // Tracks when the document was created and by whom.
   createdBy?: string
-  timeCreated: firestore.Timestamp
+  timeCreated: Timestamp
 
   // Tracks when the document was updated and by whom.
   updatedBy?: string
-  timeUpdated?: firestore.Timestamp
+  timeUpdated?: Timestamp
 }
 
 /**

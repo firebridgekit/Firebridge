@@ -11,7 +11,7 @@ import {
   UserPermissions,
   getUserPermissions,
   userHasPermission,
-} from '../../../permissions'
+} from '../../../../permissions'
 
 import getRunOptions from '../../utils/getRunOptions'
 import invoke from '../../utils/invoke'

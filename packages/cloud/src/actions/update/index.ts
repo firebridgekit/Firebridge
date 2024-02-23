@@ -1,4 +1,4 @@
-import { firestore } from 'firebase-admin'
+import { getFirestore, Timestamp } from 'firebase-admin/firestore'
 
 /**
  * Options for updating a Firestore document.
@@ -16,7 +16,7 @@ type FirestoreUpdateOptions = {
  * @description A higher-order function that returns a function for updating a Firestore document.
  * @param {string | ((args: Args & { data: Partial<Data> }) => string)} collectionPath - The path to the Firestore collection containing the document, or a function that returns the path. The function is passed an object containing the arguments and the document data.
  * @param {FirestoreUpdateOptions} [options={}] - An object containing options for the update operation. If not provided, defaults to an empty object.
- * @returns {(id: string, updates: Partial<Data>, args?: Args) => Promise<firestore.DocumentReference>} - A function that updates a Firestore document and returns a Promise that resolves with a DocumentReference to the updated document. The function takes the ID of the document, the updates to apply to the document, and an optional arguments object.
+ * @returns {(id: string, updates: Partial<Data>, args?: Args) => Promise<DocumentReference>} - A function that updates a Firestore document and returns a Promise that resolves with a DocumentReference to the updated document. The function takes the ID of the document, the updates to apply to the document, and an optional arguments object.
  */
 export const firestoreUpdate =
   <Data, Args = Record<string, any>>(
@@ -27,17 +27,17 @@ export const firestoreUpdate =
    * @param {string} id - The ID of the document to update.
    * @param {Partial<Data>} updates - The updates to apply to the document.
    * @param {Args} [args] - The arguments object.
-   * @returns {Promise<firebase.firestore.DocumentReference>} - A Promise that resolves with a DocumentReference to the updated document.
+   * @returns {Promise<firebase.DocumentReference>} - A Promise that resolves with a DocumentReference to the updated document.
    */
   async (id: string, updates: Partial<Data>, args?: Args) => {
     const data = {
       ...updates,
       ...(addMetadata && {
-        'metadata.timeUpdated': firestore.Timestamp.now(),
+        'metadata.timeUpdated': Timestamp.now(),
       }),
     }
 
-    const ref = await firestore()
+    const ref = await getFirestore()
       .collection(
         typeof collectionPath === 'string'
           ? collectionPath

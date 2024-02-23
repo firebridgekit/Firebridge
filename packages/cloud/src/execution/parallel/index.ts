@@ -1,4 +1,4 @@
-import chunk from '../../utils/chunk'
+import { chunk } from '../../utils/chunk'
 import { FirestoreOperation } from '../type'
 
 /**

@@ -1,4 +1,4 @@
-import { firestore } from 'firebase-admin'
+import { getFirestore, Timestamp } from 'firebase-admin/firestore'
 
 /**
  * Options for merging a Firestore document.
@@ -16,7 +16,7 @@ type FirestoreMergeOptions = {
  * @description A higher-order function that returns a function for merging data into a Firestore document.
  * @param {string | ((args: Args & { data: Data }) => string)} collectionPath - The path to the Firestore collection containing the document, or a function that returns the path. The function is passed an object containing the arguments and the document data.
  * @param {FirestoreMergeOptions} [options={}] - An object containing options for the merge operation. If not provided, defaults to an empty object.
- * @returns {(id: string, data: Data, args?: Args) => Promise<firestore.DocumentReference>} - A function that merges data into a Firestore document and returns a Promise that resolves with a DocumentReference to the merged document. The function takes the ID of the document, the data to merge into the document, and an optional arguments object.
+ * @returns {(id: string, data: Data, args?: Args) => Promise<DocumentReference>} - A function that merges data into a Firestore document and returns a Promise that resolves with a DocumentReference to the merged document. The function takes the ID of the document, the data to merge into the document, and an optional arguments object.
  */
 export const firestoreMerge =
   <Data, Args = Record<string, any>>(
@@ -27,17 +27,17 @@ export const firestoreMerge =
    * @param {string} id - The ID of the document to merge.
    * @param {Partial<Data>} item - The item to merge in the document.
    * @param {Args} [args] - The arguments object.
-   * @returns {Promise<firebase.firestore.DocumentReference>} - A Promise that resolves with a DocumentReference to the merged document.
+   * @returns {Promise<DocumentReference>} - A Promise that resolves with a DocumentReference to the merged document.
    */
   async (id: string, item: Partial<Data>, args?: Args) => {
     const data = {
       ...item,
       ...(addMetadata && {
-        'metadata.timeUpdated': firestore.Timestamp.now(),
+        'metadata.timeUpdated': Timestamp.now(),
       }),
     }
 
-    const ref = await firestore()
+    const ref = await getFirestore()
       .collection(
         typeof collectionPath === 'string'
           ? collectionPath

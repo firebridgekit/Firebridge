@@ -1,7 +1,9 @@
 import { RuntimeOptions } from 'firebase-functions'
-import { config } from 'firebase-functions'
+import { defineString } from 'firebase-functions/params'
 
 import { InvokableRuntimeModes } from '../type'
+
+const invokableMode = defineString('INVOKABLE_MODE')
 
 /**
  * @function getRunOptions
@@ -18,7 +20,7 @@ const getRunOptions = (modes: InvokableRuntimeModes = {}): RuntimeOptions => {
     minInstances: 0,
   }
 
-  const mode = config().invokable.mode as keyof InvokableRuntimeModes
+  const mode = invokableMode as unknown as keyof InvokableRuntimeModes
 
   return {
     ...resets,
