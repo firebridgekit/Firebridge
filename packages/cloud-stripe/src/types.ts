@@ -1,4 +1,4 @@
-import { firestore } from 'firebase-admin'
+import { Timestamp } from 'firebase-admin/firestore'
 
 export type WithId<T> = T & { id: string }
 
@@ -43,7 +43,7 @@ export interface Checkout {
   dateUpdated: Date
 }
 
-export type FirestoreTimestamp = firestore.Timestamp
+export type FirestoreTimestamp = Timestamp
 
 export type TimestampDates<T, V extends string = 'date'> = Omit<T, V> & {
   [Property in V]: FirestoreTimestamp

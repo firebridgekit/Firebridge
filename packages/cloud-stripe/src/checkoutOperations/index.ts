@@ -1,4 +1,4 @@
-import { firestore } from 'firebase-admin'
+import { getFirestore, Timestamp } from 'firebase-admin/firestore'
 import {
   firestoreSet,
   firestoreAdd,
@@ -19,7 +19,7 @@ export const deleteCheckout = firestoreDelete('checkouts')
 export const getCheckoutBySession = async (
   session: string,
 ): Promise<WithId<Checkout>> => {
-  const checkoutQuery = await firestore()
+  const checkoutQuery = await getFirestore()
     .collection('checkouts')
     .where('session', '==', session)
     .limit(1)
@@ -37,16 +37,16 @@ export const getCheckoutBySession = async (
 export const getCheckouts = async ({
   sinceDate,
 }: {
-  sinceDate?: firestore.Timestamp
+  sinceDate?: Timestamp
 }): Promise<WithId<Checkout>[]> => {
-  let query = await firestore()
+  let query = await getFirestore()
     .collection('checkouts')
     .where('status', '==', 'completed')
 
   if (sinceDate) query = query.where('dateCreated', '>=', sinceDate)
   const snap = await query.get()
 
-  const docs = snap.docs.map((a) => {
+  const docs = snap.docs.map(a => {
     const data = a.data() as TimestampDates<
       Checkout,
       'dateCreated' | 'dateUpdated'

@@ -1,8 +1,7 @@
-import { config } from 'firebase-functions'
 import Stripe from 'stripe'
-import { onRequest, OnRequestHandler } from '@firebridge/cloud'
+import { onRequest } from 'firebase-functions/v2/https'
 
-import { stripe } from '../client'
+import { getStripe } from '../client'
 import { updateCheckout, getCheckoutBySession } from '../checkoutOperations'
 import {
   AcceptedCheckoutEvent,
@@ -11,10 +10,10 @@ import {
 } from './events'
 
 export const stripeCheckoutWebhook = (
-  endpointSecret = config().stripe.whsec.default,
+  endpointSecret?: string,
   onReceived?: (event: Stripe.Event) => void | Promise<void>,
-) => {
-  const requestable: OnRequestHandler = async (req, res) => {
+) =>
+  onRequest(async (req, res) => {
     try {
       if (req.method !== 'POST') {
         throw new Error('webhook called with a method other than POST')
@@ -25,8 +24,12 @@ export const stripeCheckoutWebhook = (
         throw new Error('missing "stripe-signature" header')
       }
 
+      if (!endpointSecret) {
+        throw new Error('missing endpoint secret')
+      }
+
       // validate the webhook
-      const event = stripe.webhooks.constructEvent(
+      const event = getStripe().webhooks.constructEvent(
         req.rawBody,
         stripeSignature,
         endpointSecret,
@@ -64,7 +67,4 @@ export const stripeCheckoutWebhook = (
         console.error(error)
       }
     }
-  }
-
-  return onRequest(requestable, { performance: { minInstances: 1 } })
-}
+  })

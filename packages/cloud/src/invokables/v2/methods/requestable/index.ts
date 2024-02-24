@@ -50,7 +50,7 @@ export const requestableV2 = <Body, Res = void>(options: {
 
     // Invoking the specified action with the request body and a custom context.
     const response = invoke(options.action, {
-      data: req.body.data,
+      data: req.body,
       auth: { uid: key.uid },
       claims: key.claims,
     })

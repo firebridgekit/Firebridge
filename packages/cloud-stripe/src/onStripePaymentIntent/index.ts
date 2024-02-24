@@ -1,36 +1,36 @@
-import * as yup from 'yup'
-import { firestore } from 'firebase-admin'
 import { sumBy } from 'lodash'
-import { callable } from '@firebridge/cloud'
+import Stripe from 'stripe'
+import { callableV2 } from '@firebridge/cloud'
+import { CollectionReference } from 'firebase-admin/firestore'
 
 import { Quanitifed, Sellable } from '../types'
 import { setCheckout } from '../checkoutOperations'
-import { stripe } from '../client'
+import validation from './validation'
+import { getStripe } from '../client'
 
-interface OnStripePaymentIntentBody {
+type Body = {
   cart: {
     id: string
     quantity: number
   }[]
 }
 
-interface OnStripePaymentIntentArgs {
-  itemsCollection: firestore.CollectionReference
+type Response = {
+  clientSecret: string
 }
 
-export const onStripePaymentIntent = ({
-  itemsCollection,
-}: OnStripePaymentIntentArgs) =>
-  callable<OnStripePaymentIntentBody, any>({
-    validation: yup.object({
-      cart: yup.array(
-        yup.object({
-          id: yup.string().required(),
-          quantity: yup.number().integer().required(),
-        }),
-      ),
-    }),
-    action: async ({ cart }, ctx) => {
+type Args = {
+  itemsCollection: CollectionReference
+}
+
+export const onStripePaymentIntent = ({ itemsCollection }: Args) =>
+  callableV2<Body, Response>({
+    validation,
+    action: async body => {
+      const stripe = getStripe()
+
+      const { cart } = body.data
+
       const getSellableItem = async ({
         id,
         quantity,
@@ -53,11 +53,17 @@ export const onStripePaymentIntent = ({
 
       await setCheckout(paymentIntent.id, {
         payment: paymentIntent.id,
-        uid: ctx.auth.uid,
+        uid: body.auth.uid,
         status: 'created',
         items,
         itemIds: items.map(({ id }) => id),
+        dateCreated: new Date(),
+        dateUpdated: new Date(),
       })
+
+      if (!paymentIntent.client_secret) {
+        throw new Error('client_secret is missing')
+      }
 
       return { clientSecret: paymentIntent.client_secret }
     },

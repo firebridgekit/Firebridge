@@ -1,12 +1,13 @@
-import * as yup from 'yup'
 import { customAlphabet } from 'nanoid'
-import { auth, firestore } from 'firebase-admin'
+import { CollectionReference } from 'firebase-admin/firestore'
+import { getAuth } from 'firebase-admin/auth'
 import { chunk } from 'lodash'
-import { callable } from '@firebridge/cloud'
+import { callableV2 } from '@firebridge/cloud'
 
 import { Quanitifed, Sellable } from '../types'
 import { setCheckout } from '../checkoutOperations'
-import { stripe } from '../client'
+import { getStripe } from '../client'
+import validation from './validation'
 
 interface OnStripeCheckoutBody {
   cart: {
@@ -17,7 +18,7 @@ interface OnStripeCheckoutBody {
 }
 
 interface OnStripeCheckoutArgs {
-  itemsCollection: firestore.CollectionReference
+  itemsCollection: CollectionReference
   successUrl: (orderReference: string) => string | string
   cancelUrl: string
 }
@@ -27,18 +28,11 @@ export const onStripeCheckout = ({
   successUrl,
   cancelUrl,
 }: OnStripeCheckoutArgs) =>
-  callable<OnStripeCheckoutBody, any>({
-    validation: yup.object({
-      cancelUrl: yup.string().optional(),
-      cart: yup.array(
-        yup.object({
-          id: yup.string().required(),
-          quantity: yup.number().integer().required(),
-        }),
-      ),
-    }),
-    action: async ({ cart, cancelUrl: overrideCancelUrl }, ctx) => {
-      const user = await auth().getUser(ctx.auth.uid)
+  callableV2<OnStripeCheckoutBody, any>({
+    validation,
+    action: async body => {
+      const { cart, cancelUrl: overrideCancelUrl } = body.data
+      const user = await getAuth().getUser(body.auth.uid)
 
       const getSellableItem = async ({
         id,
@@ -64,7 +58,7 @@ export const onStripeCheckout = ({
         .map(part => part.join(''))
         .join('-')
 
-      const session = await stripe.checkout.sessions.create({
+      const session = await getStripe().checkout.sessions.create({
         payment_method_types: ['card'],
         customer_email: user?.email || undefined,
         phone_number_collection: { enabled: true },
@@ -87,10 +81,12 @@ export const onStripeCheckout = ({
 
       await setCheckout(chunkedReferenceCode, {
         session: session.id,
-        uid: ctx.auth.uid,
+        uid: body.auth.uid,
         status: 'created',
         items,
         itemIds: items.map(({ id }) => id),
+        dateCreated: new Date(),
+        dateUpdated: new Date(),
       })
 
       return { session }
