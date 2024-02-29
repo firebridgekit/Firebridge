@@ -1,5 +1,11 @@
 # @firebridge/web
 
+## 0.11.0
+
+### Minor Changes
+
+- Memoizes callbacks
+
 ## 0.10.1
 
 ### Patch Changes

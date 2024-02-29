@@ -1,5 +1,11 @@
 # @firebridge/native
 
+## 0.5.0
+
+### Minor Changes
+
+- Memoizes callbacks
+
 ## 0.4.0
 
 ### Minor Changes
