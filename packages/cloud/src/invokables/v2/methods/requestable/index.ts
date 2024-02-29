@@ -30,32 +30,37 @@ export const requestableV2 = <Body, Res = void>(options: {
   scope?: (args: Body) => string[]
 }) =>
   onRequest(options.options ?? {}, async (req: Request, res: Response) => {
-    // Checking for the presence of an 'x-api-key' in the request header.
-    const keyHash = req.header('x-api-key')
-    if (!keyHash) {
-      throw new HttpsError(
-        'unauthenticated',
-        'You must provide an x-api-key header.',
-      )
+    try {
+      // Checking for the presence of an 'x-api-key' in the request header.
+      const keyHash = req.header('x-api-key')
+      if (!keyHash) {
+        throw new HttpsError(
+          'unauthenticated',
+          'You must provide an x-api-key header.',
+        )
+      }
+
+      // Verifying the provided API key against the 'keys' collection in Firestore.
+      const key = await getKey(keyHash)
+      if (!key?.uid) {
+        throw new HttpsError('unauthenticated', 'API key not found.')
+      }
+
+      // Validating the request body against the provided schema, if any.
+      await validate(req.body, options.validation)
+
+      // Invoking the specified action with the request body and a custom context.
+      const response = await invoke(options.action, {
+        data: req.body,
+        auth: { uid: key.uid },
+        claims: key.claims,
+      })
+
+      // Sending the response back to the client.
+      res.status(200).send(response)
+    } catch (error) {
+      res.status(500).send({
+        error: (error as any)?.message || 'An unknown error occurred.',
+      })
     }
-
-    // Verifying the provided API key against the 'keys' collection in Firestore.
-    const key = await getKey(keyHash)
-    if (!key?.uid) {
-      throw new HttpsError('unauthenticated', 'API key not found.')
-    }
-
-    // Validating the request body against the provided schema, if any.
-    await validate(req.body, options.validation)
-
-    // Invoking the specified action with the request body and a custom context.
-    const response = invoke(options.action, {
-      data: req.body,
-      auth: { uid: key.uid },
-      claims: key.claims,
-    })
-
-    // Sending the response back to the client.
-    res.send(response)
-    res.end()
   })

@@ -1,3 +1,4 @@
+import { useCallback } from 'react'
 import { Functions, httpsCallable } from 'firebase/functions'
 
 import { useFirebridge } from '../context'
@@ -30,14 +31,17 @@ export const useCallable = <Body = undefined, Response = void>(
   const callable = httpsCallable(functionsInstance, name)
 
   // Return an asynchronous function for invoking the cloud function.
-  return async (body?: Body): Promise<Response> => {
-    // Log the cloud function call with the request body, if provided.
-    log.debug(`[Cloud Callable]: ${name}`, { ...(body as Body) })
+  return useCallback(
+    async (body?: Body): Promise<Response> => {
+      // Log the cloud function call with the request body, if provided.
+      log.debug(`[Cloud Callable]: ${name}`, { ...(body as Body) })
 
-    // Call the cloud function with the request body and wait for the response.
-    const result = await callable({ ...(body as Body) })
+      // Call the cloud function with the request body and wait for the response.
+      const result = await callable({ ...(body as Body) })
 
-    // Return the data from the response, cast to the expected type.
-    return result?.data as Response
-  }
+      // Return the data from the response, cast to the expected type.
+      return result?.data as Response
+    },
+    [functionsInstance, name, log],
+  )
 }
