@@ -1,0 +1,5 @@
+---
+'@firebridge/web': patch
+---
+
+Rebuilding

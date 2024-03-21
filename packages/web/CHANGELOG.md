@@ -1,5 +1,11 @@
 # @firebridge/web
 
+## 0.11.1-next.1
+
+### Patch Changes
+
+- Rebuilding
+
 ## 0.11.1-next.0
 
 ### Patch Changes

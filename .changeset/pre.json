@@ -10,6 +10,7 @@
     "@firebridge/web": "0.11.0"
   },
   "changesets": [
-    "lucky-needles-marry"
+    "lucky-needles-marry",
+    "rich-spoons-jog"
   ]
 }
