@@ -1,5 +1,19 @@
 # @firebridge/web
 
+## 0.12.0
+
+### Minor Changes
+
+- Improves error handling on web
+
+## 0.11.1
+
+### Patch Changes
+
+- bbb4ca8: Handles errors and loading more gracefully on web
+- a505098: Rebuilding
+- 35494c2: Adds error handling to collection listener
+
 ## 0.11.1-next.2
 
 ### Patch Changes
