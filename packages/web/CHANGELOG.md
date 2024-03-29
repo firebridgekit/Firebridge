@@ -1,5 +1,23 @@
 # @firebridge/web
 
+## 0.11.1-next.2
+
+### Patch Changes
+
+- Adds error handling to collection listener
+
+## 0.11.1-next.1
+
+### Patch Changes
+
+- Rebuilding
+
+## 0.11.1-next.0
+
+### Patch Changes
+
+- Handles errors and loading more gracefully on web
+
 ## 0.11.0
 
 ### Minor Changes

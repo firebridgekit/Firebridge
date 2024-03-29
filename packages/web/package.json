@@ -1,8 +1,9 @@
 {
   "name": "@firebridge/web",
-  "version": "0.11.0",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "version": "0.11.1-next.2",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "module": "dist/index.mjs",
   "license": "MIT",
   "publishConfig": {
     "access": "public",
@@ -13,7 +14,8 @@
   ],
   "scripts": {
     "lint": "TIMING=1 eslint \"**/*.ts*\"",
-    "build": "tsup ./index.ts --dts --format esm,cjs --minify"
+    "build": "tsup ./index.ts --format esm,cjs --minify --sourcemap --treeshake --clean --dts",
+    "dev": "tsup ./index.ts --format esm,cjs --clean --watch --dts"
   },
   "peerDependencies": {
     "firebase": ">=9",
