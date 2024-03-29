@@ -20,12 +20,16 @@
 //   collection(firestore, 'profiles', uid, 'connections')
 // )
 
-import { CollectionReference, Query } from 'firebase/firestore'
+import { CollectionReference, FirestoreError, Query } from 'firebase/firestore'
 import { useMemo } from 'react'
 import { useCollection as useFirebaseHooksCollection } from 'react-firebase-hooks/firestore'
 
 import { useFirebridge } from '../context'
 import { WithId } from '../types'
+
+type UseCollectionOptions = {
+  onError?: (error: FirestoreError | undefined) => void
+}
 
 /**
  * @function useCollection
@@ -56,6 +60,7 @@ export const useCollection = <Data = any>(
     | ((uid: string, ...pathParts: string[]) => CollectionReference | Query)
     | undefined,
   pathParts: (string | undefined)[] = [],
+  options: UseCollectionOptions = {},
 ) => {
   const { user, log } = useFirebridge()
   const uid = user?.uid
@@ -73,16 +78,21 @@ export const useCollection = <Data = any>(
   }, [getRef, pathParts, uid])
 
   // Use the Firebase hooks to subscribe to the Firestore collection.
-  const [snap, _loading, error] = useFirebaseHooksCollection(ref)
+  const [snap, loading, error] = useFirebaseHooksCollection(ref)
 
   // Process the snapshot data.
   const data = useMemo(() => {
-    if (error) {
-      log.error(error)
+    // If the collection is loading, return undefined.
+    if (loading) {
       return undefined
     }
 
-    if (!snap) return undefined
+    // If an error occurred, log it and call the error handler.
+    if (error) {
+      log.error(error)
+      options.onError?.(error)
+      return undefined
+    }
 
     // Map the documents to include their IDs.
     const data = (snap?.docs ?? []).map(doc => ({

@@ -1,4 +1,4 @@
-import { DocumentReference } from 'firebase/firestore'
+import { DocumentReference, FirestoreError } from 'firebase/firestore'
 import { useMemo } from 'react'
 import { useDocument as useFirebaseHooksDocument } from 'react-firebase-hooks/firestore'
 
@@ -27,12 +27,18 @@ import { WithId } from '../types'
  *   [userId]
  * );
  */
+
+type UseDocumentOptions = {
+  onError?: (error: FirestoreError | undefined) => void
+}
+
 export const useDocument = <Data = any>(
   getRef:
     | DocumentReference
     | ((uid: string, ...pathParts: string[]) => DocumentReference)
     | undefined,
   pathParts: (string | undefined)[] = [],
+  options: UseDocumentOptions = {},
 ) => {
   const { user, log } = useFirebridge()
   const uid = user?.uid
@@ -50,21 +56,25 @@ export const useDocument = <Data = any>(
   }, [getRef, pathParts, uid])
 
   // Use the Firebase hooks to subscribe to the Firestore document.
-  const [doc, _loading, error] = useFirebaseHooksDocument(ref)
+  const [doc, loading, error] = useFirebaseHooksDocument(ref)
 
   // Process the document data.
   const value = useMemo(() => {
-    if (error) {
-      log.error(error)
+    // If the document is not yet available, return undefined.
+    if (!doc || loading) {
       return undefined
     }
 
-    if (doc === undefined) return undefined
+    // If an error occurred, log it and call the error handler.
+    if (error) {
+      log.error(error)
+      options.onError?.(error)
+      return undefined
+    }
 
     // Include the document ID in the returned data.
-    const data = { ...doc.data(), id: doc.id } as WithId<Data>
-    return doc.exists() ? data : null
-  }, [doc, error])
+    return doc.exists() ? ({ ...doc.data(), id: doc.id } as WithId<Data>) : null
+  }, [doc, loading, error])
 
   return value
 }
