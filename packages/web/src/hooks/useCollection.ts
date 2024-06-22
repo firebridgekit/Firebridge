@@ -94,11 +94,16 @@ export const useCollection = <Data = any>(
       return undefined
     }
 
+    if (!snap) {
+      return undefined
+    }
+
     // Map the documents to include their IDs.
-    const data = (snap?.docs ?? []).map(doc => ({
+    const data = snap.docs.map(doc => ({
       ...doc.data(),
       id: doc.id,
     }))
+
     return data as WithId<Data>[]
   }, [snap])
 
