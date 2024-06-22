@@ -1,5 +1,11 @@
 # @firebridge/web
 
+## 0.12.1
+
+### Patch Changes
+
+- Returns undefined until snapshot is populated on collections
+
 ## 0.12.0
 
 ### Minor Changes
