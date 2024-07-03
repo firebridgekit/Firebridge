@@ -1,5 +1,11 @@
 # @firebridge/cloud
 
+## 1.1.0
+
+### Minor Changes
+
+- Adds metrics functions
+
 ## 0.13.0
 
 ### Minor Changes

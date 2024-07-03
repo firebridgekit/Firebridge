@@ -1,6 +1,7 @@
 export * from './actions'
 export * from './execution'
 export * from './invokables'
+export * from './metrics'
 export * from './permissions'
 export * from './snapshots'
 export * from './timestamps'

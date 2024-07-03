@@ -1,6 +1,6 @@
 {
   "name": "@firebridge/cloud",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "license": "MIT",
@@ -16,7 +16,6 @@
     "build": "tsup ./index.ts --dts --format esm,cjs --minify"
   },
   "dependencies": {
-    "lodash": "^4.17.21",
     "luxon": "^3.2.1",
     "uuid": "^9.0.0"
   },
@@ -26,7 +25,6 @@
     "yup": "^0.32.11"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.191",
     "@types/luxon": "^3.2.0",
     "@types/uuid": "^9.0.0",
     "eslint": "^7.32.0",
