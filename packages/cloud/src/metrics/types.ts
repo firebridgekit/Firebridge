@@ -47,7 +47,7 @@ export type MetricConfig = {
 }
 
 export type TrackableEvent = {
-  date: Date
+  time: Timestamp
   count?: number
   value?: number
 }

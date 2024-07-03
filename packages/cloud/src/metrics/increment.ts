@@ -16,8 +16,8 @@ export const incrementMetric = async (
     time?: firestore.Timestamp
   },
 ) => {
-  const date = time.toDate()
   const metric = firebridgeMetric(noun, action)
+  const metricEntity = metric.entity(entity)
 
   // The metric config relates to a specific noun-action pair. For example,
   // the metric config for "product" "purchase" would define how we should store
@@ -29,6 +29,6 @@ export const incrementMetric = async (
   // A unit could be "hour", "day", "week", "month", etc.
   // The levels of granularity are defined in the metric config.
   for (const unit of units) {
-    await metric.entity(entity).timeline(unit).increment(date, { count, value })
+    await metricEntity.timeline(unit).cursor.increment(time, { count, value })
   }
 }

@@ -1,5 +1,3 @@
-import { firestore } from 'firebase-admin'
-
 import { FirestoreOperation, executeFirestoreBatch } from '../execution'
 import { buildTimeline, firebridgeMetric } from './utils'
 import { TrackableEvent } from './types'
@@ -25,6 +23,7 @@ export const updateMetric = async (
   }
 
   const metric = firebridgeMetric(noun, action)
+  const metricEntity = metric.entity(entity)
 
   // The metric config relates to a specific noun-action pair. For example,
   // the metric config for "product" "purchase" would define how we should store
@@ -35,7 +34,7 @@ export const updateMetric = async (
   const updates: FirestoreOperation[] = []
 
   if (clean) {
-    await metric.entity(entity).delete()
+    await metricEntity.delete()
   }
 
   for (const unit of units) {
@@ -45,11 +44,10 @@ export const updateMetric = async (
       startingValue,
     })
 
+    const cursor = metricEntity.timeline(unit).cursor
     const unitUpdates: FirestoreOperation[] = timeline.map(data => ({
       type: 'set',
-      ref: firestore()
-        .collection(metric.entity(entity).timeline(unit).ref)
-        .doc(data.startTime.toDate().toJSON()),
+      ref: cursor.makeRef(data.startTime),
       data,
     }))
 

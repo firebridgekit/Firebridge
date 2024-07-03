@@ -26,12 +26,20 @@ export const buildTimeline = (
   let currentCount = startingCount
   let currentValue = startingValue
 
-  const sortedEvents = (events ?? []).sort((a, b) => (a.date > b.date ? 1 : -1))
-  const firstEvent = sortedEvents[0]
-  const lastEvent = sortedEvents[sortedEvents.length - 1]
+  const sortedEvents = (events ?? []).sort((a, b) => {
+    const dateA = a.time.toDate()
+    const dateB = b.time.toDate()
+    return dateA > dateB ? 1 : -1
+  })
 
-  const start = DateTime.fromJSDate(firstEvent.date).startOf(unit)
-  const end = DateTime.fromJSDate(lastEvent.date).endOf(unit)
+  const firstEvent = sortedEvents[0]
+  const firstEventDate = firstEvent.time.toDate()
+
+  const lastEvent = sortedEvents[sortedEvents.length - 1]
+  const lastEventDate = lastEvent.time.toDate()
+
+  const start = DateTime.fromJSDate(firstEventDate).startOf(unit)
+  const end = DateTime.fromJSDate(lastEventDate).endOf(unit)
 
   let cursor = start
   while (cursor < end) {

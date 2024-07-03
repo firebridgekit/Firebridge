@@ -1,5 +1,12 @@
 # @firebridge/cloud-stripe
 
+## 13.0.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @firebridge/cloud@1.2.0
+
 ## 12.0.0
 
 ### Patch Changes

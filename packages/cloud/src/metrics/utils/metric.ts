@@ -1,4 +1,5 @@
 import { firestore } from 'firebase-admin'
+import { Timestamp } from 'firebase-admin/firestore'
 import { DateTime, DateTimeUnit } from 'luxon'
 
 import {
@@ -10,7 +11,6 @@ import {
 import {
   MetricConfig,
   MetricEntitySummary,
-  MetricTimelineSection,
   MetricTimelineSectionUpdates,
   MetricEntitySummaryUpdates,
 } from '../types'
@@ -19,42 +19,33 @@ import {
 const timestampFromDateTime = (dt: DateTime) =>
   firestore.Timestamp.fromMillis(dt.toMillis())
 
-const makeMetricPath = (noun: string) => `metrics/${noun}`
-
-const makeActionsPath = (noun: string) => `${makeMetricPath(noun)}/actions`
-
-const makeEntitiesPath = (noun: string, action: string) =>
-  `${makeActionsPath(noun)}/${action}/entities`
-
-const makeUnitsPath = (noun: string, action: string, entity: string) =>
-  `${makeEntitiesPath(noun, action)}/${entity}/units`
-
-export const firebridgeMetric = (noun: string, action: string) => {
-  const actionsPath = makeActionsPath(noun)
+export const firebridgeMetric = (noun: string, verb: string) => {
+  const metricsPath = 'metrics'
+  const metricName = `${noun}-${verb}`
 
   // Metric Config
   // -------------
   // The metric config relates to a specific noun-action pair. For example,
   // the metric config for "product" "purchase" would define how we should store
   // purchase events for our products.
-  const configUtils = {
-    ref: `${actionsPath}/${action}`,
-    get: async () => firestoreGet<MetricConfig>(actionsPath)(action),
+  const metricUtils = {
+    ref: firestore().collection(metricsPath).doc(metricName),
+    get: async () => firestoreGet<MetricConfig>(metricsPath)(metricName),
     set: async (data: MetricConfig) =>
-      firestoreSet<MetricConfig>(actionsPath)(action, data),
+      firestoreSet<MetricConfig>(metricsPath)(metricName, data),
   }
 
   return {
-    ...configUtils,
+    ...metricUtils,
 
     // Entity Summary
     // --------------
     // The entity summary is a single document that contains the summary of an
     // action for a given entity (e.g., all of the views for a specific product).
     entity: (entity: string) => {
-      const entitiesPath = makeEntitiesPath(noun, action)
+      const entitiesPath = `${metricsPath}/${metricName}/entities`
       const entityUtils = {
-        ref: `${entitiesPath}/${entity}`,
+        ref: firestore().collection(entitiesPath).doc(entity),
         get: async () =>
           firestoreGet<MetricEntitySummary>(entitiesPath)(entity),
         set: async (data: MetricEntitySummaryUpdates) =>
@@ -89,39 +80,57 @@ export const firebridgeMetric = (noun: string, action: string) => {
         // might represent the total number of views for a product on a given day.
         // The units of time are defined in the metric config.
         timeline: (unit: DateTimeUnit) => {
-          const unitsPath = makeUnitsPath(noun, action, entity)
+          const timelinesPath = `${entitiesPath}/${entity}/timelines`
+          const cursorsPath = `${timelinesPath}/${unit}/cursors`
+
+          const makeCursorId = (time: Timestamp) => {
+            const date = time.toDate()
+            const id = DateTime.fromJSDate(date).startOf(unit).toJSON()
+            if (!id) throw new Error('Invalid cursor ID')
+            return id
+          }
+
+          const makeCursorPath = (time: Timestamp) =>
+            `${cursorsPath}/${makeCursorId(time)}`
 
           return {
-            ref: `${unitsPath}/${unit}`,
-            get: async () =>
-              firestoreGet<MetricTimelineSection>(unitsPath)(unit),
-            set: async (data: MetricTimelineSectionUpdates) =>
-              firestoreSet<MetricTimelineSectionUpdates>(unitsPath)(unit, data),
-            increment: async (
-              date: Date,
-              { count = 1, value = 0 }: { count?: number; value?: number } = {},
-            ) => {
-              const start = DateTime.fromJSDate(date).startOf(unit)
-              const end = DateTime.fromJSDate(date).endOf(unit)
-
-              await entityUtils.increment({ count, value })
-
-              // Since this is an increment operation, we can use the increment so that
-              // we don't have to combine a read and a write operation.
-              const countIncrement = firestore.FieldValue.increment(count)
-              const valueIncrement = firestore.FieldValue.increment(value)
-
-              return firestoreMerge<MetricTimelineSectionUpdates>(unitsPath)(
-                unit,
+            cursor: {
+              makeRef: (time: Timestamp) =>
+                firestore().doc(makeCursorPath(time)),
+              set: async (data: MetricTimelineSectionUpdates) =>
+                firestoreSet<MetricTimelineSectionUpdates>(cursorsPath)(
+                  makeCursorId(data.startTime),
+                  data,
+                ),
+              increment: async (
+                time: Timestamp,
                 {
+                  count = 1,
+                  value = 0,
+                }: { count?: number; value?: number } = {},
+              ) => {
+                const date = time.toDate()
+                const start = DateTime.fromJSDate(date).startOf(unit)
+                const end = DateTime.fromJSDate(date).endOf(unit)
+
+                await entityUtils.increment({ count, value })
+
+                // Since this is an increment operation, we can use the increment so that
+                // we don't have to combine a read and a write operation.
+                const countIncrement = firestore.FieldValue.increment(count)
+                const valueIncrement = firestore.FieldValue.increment(value)
+
+                return firestoreMerge<MetricTimelineSectionUpdates>(
+                  timelinesPath,
+                )(makeCursorId(time), {
                   startTime: timestampFromDateTime(start),
                   endTime: timestampFromDateTime(end),
                   count: countIncrement,
                   totalCount: countIncrement,
                   value: valueIncrement,
                   totalValue: valueIncrement,
-                },
-              )
+                })
+              },
             },
           }
         },

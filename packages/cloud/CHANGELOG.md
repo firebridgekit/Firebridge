@@ -1,5 +1,11 @@
 # @firebridge/cloud
 
+## 1.2.0
+
+### Minor Changes
+
+- Changes structure of metrics
+
 ## 1.1.0
 
 ### Minor Changes
