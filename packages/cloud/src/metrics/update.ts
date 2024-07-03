@@ -1,3 +1,5 @@
+import { firestore } from 'firebase-admin'
+
 import { FirestoreOperation, executeFirestoreBatch } from '../execution'
 import { buildTimeline, firebridgeMetric } from './utils'
 import { TrackableEvent } from './types'
@@ -55,4 +57,10 @@ export const updateMetric = async (
   }
 
   await executeFirestoreBatch(updates)
+
+  await metricEntity.set({
+    lastUpdated: firestore.Timestamp.now(),
+    count: updates[updates.length - 1].data.totalCount,
+    value: updates[updates.length - 1].data.totalValue,
+  })
 }

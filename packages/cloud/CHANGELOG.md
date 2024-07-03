@@ -1,5 +1,11 @@
 # @firebridge/cloud
 
+## 1.2.2
+
+### Patch Changes
+
+- Update entity when metrics are updated
+
 ## 1.2.1
 
 ### Patch Changes
