@@ -62,14 +62,16 @@ export const buildTimeline = (
     currentCount += count
     currentValue += value
 
-    timeline.push({
-      startTime: Timestamp.fromDate(cursor.toJSDate()),
-      endTime: Timestamp.fromDate(nextCursor.toJSDate()),
-      count,
-      value,
-      totalCount: currentCount,
-      totalValue: currentValue,
-    })
+    if (count || value) {
+      timeline.push({
+        startTime: Timestamp.fromDate(cursor.toJSDate()),
+        endTime: Timestamp.fromDate(nextCursor.toJSDate()),
+        count,
+        value,
+        totalCount: currentCount,
+        totalValue: currentValue,
+      })
+    }
 
     cursor = nextCursor
   }

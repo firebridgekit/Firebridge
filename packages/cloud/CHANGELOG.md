@@ -1,5 +1,11 @@
 # @firebridge/cloud
 
+## 1.2.1
+
+### Patch Changes
+
+- Stops writing empty metric sections
+
 ## 1.2.0
 
 ### Minor Changes
