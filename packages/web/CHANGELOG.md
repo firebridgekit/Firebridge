@@ -1,5 +1,11 @@
 # @firebridge/web
 
+## 0.13.0
+
+### Minor Changes
+
+- Introduces Read Snapshot utilities
+
 ## 0.12.1
 
 ### Patch Changes
