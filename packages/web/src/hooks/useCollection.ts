@@ -25,7 +25,7 @@ import { useMemo } from 'react'
 import { useCollection as useFirebaseHooksCollection } from 'react-firebase-hooks/firestore'
 
 import { useFirebridge } from '../context'
-import { WithId } from '../types'
+import { readQuerySnapshot } from '../utils'
 
 type UseCollectionOptions = {
   onError?: (error: FirestoreError | undefined) => void
@@ -98,13 +98,7 @@ export const useCollection = <Data = any>(
       return undefined
     }
 
-    // Map the documents to include their IDs.
-    const data = snap.docs.map(doc => ({
-      ...doc.data(),
-      id: doc.id,
-    }))
-
-    return data as WithId<Data>[]
+    return readQuerySnapshot<Data>(snap)
   }, [snap])
 
   return data

@@ -3,7 +3,7 @@ import { useMemo } from 'react'
 import { useDocument as useFirebaseHooksDocument } from 'react-firebase-hooks/firestore'
 
 import { useFirebridge } from '../context'
-import { WithId } from '../types'
+import { readSnapshot } from '../utils'
 
 /**
  * @function useDocument
@@ -73,7 +73,7 @@ export const useDocument = <Data = any>(
     }
 
     // Include the document ID in the returned data.
-    return doc.exists() ? ({ ...doc.data(), id: doc.id } as WithId<Data>) : null
+    return readSnapshot<Data>(doc)
   }, [doc, loading, error])
 
   return value
