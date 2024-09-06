@@ -1,5 +1,11 @@
 # @firebridge/cloud
 
+## 1.3.0
+
+### Minor Changes
+
+- 8d060e2: Bumps firebase versions
+
 ## 1.2.2
 
 ### Patch Changes
