@@ -1,8 +1,8 @@
-import { Request } from 'firebase-functions/v2/https'
-import { AnyObjectSchema } from 'yup'
 import { Response } from 'express'
+import { AnyObjectSchema } from 'yup'
+import { Request } from 'firebase-functions/v2/https'
 
-export type AuthenticatedBody<Body> = {
+export type AuthenticatedBody<Body, T = {}> = T & {
   data: Body
   auth: { uid: string }
   // These are custom claims you can add to an API key.

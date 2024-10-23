@@ -2,6 +2,7 @@ import {
   onCall,
   CallableOptions,
   HttpsError,
+  CallableRequest,
 } from 'firebase-functions/v2/https'
 
 import {
@@ -83,7 +84,7 @@ export const callableV2 = <Body, Response = void>(options: {
     // Invoke the specified action with the request body and context
     const response = await invoke(
       options.action,
-      body as AuthenticatedBody<Body>,
+      body as AuthenticatedBody<Body, CallableRequest>,
     )
 
     return response
