@@ -18,7 +18,7 @@
     "dev": "tsup ./index.ts --format esm,cjs --clean --watch --dts"
   },
   "peerDependencies": {
-    "firebase": ">=9",
+    "firebase": ">=11",
     "react": ">=18",
     "react-dom": ">=18"
   },
