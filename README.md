@@ -10,11 +10,7 @@
 
 ## What is Firebridge?
 
-Firebridge provides just the right amount of abstraction for building Firebase applications with React (web & native).
-
-**The problem:** Working with Firebase directly requires lots of boilerplate, managing auth state in paths, and writing the same patterns repeatedly.
-
-**The solution:** Type-safe React hooks and utilities that handle the complexity while keeping you in control.
+Firebridge provides just the right amount of abstraction for building Firebase applications with React (web & native). Slightly adapted cross-platform patterns from [`react-firebase-hooks`](https://github.com/firebase/firebase-js-sdk/tree/master/packages/react-firebase-hooks) for web and native, along with cloud functions and utilities.
 
 ## Key Features
 
@@ -132,22 +128,6 @@ const recentReviews = useCollection<Review>(
   [bookId],
 )
 ```
-
-## Why Choose Firebridge?
-
-**For Frontend Developers:**
-
-- Write less code, ship faster
-- Automatic handling of auth state in paths
-- Real-time data with zero configuration
-- TypeScript autocompletion everywhere
-
-**For Full-Stack Teams:**
-
-- Shared types between client and server
-- Pre-built secure patterns for common operations
-- Consistent API across web and native
-- Built on proven libraries (react-firebase-hooks & react-native-firebase)
 
 ## Getting Started
 
