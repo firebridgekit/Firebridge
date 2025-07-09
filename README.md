@@ -55,7 +55,7 @@ const App = () => <FirebridgeProvider>{/* Your app */}</FirebridgeProvider>
 
 ### Realtime Document Connection
 
-**BEFORE:** Vanilla Firebase:
+**BEFORE:** 🙅 Vanilla Firebase:
 
 ```tsx
 const [book, setBook] = useState(null)
@@ -70,7 +70,7 @@ useEffect(() => {
 }, [bookId])
 ```
 
-**AFTER:** With Firebridge
+**AFTER:** 🙋🏼 With Firebridge
 
 ```tsx
 const book = useDocument<Book>(doc(firestore, 'books', bookId))
