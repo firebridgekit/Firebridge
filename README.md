@@ -3,9 +3,6 @@
 <div align="center">
   <img src="docs/logo/light.svg" alt="Firebridge" width="200" />
   <p><strong>Powerful patterns for Firebase + React applications</strong></p>
-  
-  [![npm version](https://img.shields.io/npm/v/@firebridge/web.svg?style=flat)](https://www.npmjs.com/package/@firebridge/web)
-  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 </div>
 
 ## What is Firebridge?
@@ -151,7 +148,3 @@ const user = useDocument(uid => doc(firestore, 'users', uid))
 We welcome contributions! Please feel free to submit a Pull Request.
 
 For bugs and feature requests, please create an issue.
-
-## License
-
-MIT © Mitchell Butler
