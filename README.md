@@ -1,9 +1,4 @@
-# Firebridge
-
-<div align="center">
-  <img src="docs/logo/light.svg" alt="Firebridge" width="200" />
-  <p><strong>Powerful patterns for Firebase + React applications</strong></p>
-</div>
+<img src="docs/logo/light.svg" alt="Firebridge" width="200" />
 
 ## What is Firebridge?
 
