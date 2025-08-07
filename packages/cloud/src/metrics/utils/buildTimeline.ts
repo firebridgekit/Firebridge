@@ -9,10 +9,12 @@ export const buildTimeline = (
   events: TrackableEvent[],
   {
     unit = 'day',
+    timezone = 'UTC',
     startingCount = 0,
     startingValue = 0,
   }: {
     unit?: DateTimeUnit
+    timezone?: string
     startingCount?: number
     startingValue?: number
   } = {},
@@ -38,8 +40,8 @@ export const buildTimeline = (
   const lastEvent = sortedEvents[sortedEvents.length - 1]
   const lastEventDate = lastEvent.time.toDate()
 
-  const start = DateTime.fromJSDate(firstEventDate).startOf(unit)
-  const end = DateTime.fromJSDate(lastEventDate).endOf(unit)
+  const start = DateTime.fromJSDate(firstEventDate).setZone(timezone).startOf(unit)
+  const end = DateTime.fromJSDate(lastEventDate).setZone(timezone).endOf(unit)
 
   let cursor = start
   while (cursor < end) {

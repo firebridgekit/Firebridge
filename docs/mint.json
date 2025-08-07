@@ -87,6 +87,16 @@
             "cloud/timestamps/sortTimestamps",
             "cloud/timestamps/timestampToDate"
           ]
+        },
+        {
+          "group": "Metrics",
+          "pages": [
+            "cloud/metrics/overview",
+            "cloud/metrics/increment",
+            "cloud/metrics/update",
+            "cloud/metrics/types",
+            "cloud/metrics/utilities"
+          ]
         }
       ]
     }

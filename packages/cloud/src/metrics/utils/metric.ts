@@ -79,13 +79,13 @@ export const firebridgeMetric = (noun: string, verb: string) => {
         // summary of events for a specific time period. For example, a document
         // might represent the total number of views for a product on a given day.
         // The units of time are defined in the metric config.
-        timeline: (unit: DateTimeUnit) => {
+        timeline: (unit: DateTimeUnit, timezone: string = 'UTC') => {
           const timelinesPath = `${entitiesPath}/${entity}/timelines`
           const cursorsPath = `${timelinesPath}/${unit}/cursors`
 
           const makeCursorId = (time: Timestamp) => {
             const date = time.toDate()
-            const id = DateTime.fromJSDate(date).startOf(unit).toJSON()
+            const id = DateTime.fromJSDate(date).setZone(timezone).startOf(unit).toJSON()
             if (!id) throw new Error('Invalid cursor ID')
             return id
           }
@@ -110,8 +110,8 @@ export const firebridgeMetric = (noun: string, verb: string) => {
                 }: { count?: number; value?: number } = {},
               ) => {
                 const date = time.toDate()
-                const start = DateTime.fromJSDate(date).startOf(unit)
-                const end = DateTime.fromJSDate(date).endOf(unit)
+                const start = DateTime.fromJSDate(date).setZone(timezone).startOf(unit)
+                const end = DateTime.fromJSDate(date).setZone(timezone).endOf(unit)
 
                 await entityUtils.increment({ count, value })
 

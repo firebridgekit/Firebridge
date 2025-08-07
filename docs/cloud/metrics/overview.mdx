@@ -1,0 +1,116 @@
+---
+title: "Metrics Overview"
+description: "Track and analyze events with FireBridge's powerful metrics system"
+---
+
+The FireBridge metrics system provides a comprehensive solution for tracking, aggregating, and analyzing events in your application. It's designed to handle time-series data efficiently using Firebase Firestore as the backend.
+
+## Key Features
+
+- **Flexible Event Tracking**: Track any type of event with customizable counts and values
+- **Time-based Aggregation**: Automatically aggregate events by hour, day, week, month, or custom time units
+- **Entity-based Organization**: Group metrics by entities (users, products, etc.)
+- **Real-time Updates**: Increment metrics in real-time or batch update historical data
+- **Timeline Views**: Access aggregated data for any time period
+
+## Core Concepts
+
+### Metric Address
+
+Every metric is identified by three components:
+
+- **Noun**: The entity type being tracked (e.g., "product", "user")
+- **Action**: The action being measured (e.g., "purchase", "view", "click")
+- **Entity**: The specific entity ID (e.g., product ID, user ID)
+
+### Metric Structure
+
+Metrics are stored in a hierarchical structure:
+
+```
+metrics/
+  └── {noun}-{action}/
+      ├── config (units, settings)
+      └── entities/
+          └── {entity}/
+              ├── summary (total count/value)
+              └── timelines/
+                  └── {unit}/
+                      └── cursors/
+                          └── {timestamp} (aggregated data)
+```
+
+### Trackable Events
+
+Events contain:
+- **time**: When the event occurred (Firestore Timestamp)
+- **count**: Number of occurrences (optional, defaults to 1)
+- **value**: Numerical value associated with the event (optional, defaults to 1)
+
+### Timezone Support
+
+Metrics support timezone-aware aggregation for accurate daily, weekly, and monthly boundaries:
+- Configure timezone per metric using IANA timezone identifiers
+- Events are aggregated based on local time boundaries
+- Perfect for multi-region applications with location-specific reporting
+
+## Quick Start
+
+### Configure Metrics
+
+First, configure your metric with time units and timezone:
+
+```typescript
+import { firebridgeMetric } from '@firebridge/cloud/metrics'
+
+// Configure for UTC (default)
+await firebridgeMetric('product', 'purchase').set({
+  units: ['day', 'week', 'month'],
+  dateUpdated: firestore.Timestamp.now()
+})
+
+// Configure with specific timezone for regional businesses
+await firebridgeMetric('store', 'sale').set({
+  units: ['hour', 'day', 'month'],
+  timezone: 'America/New_York',  // Eastern Time
+  dateUpdated: firestore.Timestamp.now()
+})
+```
+
+### Increment a Metric
+
+Track a single event in real-time:
+
+```typescript
+import { incrementMetric } from '@firebridge/cloud/metrics'
+
+// Track a product purchase - aggregated using configured timezone
+await incrementMetric('product', 'purchase', 'product-123', {
+  count: 1,
+  value: 99.99,
+  time: firestore.Timestamp.now()
+})
+```
+
+### Batch Update Metrics
+
+Update historical data or import events:
+
+```typescript
+import { updateMetric } from '@firebridge/cloud/metrics'
+
+// Import historical purchase events - respects configured timezone
+await updateMetric('product', 'purchase', 'product-123', [
+  { time: timestamp1, count: 5, value: 500 },
+  { time: timestamp2, count: 3, value: 300 }
+], {
+  clean: true // Replace existing data
+})
+```
+
+## Next Steps
+
+- [Increment Metrics](/cloud/metrics/increment) - Learn about real-time metric tracking
+- [Update Metrics](/cloud/metrics/update) - Batch update and import historical data
+- [Types Reference](/cloud/metrics/types) - Detailed type definitions
+- [Utilities](/cloud/metrics/utilities) - Helper functions and advanced usage
