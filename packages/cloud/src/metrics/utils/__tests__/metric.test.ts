@@ -108,9 +108,10 @@ describe('firebridgeMetric', () => {
     })
 
     it('should increment entity values', async () => {
-      ;(firestoreMerge as jest.Mock).mockReturnValue(() =>
-        Promise.resolve(undefined),
-      )
+      const mockMergeFunction = jest
+        .fn()
+        .mockReturnValue(Promise.resolve(undefined))
+      ;(firestoreMerge as jest.Mock).mockReturnValue(mockMergeFunction)
 
       const metric = firebridgeMetric('user', 'action')
       const entity = metric.entity('user-789')
@@ -125,19 +126,13 @@ describe('firebridgeMetric', () => {
       )
 
       // Verify the increment data structure
-      const mergeCall = (firestoreMerge as jest.Mock).mock.calls[0]
-      const entityId = mergeCall[1] // Second argument is the entity ID
-      const incrementData = mergeCall[2] // Third argument is the data
+      const mergeCall = mockMergeFunction.mock.calls[0]
+      const entityId = mergeCall[0] // First argument is the entity ID
+      const incrementData = mergeCall[1] // Second argument is the data
 
       expect(entityId).toBe('user-789')
-      expect(incrementData.count).toHaveProperty(
-        '_methodName',
-        'FieldValue.increment',
-      )
-      expect(incrementData.value).toHaveProperty(
-        '_methodName',
-        'FieldValue.increment',
-      )
+      expect(incrementData.count).toHaveProperty('operand', 5)
+      expect(incrementData.value).toHaveProperty('operand', 250)
       expect(incrementData.lastUpdated).toBeDefined()
     })
 
@@ -232,9 +227,10 @@ describe('firebridgeMetric', () => {
     })
 
     it('should increment timeline cursor', async () => {
-      ;(firestoreMerge as jest.Mock).mockReturnValue(() =>
-        Promise.resolve(undefined),
-      )
+      const mockMergeFunction = jest
+        .fn()
+        .mockReturnValue(Promise.resolve(undefined))
+      ;(firestoreMerge as jest.Mock).mockReturnValue(mockMergeFunction)
 
       const metric = firebridgeMetric('activity', 'event')
       const entity = metric.entity('user-123')
@@ -254,25 +250,13 @@ describe('firebridgeMetric', () => {
       expect(firestoreMerge).toHaveBeenCalled()
 
       // Verify the timeline increment data
-      const mergeCall = (firestoreMerge as jest.Mock).mock.calls[0]
-      const incrementData = mergeCall[2] // Third argument is the data
+      const timelineMergeCall = mockMergeFunction.mock.calls[1] // Second call is the timeline increment
+      const incrementData = timelineMergeCall[1] // Second argument is the data
 
-      expect(incrementData.count).toHaveProperty(
-        '_methodName',
-        'FieldValue.increment',
-      )
-      expect(incrementData.value).toHaveProperty(
-        '_methodName',
-        'FieldValue.increment',
-      )
-      expect(incrementData.totalCount).toHaveProperty(
-        '_methodName',
-        'FieldValue.increment',
-      )
-      expect(incrementData.totalValue).toHaveProperty(
-        '_methodName',
-        'FieldValue.increment',
-      )
+      expect(incrementData.count).toHaveProperty('operand', 3)
+      expect(incrementData.value).toHaveProperty('operand', 150)
+      expect(incrementData.totalCount).toHaveProperty('operand', 3)
+      expect(incrementData.totalValue).toHaveProperty('operand', 150)
       expect(incrementData.startTime).toBeDefined()
       expect(incrementData.endTime).toBeDefined()
     })
@@ -340,9 +324,10 @@ describe('firebridgeMetric', () => {
 
   describe('default parameters', () => {
     it('should use default increment values', async () => {
-      ;(firestoreMerge as jest.Mock).mockReturnValue(() =>
-        Promise.resolve(undefined),
-      )
+      const mockMergeFunction = jest
+        .fn()
+        .mockReturnValue(Promise.resolve(undefined))
+      ;(firestoreMerge as jest.Mock).mockReturnValue(mockMergeFunction)
 
       const metric = firebridgeMetric('default', 'test')
       const entity = metric.entity('entity-1')
@@ -350,12 +335,12 @@ describe('firebridgeMetric', () => {
       // Test entity increment with defaults
       await entity.increment()
 
-      const mergeCall = (firestoreMerge as jest.Mock).mock.calls[0]
-      const incrementData = mergeCall[2]
+      const mergeCall = mockMergeFunction.mock.calls[0]
+      const incrementData = mergeCall[1]
 
       // Should use default values (count=1, value=0)
-      expect(incrementData.count).toHaveProperty('_methodName', 'FieldValue.increment')
-      expect(incrementData.value).toHaveProperty('_methodName', 'FieldValue.increment')
+      expect(incrementData.count).toHaveProperty('operand', 1)
+      expect(incrementData.value).toHaveProperty('operand', 0)
       expect(incrementData.lastUpdated).toBeDefined()
     })
 
