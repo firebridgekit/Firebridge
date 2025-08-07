@@ -6,6 +6,8 @@ jest.mock('firebase-admin', () => {
     now: jest.fn(() => ({
       toDate: () => new Date('2024-01-15T10:00:00Z'),
       toMillis: () => 1705312800000,
+      seconds: Math.floor(1705312800000 / 1000),
+      nanoseconds: 0,
     })),
     fromDate: jest.fn((date: Date) => ({
       toDate: () => date,
@@ -43,7 +45,7 @@ jest.mock('firebase-admin', () => {
     get: jest.fn().mockResolvedValue({ docs: [] }),
   }
 
-  const mockFirestore = {
+  const mockFirestoreInstance = {
     collection: jest.fn(() => mockCollectionReference),
     doc: jest.fn(() => mockDocumentReference),
     batch: jest.fn(() => ({
@@ -57,68 +59,75 @@ jest.mock('firebase-admin', () => {
     FieldValue: mockFieldValue,
   }
 
+  const firestore = jest.fn(() => mockFirestoreInstance)
+  firestore.Timestamp = mockTimestamp
+  firestore.FieldValue = mockFieldValue
+
   return {
-    firestore: jest.fn(() => mockFirestore),
+    firestore,
     Timestamp: mockTimestamp,
     FieldValue: mockFieldValue,
   }
 })
 
-// Also setup named exports
-const mockFirestore = () => ({
-  collection: jest.fn(() => ({
+// Mock the firestore export
+jest.mock('firebase-admin/firestore', () => {
+  // Define mockFirestore inside the factory function to avoid temporal dead zone
+  const mockFirestore = () => ({
+    collection: jest.fn(() => ({
+      doc: jest.fn(() => ({
+        set: jest.fn().mockResolvedValue(undefined),
+        update: jest.fn().mockResolvedValue(undefined),
+        get: jest.fn().mockResolvedValue({ data: () => null, exists: false }),
+        delete: jest.fn().mockResolvedValue(undefined),
+      })),
+    })),
     doc: jest.fn(() => ({
       set: jest.fn().mockResolvedValue(undefined),
       update: jest.fn().mockResolvedValue(undefined),
       get: jest.fn().mockResolvedValue({ data: () => null, exists: false }),
       delete: jest.fn().mockResolvedValue(undefined),
     })),
-  })),
-  doc: jest.fn(() => ({
-    set: jest.fn().mockResolvedValue(undefined),
-    update: jest.fn().mockResolvedValue(undefined),
-    get: jest.fn().mockResolvedValue({ data: () => null, exists: false }),
-    delete: jest.fn().mockResolvedValue(undefined),
-  })),
-  batch: jest.fn(() => ({
-    set: jest.fn(),
-    update: jest.fn(),
-    delete: jest.fn(),
-    commit: jest.fn().mockResolvedValue(undefined),
-  })),
-  Timestamp: {
-    now: jest.fn(() => ({
-      toDate: () => new Date('2024-01-15T10:00:00Z'),
-      toMillis: () => 1705312800000,
+    batch: jest.fn(() => ({
+      set: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+      commit: jest.fn().mockResolvedValue(undefined),
     })),
-    fromDate: jest.fn((date: Date) => ({
-      toDate: () => date,
-      toMillis: () => date.getTime(),
-    })),
-    fromMillis: jest.fn((millis: number) => ({
-      toDate: () => new Date(millis),
-      toMillis: () => millis,
-    })),
-  },
-  FieldValue: {
-    increment: jest.fn((value: number) => ({
-      _methodName: 'FieldValue.increment',
-      _elements: [value],
-    })),
-    delete: jest.fn(() => ({ _methodName: 'FieldValue.delete' })),
-    serverTimestamp: jest.fn(() => ({
-      _methodName: 'FieldValue.serverTimestamp',
-    })),
-  },
-})
+    Timestamp: {
+      now: jest.fn(() => ({
+        toDate: () => new Date('2024-01-15T10:00:00Z'),
+        toMillis: () => 1705312800000,
+      })),
+      fromDate: jest.fn((date: Date) => ({
+        toDate: () => date,
+        toMillis: () => date.getTime(),
+      })),
+      fromMillis: jest.fn((millis: number) => ({
+        toDate: () => new Date(millis),
+        toMillis: () => millis,
+      })),
+    },
+    FieldValue: {
+      increment: jest.fn((value: number) => ({
+        _methodName: 'FieldValue.increment',
+        _elements: [value],
+      })),
+      delete: jest.fn(() => ({ _methodName: 'FieldValue.delete' })),
+      serverTimestamp: jest.fn(() => ({
+        _methodName: 'FieldValue.serverTimestamp',
+      })),
+    },
+  })
 
-// Mock the firestore export
-jest.mock('firebase-admin/firestore', () => ({
-  firestore: mockFirestore,
+  return {
+    firestore: mockFirestore,
   Timestamp: {
     now: jest.fn(() => ({
       toDate: () => new Date('2024-01-15T10:00:00Z'),
       toMillis: () => 1705312800000,
+      seconds: Math.floor(1705312800000 / 1000),
+      nanoseconds: 0,
     })),
     fromDate: jest.fn((date: Date) => ({
       toDate: () => date,
@@ -139,7 +148,8 @@ jest.mock('firebase-admin/firestore', () => ({
       _methodName: 'FieldValue.serverTimestamp',
     })),
   },
-}))
+  }
+})
 
 // Mock Firebase Functions
 jest.mock('firebase-functions', () => ({
@@ -173,7 +183,7 @@ global.createMockTimestamp = (date: string | Date) => {
 }
 
 global.createMockEvent = (time: string | Date, count = 1, value = 0) => ({
-  time: Timestamp.fromDate(new Date(time)),
+  time: createMockTimestamp(time),
   count,
   value,
 })

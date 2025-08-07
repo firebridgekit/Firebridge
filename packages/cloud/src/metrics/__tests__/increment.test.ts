@@ -204,7 +204,7 @@ describe('incrementMetric', () => {
       };
       mockMetric.get.mockResolvedValue(mockConfig);
 
-      // Execute
+      // Execute - let incrementMetric use default timestamp
       await incrementMetric('event', 'occurrence', 'event-1', {
         count: 0,
         value: 0,
@@ -212,7 +212,10 @@ describe('incrementMetric', () => {
 
       // Verify
       expect(mockTimeline.cursor.increment).toHaveBeenCalledWith(
-        expect.any(Object), // timestamp
+        expect.objectContaining({
+          toDate: expect.any(Function),
+          toMillis: expect.any(Function),
+        }),
         { count: 0, value: 0 }
       );
     });
@@ -225,7 +228,7 @@ describe('incrementMetric', () => {
       };
       mockMetric.get.mockResolvedValue(mockConfig);
 
-      // Execute
+      // Execute - let incrementMetric use default timestamp
       await incrementMetric('account', 'adjustment', 'account-1', {
         count: -1,
         value: -50.00,
@@ -233,7 +236,10 @@ describe('incrementMetric', () => {
 
       // Verify
       expect(mockTimeline.cursor.increment).toHaveBeenCalledWith(
-        expect.any(Object), // timestamp
+        expect.objectContaining({
+          toDate: expect.any(Function),
+          toMillis: expect.any(Function),
+        }),
         { count: -1, value: -50.00 }
       );
     });
