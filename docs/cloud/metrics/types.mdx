@@ -1,0 +1,246 @@
+---
+title: "Types Reference"
+description: "TypeScript type definitions for the FireBridge metrics system"
+---
+
+This page provides a comprehensive reference for all TypeScript types used in the FireBridge metrics system.
+
+## Core Types
+
+### MetricAddress
+
+Identifies a specific metric by its components:
+
+```typescript
+type MetricAddress = {
+  noun: string    // Entity type (e.g., "product", "user")
+  action: string  // Action type (e.g., "purchase", "view")
+  entity: string  // Specific entity ID
+}
+```
+
+### TrackableEvent
+
+Represents a single event to be tracked:
+
+```typescript
+type TrackableEvent = {
+  time: Timestamp      // When the event occurred
+  count?: number       // Number of occurrences (default: 1)
+  value?: number       // Associated value (default: 0)
+}
+```
+
+## Summary Types
+
+### MetricEntitySummary
+
+Stores the total aggregated values for an entity:
+
+```typescript
+type MetricEntitySummary = {
+  count: number          // Total event count
+  value: number          // Total accumulated value
+  lastUpdated: Timestamp // Last update timestamp
+}
+```
+
+### MetricEntitySummaryUpdates
+
+Used for updating entity summaries with Firestore field values:
+
+```typescript
+type MetricEntitySummaryUpdates = Omit<
+  MetricEntitySummary,
+  'count' | 'value'
+> & {
+  count: number | firestore.FieldValue
+  value: number | firestore.FieldValue
+}
+```
+
+## Timeline Types
+
+### MetricTimelineSection
+
+Represents aggregated data for a specific time period:
+
+```typescript
+type MetricTimelineSection = {
+  startTime: Timestamp   // Period start time
+  endTime: Timestamp     // Period end time
+  totalCount: number     // Running total count
+  totalValue: number     // Running total value
+  count: number          // Count for this period
+  value: number          // Value for this period
+}
+```
+
+### MetricTimelineSectionUpdates
+
+Used for updating timeline sections with Firestore field values:
+
+```typescript
+type MetricTimelineSectionUpdates = Omit<
+  MetricTimelineSection,
+  'count' | 'value' | 'totalCount' | 'totalValue'
+> & {
+  totalCount: number | firestore.FieldValue
+  totalValue: number | firestore.FieldValue
+  count: number | firestore.FieldValue
+  value: number | firestore.FieldValue
+}
+```
+
+## Configuration Types
+
+### MetricConfig
+
+Defines how metrics should be aggregated:
+
+```typescript
+type MetricConfig = {
+  units: DateTimeUnit[]     // Time units for aggregation
+  timezone?: string         // IANA timezone identifier (default: 'UTC')
+  dateUpdated?: Timestamp   // Config last updated
+}
+```
+
+### DateTimeUnit
+
+Valid time units from Luxon library:
+
+```typescript
+type DateTimeUnit = 
+  | 'year'
+  | 'quarter'
+  | 'month'
+  | 'week'
+  | 'day'
+  | 'hour'
+  | 'minute'
+  | 'second'
+  | 'millisecond'
+```
+
+## Usage Examples
+
+### Creating Events
+
+```typescript
+const events: TrackableEvent[] = [
+  {
+    time: firestore.Timestamp.now(),
+    count: 1,
+    value: 99.99
+  },
+  {
+    time: firestore.Timestamp.fromDate(new Date('2024-01-01')),
+    count: 5,
+    value: 499.95
+  }
+]
+```
+
+### Working with Summaries
+
+```typescript
+// Reading a summary
+const summary: MetricEntitySummary = await metricEntity.get()
+console.log(`Total purchases: ${summary.count}`)
+console.log(`Total revenue: ${summary.value}`)
+
+// Updating a summary
+const updates: MetricEntitySummaryUpdates = {
+  count: firestore.FieldValue.increment(1),
+  value: firestore.FieldValue.increment(99.99),
+  lastUpdated: firestore.Timestamp.now()
+}
+```
+
+### Timeline Sections
+
+```typescript
+// A timeline section represents aggregated data
+const section: MetricTimelineSection = {
+  startTime: firestore.Timestamp.fromDate(new Date('2024-01-01')),
+  endTime: firestore.Timestamp.fromDate(new Date('2024-01-02')),
+  count: 10,        // 10 events in this day
+  value: 999.90,    // $999.90 in this day
+  totalCount: 150,  // 150 events total up to this point
+  totalValue: 14999.50  // $14,999.50 total up to this point
+}
+```
+
+### Metric Configuration
+
+```typescript
+// Configure a metric to track by hour, day, and month
+const config: MetricConfig = {
+  units: ['hour', 'day', 'month'],
+  dateUpdated: firestore.Timestamp.now()
+}
+
+// Apply configuration
+await firebridgeMetric('product', 'purchase').set(config)
+
+// Configure with timezone for accurate local time boundaries
+const regionalConfig: MetricConfig = {
+  units: ['day', 'week', 'month'],
+  timezone: 'America/Los_Angeles',  // Pacific Time
+  dateUpdated: firestore.Timestamp.now()
+}
+
+await firebridgeMetric('store', 'sales').set(regionalConfig)
+```
+
+## Type Guards
+
+### Check if Event is Valid
+
+```typescript
+function isValidTrackableEvent(event: any): event is TrackableEvent {
+  return (
+    event &&
+    event.time instanceof firestore.Timestamp &&
+    (event.count === undefined || typeof event.count === 'number') &&
+    (event.value === undefined || typeof event.value === 'number')
+  )
+}
+```
+
+### Validate Metric Address
+
+```typescript
+function isValidMetricAddress(address: any): address is MetricAddress {
+  return (
+    address &&
+    typeof address.noun === 'string' &&
+    typeof address.action === 'string' &&
+    typeof address.entity === 'string' &&
+    address.noun.length > 0 &&
+    address.action.length > 0 &&
+    address.entity.length > 0
+  )
+}
+```
+
+## Import Statements
+
+```typescript
+import type {
+  MetricAddress,
+  MetricEntitySummary,
+  MetricEntitySummaryUpdates,
+  MetricTimelineSection,
+  MetricTimelineSectionUpdates,
+  MetricConfig,
+  TrackableEvent
+} from '@firebridge/cloud/metrics'
+```
+
+## See Also
+
+- [Overview](/cloud/metrics/overview) - Introduction to metrics
+- [incrementMetric](/cloud/metrics/increment) - Real-time tracking
+- [updateMetric](/cloud/metrics/update) - Batch updates

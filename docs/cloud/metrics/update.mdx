@@ -1,0 +1,265 @@
+---
+title: "updateMetric"
+description: "Batch update metrics with multiple events or rebuild historical data"
+---
+
+The `updateMetric` function allows you to update metrics with multiple events at once, perfect for importing historical data, rebuilding metrics, or processing batched events.
+
+## Function Signature
+
+```typescript
+updateMetric(
+  noun: string,
+  action: string,
+  entity: string,
+  events: TrackableEvent[],
+  options?: {
+    startingCount?: number
+    startingValue?: number
+    clean?: boolean
+  }
+): Promise<void>
+```
+
+## Parameters
+
+### Required Parameters
+
+- **noun** `string`: The entity type being tracked
+- **action** `string`: The action being measured
+- **entity** `string`: The specific entity ID
+- **events** `TrackableEvent[]`: Array of events to process
+
+### TrackableEvent Structure
+
+```typescript
+type TrackableEvent = {
+  time: firestore.Timestamp
+  count?: number  // defaults to 1
+  value?: number  // defaults to 0
+}
+```
+
+### Optional Parameters
+
+- **startingCount** `number`: Initial count before events (default: 0)
+- **startingValue** `number`: Initial value before events (default: 0)
+- **clean** `boolean`: Delete existing data before update (default: true)
+
+## How It Works
+
+1. Retrieves metric configuration including time units and timezone settings
+2. If `clean` is true, deletes all existing data for the entity
+3. Sorts events chronologically
+4. Builds timeline aggregations for each configured unit using the configured timezone
+5. Executes batch update for all timeline sections
+6. Updates entity summary with final totals
+
+**Timezone Handling**: All timeline aggregations respect the configured timezone, ensuring events are grouped into the correct time periods based on local time boundaries rather than UTC.
+
+## Examples
+
+### Import Historical Data
+
+```typescript
+import { updateMetric } from '@firebridge/cloud/metrics'
+import { firestore } from 'firebase-admin'
+
+// Import purchase history
+const purchaseEvents = [
+  {
+    time: firestore.Timestamp.fromDate(new Date('2024-01-15')),
+    count: 3,
+    value: 299.97
+  },
+  {
+    time: firestore.Timestamp.fromDate(new Date('2024-01-20')),
+    count: 1,
+    value: 99.99
+  },
+  {
+    time: firestore.Timestamp.fromDate(new Date('2024-02-01')),
+    count: 2,
+    value: 199.98
+  }
+]
+
+await updateMetric('product', 'purchase', 'product-123', purchaseEvents)
+```
+
+### Rebuild Metrics from Existing Data
+
+```typescript
+// Fetch events from your database
+const events = await db.collection('orders')
+  .where('productId', '==', 'product-123')
+  .get()
+
+// Transform to TrackableEvent format
+const trackableEvents = events.docs.map(doc => ({
+  time: doc.data().createdAt,
+  count: doc.data().quantity,
+  value: doc.data().totalPrice
+}))
+
+// Rebuild metrics
+await updateMetric('product', 'purchase', 'product-123', trackableEvents, {
+  clean: true  // Clear existing data first
+})
+```
+
+### Append to Existing Metrics
+
+```typescript
+// Add new events without deleting existing data
+await updateMetric('user', 'login', 'user-456', newLoginEvents, {
+  clean: false,  // Keep existing data
+  startingCount: 150,  // Previous total count
+  startingValue: 150   // Previous total value
+})
+```
+
+### Process Batch Events
+
+```typescript
+// Process a batch of different event types
+const viewEvents = pageViews.map(view => ({
+  time: view.timestamp,
+  count: 1
+}))
+
+await updateMetric('page', 'view', 'homepage', viewEvents)
+```
+
+## Performance Benefits
+
+### Batch Operations
+
+`updateMetric` uses Firestore batch operations for efficiency:
+
+```typescript
+// Instead of 100 individual writes...
+for (const event of events) {
+  await incrementMetric('product', 'view', 'product-123', event)
+}
+
+// Use a single batch operation
+await updateMetric('product', 'view', 'product-123', events)
+```
+
+### Timeline Building
+
+The function efficiently builds aggregated timelines:
+- Groups events by time period
+- Calculates running totals
+- Creates only necessary timeline sections
+
+## Advanced Usage
+
+### Custom Time Units and Timezone
+
+Configure metrics with specific time units and timezone before updating:
+
+```typescript
+import { firebridgeMetric } from '@firebridge/cloud/metrics'
+
+// Configure hourly and daily aggregation in UTC (default)
+const metric = firebridgeMetric('api', 'request')
+await metric.set({
+  units: ['hour', 'day'],
+  dateUpdated: firestore.Timestamp.now()
+})
+
+// Configure with timezone for regional metrics
+await metric.set({
+  units: ['hour', 'day'],
+  timezone: 'Europe/London',  // GMT/BST
+  dateUpdated: firestore.Timestamp.now()
+})
+
+// Now update with events - timeline will use London timezone
+await updateMetric('api', 'request', 'endpoint-1', apiRequests)
+```
+
+### Migration Example
+
+Migrate from an old analytics system with timezone awareness:
+
+```typescript
+// Configure metric with appropriate timezone first
+await firebridgeMetric('product', 'analytics').set({
+  units: ['day', 'week', 'month'],
+  timezone: 'America/Chicago',  // Central Time for this dataset
+  dateUpdated: firestore.Timestamp.now()
+})
+
+// Fetch old analytics data
+const oldData = await fetchLegacyAnalytics()
+
+// Transform to events
+const events = oldData.map(record => ({
+  time: firestore.Timestamp.fromDate(record.date),
+  count: record.hits,
+  value: record.revenue || 0
+}))
+
+// Import all at once - events will be aggregated using Central Time
+await updateMetric('product', 'analytics', productId, events, {
+  clean: true  // Start fresh
+})
+```
+
+### Cross-Timezone Event Processing
+
+Handle events from multiple timezones correctly:
+
+```typescript
+// Events from different regions with explicit timezone info
+const globalEvents = [
+  // New York event at 9 AM Eastern
+  {
+    time: firestore.Timestamp.fromDate(new Date('2024-01-15T09:00:00-05:00')),
+    count: 10,
+    value: 1000
+  },
+  // London event at 2 PM GMT
+  {
+    time: firestore.Timestamp.fromDate(new Date('2024-01-15T14:00:00+00:00')),
+    count: 15,
+    value: 1500
+  }
+]
+
+// Process with company headquarters timezone
+await firebridgeMetric('global', 'transaction').set({
+  units: ['day', 'month'],
+  timezone: 'America/New_York'  // All events aggregated to Eastern Time
+})
+
+await updateMetric('global', 'transaction', 'worldwide', globalEvents)
+```
+
+## Error Handling
+
+```typescript
+try {
+  await updateMetric('product', 'purchase', 'product-123', events)
+} catch (error) {
+  if (error.code === 'resource-exhausted') {
+    // Too many events, split into batches
+    const batchSize = 500
+    for (let i = 0; i < events.length; i += batchSize) {
+      const batch = events.slice(i, i + batchSize)
+      await updateMetric('product', 'purchase', 'product-123', batch, {
+        clean: i === 0  // Only clean on first batch
+      })
+    }
+  }
+}
+```
+
+## See Also
+
+- [incrementMetric](/cloud/metrics/increment) - Track individual events
+- [buildTimeline](/cloud/metrics/utilities) - Timeline building utility
+- [Types Reference](/cloud/metrics/types) - Detailed type definitions

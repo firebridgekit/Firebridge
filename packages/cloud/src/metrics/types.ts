@@ -43,6 +43,7 @@ export type MetricTimelineSectionUpdates = Omit<
 
 export type MetricConfig = {
   units: DateTimeUnit[]
+  timezone?: string // IANA timezone identifier (e.g., 'America/New_York', 'Europe/London')
   dateUpdated?: Timestamp
 }
 

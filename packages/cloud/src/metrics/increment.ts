@@ -23,12 +23,12 @@ export const incrementMetric = async (
   // the metric config for "product" "purchase" would define how we should store
   // purchase events for our products.
   const actionConfig = await metric.get()
-  const { units = [] } = actionConfig ?? {}
+  const { units = [], timezone = 'UTC' } = actionConfig ?? {}
 
   // For each unit, we'll increment the count and value.
   // A unit could be "hour", "day", "week", "month", etc.
   // The levels of granularity are defined in the metric config.
   for (const unit of units) {
-    await metricEntity.timeline(unit).cursor.increment(time, { count, value })
+    await metricEntity.timeline(unit, timezone).cursor.increment(time, { count, value })
   }
 }
