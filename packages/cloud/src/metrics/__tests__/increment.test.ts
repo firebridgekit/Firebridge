@@ -1,6 +1,7 @@
-import { firestore } from 'firebase-admin';
+import * as admin from 'firebase-admin';
 import { incrementMetric } from '../increment';
 import { firebridgeMetric } from '../utils/metric';
+import { test } from '../../__tests__/test-setup';
 
 // Mock the firebridgeMetric utility
 jest.mock('../utils/metric');

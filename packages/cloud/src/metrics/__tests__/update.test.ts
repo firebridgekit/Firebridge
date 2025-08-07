@@ -1,7 +1,8 @@
-import { firestore } from 'firebase-admin';
+import * as admin from 'firebase-admin';
 import { updateMetric } from '../update';
 import { firebridgeMetric, buildTimeline } from '../utils';
 import { executeFirestoreBatch } from '../../execution';
+import { test } from '../../__tests__/test-setup';
 
 // Mock dependencies
 jest.mock('../utils/metric');
