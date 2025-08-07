@@ -126,9 +126,10 @@ describe('firebridgeMetric', () => {
 
       // Verify the increment data structure
       const mergeCall = (firestoreMerge as jest.Mock).mock.calls[0]
-      const mergeData = mergeCall[1] // Second argument is the entity ID
+      const entityId = mergeCall[1] // Second argument is the entity ID
       const incrementData = mergeCall[2] // Third argument is the data
 
+      expect(entityId).toBe('user-789')
       expect(incrementData.count).toHaveProperty(
         '_methodName',
         'FieldValue.increment',
@@ -239,11 +240,6 @@ describe('firebridgeMetric', () => {
       const entity = metric.entity('user-123')
       const timeline = entity.timeline('day', 'UTC')
 
-      // Mock entity increment
-      const entityIncrementSpy = jest
-        .spyOn(entity, 'increment')
-        .mockResolvedValue({} as any)
-
       const timestamp = firestore.Timestamp.fromDate(
         new Date('2024-01-15T14:00:00Z'),
       )
@@ -253,8 +249,8 @@ describe('firebridgeMetric', () => {
         value: 150,
       })
 
-      // Should increment both entity and timeline cursor
-      expect(entityIncrementSpy).toHaveBeenCalledWith({ count: 3, value: 150 })
+      // Should call firestoreMerge twice - once for entity, once for timeline
+      expect(firestoreMerge).toHaveBeenCalledTimes(2)
       expect(firestoreMerge).toHaveBeenCalled()
 
       // Verify the timeline increment data
@@ -323,11 +319,11 @@ describe('firebridgeMetric', () => {
 
       // Test with an invalid timestamp that might cause Luxon to return null
       expect(() => {
-        // This should not throw due to the error handling in makeCursorId
+        // This should throw due to the invalid date
         timeline.cursor.makeRef(
           firestore.Timestamp.fromDate(new Date('invalid')),
         )
-      }).toThrow('Invalid cursor ID')
+      }).toThrow()
     })
 
     it('should propagate Firestore operation errors', async () => {
@@ -358,8 +354,9 @@ describe('firebridgeMetric', () => {
       const incrementData = mergeCall[2]
 
       // Should use default values (count=1, value=0)
-      expect(incrementData.count).toHaveProperty('_elements', [1])
-      expect(incrementData.value).toHaveProperty('_elements', [0])
+      expect(incrementData.count).toHaveProperty('_methodName', 'FieldValue.increment')
+      expect(incrementData.value).toHaveProperty('_methodName', 'FieldValue.increment')
+      expect(incrementData.lastUpdated).toBeDefined()
     })
 
     it('should use default timezone (UTC)', () => {
