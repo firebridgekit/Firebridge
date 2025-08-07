@@ -30,7 +30,9 @@ describe('firebridgeMetric', () => {
         dateUpdated: firestore.Timestamp.now(),
       }
 
-      ;(firestoreGet as jest.Mock).mockResolvedValue(mockConfig)
+      ;(firestoreGet as jest.Mock).mockReturnValue(() =>
+        Promise.resolve(mockConfig),
+      )
 
       const metric = firebridgeMetric('user', 'login')
       const config = await metric.get()
@@ -47,7 +49,9 @@ describe('firebridgeMetric', () => {
         dateUpdated: firestore.Timestamp.now(),
       }
 
-      ;(firestoreSet as jest.Mock).mockResolvedValue(undefined)
+      ;(firestoreSet as jest.Mock).mockReturnValue(() =>
+        Promise.resolve(undefined),
+      )
 
       const metric = firebridgeMetric('api', 'request')
       await metric.set(newConfig)
@@ -73,7 +77,9 @@ describe('firebridgeMetric', () => {
         lastUpdated: firestore.Timestamp.now(),
       }
 
-      ;(firestoreGet as jest.Mock).mockResolvedValue(mockSummary)
+      ;(firestoreGet as jest.Mock).mockReturnValue(() =>
+        Promise.resolve(mockSummary),
+      )
 
       const metric = firebridgeMetric('order', 'total')
       const entity = metric.entity('customer-456')
@@ -90,7 +96,9 @@ describe('firebridgeMetric', () => {
         lastUpdated: firestore.Timestamp.now(),
       }
 
-      ;(firestoreSet as jest.Mock).mockResolvedValue(undefined)
+      ;(firestoreSet as jest.Mock).mockReturnValue(() =>
+        Promise.resolve(undefined),
+      )
 
       const metric = firebridgeMetric('page', 'view')
       const entity = metric.entity('homepage')
@@ -100,7 +108,9 @@ describe('firebridgeMetric', () => {
     })
 
     it('should increment entity values', async () => {
-      ;(firestoreMerge as jest.Mock).mockResolvedValue(undefined)
+      ;(firestoreMerge as jest.Mock).mockReturnValue(() =>
+        Promise.resolve(undefined),
+      )
 
       const metric = firebridgeMetric('user', 'action')
       const entity = metric.entity('user-789')
@@ -131,7 +141,9 @@ describe('firebridgeMetric', () => {
     })
 
     it('should delete entity data', async () => {
-      ;(firestoreDelete as jest.Mock).mockResolvedValue(undefined)
+      ;(firestoreDelete as jest.Mock).mockReturnValue(() =>
+        Promise.resolve(undefined),
+      )
 
       const metric = firebridgeMetric('temp', 'data')
       const entity = metric.entity('temp-123')
@@ -194,7 +206,9 @@ describe('firebridgeMetric', () => {
     })
 
     it('should set timeline cursor data', async () => {
-      ;(firestoreSet as jest.Mock).mockResolvedValue(undefined)
+      ;(firestoreSet as jest.Mock).mockReturnValue(() =>
+        Promise.resolve(undefined),
+      )
 
       const metric = firebridgeMetric('metric', 'test')
       const entity = metric.entity('entity-1')
@@ -217,7 +231,9 @@ describe('firebridgeMetric', () => {
     })
 
     it('should increment timeline cursor', async () => {
-      ;(firestoreMerge as jest.Mock).mockResolvedValue(undefined)
+      ;(firestoreMerge as jest.Mock).mockReturnValue(() =>
+        Promise.resolve(undefined),
+      )
 
       const metric = firebridgeMetric('activity', 'event')
       const entity = metric.entity('user-123')
@@ -316,7 +332,9 @@ describe('firebridgeMetric', () => {
 
     it('should propagate Firestore operation errors', async () => {
       const firestoreError = new Error('Firestore error')
-      ;(firestoreGet as jest.Mock).mockRejectedValue(firestoreError)
+      ;(firestoreGet as jest.Mock).mockReturnValue(() =>
+        Promise.reject(firestoreError),
+      )
 
       const metric = firebridgeMetric('error', 'test')
 
@@ -326,7 +344,9 @@ describe('firebridgeMetric', () => {
 
   describe('default parameters', () => {
     it('should use default increment values', async () => {
-      ;(firestoreMerge as jest.Mock).mockResolvedValue(undefined)
+      ;(firestoreMerge as jest.Mock).mockReturnValue(() =>
+        Promise.resolve(undefined),
+      )
 
       const metric = firebridgeMetric('default', 'test')
       const entity = metric.entity('entity-1')

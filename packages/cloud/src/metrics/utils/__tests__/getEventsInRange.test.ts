@@ -1,4 +1,13 @@
+import { Timestamp } from 'firebase-admin/firestore';
 import { getEventsInRange } from '../getEventsInRange';
+import { TrackableEvent } from '../../types';
+
+// Helper function to create mock events
+const createMockEvent = (isoString: string, count: number, value: number): TrackableEvent => ({
+  time: Timestamp.fromDate(new Date(isoString)),
+  count,
+  value,
+});
 
 describe('getEventsInRange', () => {
   it('should filter events within date range', () => {

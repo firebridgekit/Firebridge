@@ -1,8 +1,17 @@
+import { Timestamp } from 'firebase-admin/firestore';
 import { buildTimeline } from '../buildTimeline';
 import { getEventsInRange } from '../getEventsInRange';
+import { TrackableEvent } from '../../types';
 
 // Mock getEventsInRange
 jest.mock('../getEventsInRange');
+
+// Helper function to create mock events
+const createMockEvent = (isoString: string, count: number, value: number): TrackableEvent => ({
+  time: Timestamp.fromDate(new Date(isoString)),
+  count,
+  value,
+});
 
 describe('buildTimeline', () => {
   beforeEach(() => {

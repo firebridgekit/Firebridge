@@ -1,13 +1,22 @@
 import * as admin from 'firebase-admin';
+import { Timestamp } from 'firebase-admin/firestore';
 import { updateMetric } from '../update';
 import { firebridgeMetric, buildTimeline } from '../utils';
 import { executeFirestoreBatch } from '../../execution';
 import { test } from '../../__tests__/test-setup';
+import { TrackableEvent } from '../types';
 
 // Mock dependencies
 jest.mock('../utils/metric');
 jest.mock('../utils/buildTimeline');
 jest.mock('../../execution');
+
+// Helper function to create mock events
+const createMockEvent = (isoString: string, count: number, value: number): TrackableEvent => ({
+  time: Timestamp.fromDate(new Date(isoString)),
+  count,
+  value,
+});
 
 describe('updateMetric', () => {
   const mockMetric = {

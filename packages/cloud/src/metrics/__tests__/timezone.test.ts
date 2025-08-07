@@ -1,9 +1,18 @@
 import { DateTime } from 'luxon';
+import { Timestamp } from 'firebase-admin/firestore';
 import { buildTimeline } from '../utils/buildTimeline';
 import { getEventsInRange } from '../utils/getEventsInRange';
+import { TrackableEvent } from '../types';
 
 // Mock getEventsInRange
 jest.mock('../utils/getEventsInRange');
+
+// Helper function to create mock events
+const createMockEvent = (isoString: string, count: number, value: number): TrackableEvent => ({
+  time: Timestamp.fromDate(new Date(isoString)),
+  count,
+  value,
+});
 
 describe('Timezone functionality', () => {
   beforeEach(() => {
@@ -206,10 +215,10 @@ describe('Timezone functionality', () => {
   describe('weekly aggregation with timezones', () => {
     it('should respect timezone for weekly boundaries', () => {
       const events = [
-        // Sunday 11 PM PST = Monday 7 AM UTC  
-        createMockEvent('2024-01-15T07:00:00Z', 1, 100),
         // Monday 1 AM PST = Monday 9 AM UTC
         createMockEvent('2024-01-15T09:00:00Z', 1, 100),
+        // Tuesday 1 AM PST = Tuesday 9 AM UTC
+        createMockEvent('2024-01-16T09:00:00Z', 1, 100),
       ];
       
       (getEventsInRange as jest.Mock).mockReturnValue(events);

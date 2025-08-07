@@ -1,4 +1,16 @@
+import { Timestamp } from 'firebase-admin/firestore';
 import { buildTimeline } from '../utils/buildTimeline';
+import { TrackableEvent } from '../types';
+
+// Helper functions
+const createMockEvent = (isoString: string, count: number, value: number): TrackableEvent => ({
+  time: Timestamp.fromDate(new Date(isoString)),
+  count,
+  value,
+});
+
+const createMockTimestamp = (isoString: string): Timestamp => 
+  Timestamp.fromDate(new Date(isoString));
 
 describe('Simple metrics tests', () => {
   it('should create basic timeline', () => {
