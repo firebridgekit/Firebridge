@@ -1,5 +1,6 @@
 {
-  "extends": "tsconfig/base.json",
+  "extends": "@configs/tsconfig/base.json",
   "include": [".", "styled.d.ts"],
-  "exclude": ["dist", "build", "node_modules"]
+  "exclude": ["dist", "build", "node_modules"],
+  "compilerOptions": { "lib": ["ES2016"] }
 }

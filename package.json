@@ -2,22 +2,23 @@
   "name": "firebridge",
   "version": "0.0.0",
   "private": true,
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
+    "test": "turbo run test",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "publish-packages": "turbo run build && changeset version && changeset publish",
-    "test": "turbo run test"
+    "publish-packages": "turbo run build && changeset version && changeset publish"
   },
   "devDependencies": {
     "eslint-config-custom": "*",
     "prettier": "latest",
-    "turbo": "latest"
+    "turbo": "latest",
+    "jest": "^29.5.0",
+    "@types/jest": "^29.5.0",
+    "ts-jest": "^29.1.0",
+    "jest-environment-jsdom": "^29.5.0",
+    "identity-obj-proxy": "^3.0.0"
   },
   "engines": {
     "node": ">=14.0.0"
@@ -25,5 +26,5 @@
   "dependencies": {
     "@changesets/cli": "^2.26.0"
   },
-  "packageManager": "yarn@1.22.19"
+  "packageManager": "pnpm@9.15.0"
 }

@@ -1,7 +1,10 @@
 {
-  "name": "tsconfig",
+  "name": "@configs/tsconfig",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "test": "echo \"No tests for tsconfig package\" && exit 0"
+  },
   "files": [
     "base.json",
     "nextjs.json",

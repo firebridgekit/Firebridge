@@ -1,15 +1,19 @@
 {
-  "name": "eslint-config-custom",
+  "name": "@configs/eslint-config-custom",
   "version": "0.1.0",
   "private": true,
   "main": "index.js",
   "license": "MIT",
+  "scripts": {
+    "test": "echo \"No tests for eslint-config package\" && exit 0"
+  },
   "dependencies": {
     "eslint": "^7.23.0",
-    "eslint-config-next": "13.0.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-config-turbo": "latest",
-    "eslint-plugin-react": "7.31.8"
+    "eslint-plugin-react": "7.31.8",
+    "@typescript-eslint/parser": "^5.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.0.0"
   },
   "devDependencies": {
     "typescript": "^4.7.4"
