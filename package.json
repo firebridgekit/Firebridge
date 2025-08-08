@@ -8,9 +8,13 @@
     "lint": "turbo run lint",
     "test": "turbo run test",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "changeset": "changeset",
+    "version": "changeset version",
+    "release": "turbo run build && changeset publish",
     "publish-packages": "turbo run build && changeset version && changeset publish"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.27.1",
     "eslint-config-custom": "*",
     "prettier": "latest",
     "turbo": "latest",
@@ -22,9 +26,6 @@
   },
   "engines": {
     "node": ">=14.0.0"
-  },
-  "dependencies": {
-    "@changesets/cli": "^2.26.0"
   },
   "packageManager": "pnpm@9.15.0"
 }

@@ -7,11 +7,10 @@ settings:
 importers:
 
   .:
-    dependencies:
-      '@changesets/cli':
-        specifier: ^2.26.0
-        version: 2.29.5
     devDependencies:
+      '@changesets/cli':
+        specifier: ^2.27.1
+        version: 2.29.5
       '@types/jest':
         specifier: ^29.5.0
         version: 29.5.14
