@@ -1,7 +1,13 @@
 module.exports = {
-  extends: ["next", "turbo", "prettier"],
+  extends: ["turbo", "prettier"],
+  parser: "@typescript-eslint/parser",
+  plugins: ["@typescript-eslint"],
   rules: {
-    "@next/next/no-html-link-for-pages": "off",
     "react/jsx-key": "off",
+  },
+  env: {
+    browser: true,
+    node: true,
+    es2021: true,
   },
 };
