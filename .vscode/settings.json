@@ -1,16 +1,16 @@
-// {
-//   "files.exclude": {
-//     "**/.storybook": true,
-//     "**/.turbo": true,
-//     "**/dist": true,
-//     "**/node_modules": true,
-//     "**/.gitignore": true,
-//     "**/styled.d.ts": true,
-//     "**/tsconfig.json": true,
-//     ".eslintrc.js": true,
-//     ".prettierrc": true,
-//     "turbo.json": true,
-//     "yarn.lock": true,
-//     ".changeset": true
-//   }
-// }
+{
+  "files.exclude": {
+    "**/.storybook": true,
+    "**/.turbo": true,
+    "**/dist": true,
+    "**/node_modules": true,
+    "**/.gitignore": true,
+    "**/styled.d.ts": true,
+    "**/tsconfig.json": true,
+    ".eslintrc.js": true,
+    ".prettierrc": true,
+    "turbo.json": true,
+    "yarn.lock": true,
+    ".changeset": true
+  }
+}
