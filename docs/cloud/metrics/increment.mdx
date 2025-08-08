@@ -1,0 +1,180 @@
+---
+title: "incrementMetric"
+description: "Track events in real-time by incrementing metric values"
+---
+
+The `incrementMetric` function allows you to track individual events as they occur, automatically updating aggregated values across all configured time units.
+
+## Function Signature
+
+```typescript
+incrementMetric(
+  noun: string,
+  action: string,
+  entity: string,
+  options?: {
+    count?: number
+    value?: number
+    time?: firestore.Timestamp
+  }
+): Promise<void>
+```
+
+## Parameters
+
+### Required Parameters
+
+- **noun** `string`: The entity type being tracked (e.g., "product", "user", "article")
+- **action** `string`: The action being measured (e.g., "purchase", "view", "click", "share")
+- **entity** `string`: The specific entity ID (e.g., product ID, user ID)
+
+### Optional Parameters
+
+- **count** `number`: Number of occurrences (default: 1)
+- **value** `number`: Numerical value associated with the event (default: 1)
+- **time** `firestore.Timestamp`: When the event occurred (default: current time)
+
+## How It Works
+
+1. The function retrieves the metric configuration for the noun-action pair, including timezone settings
+2. For each configured time unit (hour, day, week, etc.), it:
+   - Converts the event time to the configured timezone
+   - Finds or creates the appropriate timeline cursor based on local time boundaries
+   - Increments both the period count/value and running totals
+3. Updates the entity summary with the latest values
+
+**Timezone Behavior**: Events are aggregated based on the configured timezone. For example, an event at 11 PM Pacific Time will be counted in the correct day according to Pacific Time, not UTC.
+
+## Examples
+
+### Basic Usage
+
+Track a simple page view:
+
+```typescript
+import { incrementMetric } from '@firebridge/cloud/metrics'
+
+// Track a page view
+await incrementMetric('page', 'view', 'home-page')
+```
+
+### With Custom Values
+
+Track a purchase with monetary value:
+
+```typescript
+// Track a product purchase
+await incrementMetric('product', 'purchase', 'product-abc123', {
+  count: 2,        // 2 items purchased
+  value: 159.98    // Total purchase value
+})
+```
+
+### Historical Events
+
+Track an event that occurred in the past:
+
+```typescript
+import { firestore } from 'firebase-admin'
+
+// Track a past event
+const yesterday = firestore.Timestamp.fromDate(
+  new Date(Date.now() - 24 * 60 * 60 * 1000)
+)
+
+await incrementMetric('user', 'login', 'user-123', {
+  time: yesterday
+})
+```
+
+### Multiple Event Types
+
+Track different actions for the same entity:
+
+```typescript
+const productId = 'product-xyz789'
+
+// Track a view
+await incrementMetric('product', 'view', productId)
+
+// Track add to cart
+await incrementMetric('product', 'add-to-cart', productId)
+
+// Track purchase
+await incrementMetric('product', 'purchase', productId, {
+  value: 49.99
+})
+```
+
+### Timezone-Aware Tracking
+
+When tracking events across timezones, the configured timezone determines aggregation boundaries:
+
+```typescript
+// Configure metric for Pacific Time
+await firebridgeMetric('store', 'sale').set({
+  units: ['day', 'month'],
+  timezone: 'America/Los_Angeles'
+})
+
+// This event occurs at 11:30 PM Pacific on Jan 15
+const lateNightSale = firestore.Timestamp.fromDate(
+  new Date('2024-01-15T23:30:00-08:00')
+)
+
+await incrementMetric('store', 'sale', 'store-sf', {
+  time: lateNightSale,
+  value: 150.00
+})
+
+// With Pacific timezone: counted in Jan 15 daily metrics
+// With UTC timezone: would be counted in Jan 16 daily metrics
+```
+
+## Metric Configuration
+
+Before using `incrementMetric`, ensure the metric is configured with appropriate time units and timezone:
+
+```typescript
+import { firebridgeMetric } from '@firebridge/cloud/metrics'
+
+// Configure metric to track by day and month in UTC (default)
+const metric = firebridgeMetric('product', 'purchase')
+await metric.set({
+  units: ['day', 'month'],
+  dateUpdated: firestore.Timestamp.now()
+})
+
+// Configure with specific timezone for accurate regional boundaries
+await metric.set({
+  units: ['day', 'month'],
+  timezone: 'America/New_York',  // Eastern Time
+  dateUpdated: firestore.Timestamp.now()
+})
+```
+
+## Performance Considerations
+
+- Each increment triggers updates across all configured time units
+- Use batch operations via `updateMetric` for importing large datasets
+- Consider rate limiting for high-frequency events
+- Firestore write costs scale with the number of time units configured
+
+## Error Handling
+
+```typescript
+try {
+  await incrementMetric('product', 'purchase', 'product-123', {
+    value: 99.99
+  })
+} catch (error) {
+  console.error('Failed to increment metric:', error)
+  // Handle error appropriately
+}
+```
+
+## See Also
+
+- [updateMetric](/cloud/metrics/update) - Batch update metrics
+- [firebridgeMetric](/cloud/metrics/utilities) - Access metric utilities
+- [Types Reference](/cloud/metrics/types) - Detailed type definitions

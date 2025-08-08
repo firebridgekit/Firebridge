@@ -1,0 +1,360 @@
+---
+title: "Utilities"
+description: "Helper functions and utilities for working with FireBridge metrics"
+---
+
+The metrics system provides several utility functions to help you work with metrics data, build timelines, and access metric configurations.
+
+## firebridgeMetric
+
+The main utility for accessing and managing metrics.
+
+### Function Signature
+
+```typescript
+firebridgeMetric(noun: string, verb: string): MetricUtils
+```
+
+### Returns
+
+A metric utility object with methods for:
+- Managing metric configuration
+- Accessing entity data
+- Working with timelines
+
+### Example Usage
+
+```typescript
+import { firebridgeMetric } from '@firebridge/cloud/metrics'
+
+const metric = firebridgeMetric('product', 'purchase')
+
+// Get metric configuration
+const config = await metric.get()
+
+// Set metric configuration
+await metric.set({
+  units: ['day', 'week', 'month'],
+  timezone: 'America/New_York', // Optional: defaults to 'UTC'
+  dateUpdated: firestore.Timestamp.now()
+})
+
+// Access entity data
+const entity = metric.entity('product-123')
+```
+
+## Entity Methods
+
+When you access an entity through `metric.entity(entityId)`, you get:
+
+### Summary Methods
+
+```typescript
+const entity = metric.entity('product-123')
+
+// Get entity summary
+const summary = await entity.get()
+console.log(`Total: ${summary.count} events, value: ${summary.value}`)
+
+// Set entity summary
+await entity.set({
+  count: 100,
+  value: 9999.00,
+  lastUpdated: firestore.Timestamp.now()
+})
+
+// Increment entity values
+await entity.increment({
+  count: 1,
+  value: 99.99
+})
+
+// Delete all entity data
+await entity.delete()
+```
+
+### Timeline Access
+
+```typescript
+// Access timeline for a specific unit
+const timeline = entity.timeline('day')
+
+// Get timeline cursor methods
+const cursor = timeline.cursor
+
+// Increment a specific time period
+await cursor.increment(firestore.Timestamp.now(), {
+  count: 1,
+  value: 99.99
+})
+```
+
+## buildTimeline
+
+Builds aggregated timeline sections from an array of events.
+
+### Function Signature
+
+```typescript
+buildTimeline(
+  events: TrackableEvent[],
+  options?: {
+    unit?: DateTimeUnit
+    timezone?: string
+    startingCount?: number
+    startingValue?: number
+  }
+): MetricTimelineSection[]
+```
+
+### Parameters
+
+- **events**: Array of events to aggregate
+- **unit**: Time unit for aggregation (default: 'day')
+- **timezone**: IANA timezone identifier (default: 'UTC')
+- **startingCount**: Initial count value (default: 0)
+- **startingValue**: Initial value sum (default: 0)
+
+### Example
+
+```typescript
+import { buildTimeline } from '@firebridge/cloud/metrics'
+
+const events = [
+  { time: timestamp1, count: 5, value: 500 },
+  { time: timestamp2, count: 3, value: 300 }
+]
+
+// Build daily timeline
+const dailyTimeline = buildTimeline(events, { unit: 'day' })
+
+// Build hourly timeline with starting values
+const hourlyTimeline = buildTimeline(events, {
+  unit: 'hour',
+  startingCount: 100,
+  startingValue: 10000
+})
+
+// Build timeline with specific timezone
+const nyTimeline = buildTimeline(events, {
+  unit: 'day',
+  timezone: 'America/New_York'
+})
+```
+
+## getEventsInRange
+
+Filters events within a specific date range.
+
+### Function Signature
+
+```typescript
+getEventsInRange(
+  events: TrackableEvent[],
+  fromDate: Date,
+  toDate: Date
+): TrackableEvent[]
+```
+
+### Example
+
+```typescript
+import { getEventsInRange } from '@firebridge/cloud/metrics'
+
+const fromDate = new Date('2024-01-01')
+const toDate = new Date('2024-01-31')
+
+const januaryEvents = getEventsInRange(allEvents, fromDate, toDate)
+```
+
+## Advanced Patterns
+
+### Custom Metric Wrapper
+
+Create a typed wrapper for your metrics:
+
+```typescript
+class ProductMetrics {
+  private metric = firebridgeMetric('product', 'purchase')
+  
+  async trackPurchase(productId: string, amount: number) {
+    const entity = this.metric.entity(productId)
+    await entity.increment({
+      count: 1,
+      value: amount
+    })
+  }
+  
+  async getPurchaseStats(productId: string) {
+    const entity = this.metric.entity(productId)
+    const summary = await entity.get()
+    
+    return {
+      totalPurchases: summary.count,
+      totalRevenue: summary.value,
+      averageOrderValue: summary.value / summary.count
+    }
+  }
+}
+```
+
+### Metric Migration
+
+Migrate metrics between different structures:
+
+```typescript
+async function migrateMetrics(
+  oldNoun: string,
+  oldAction: string,
+  newNoun: string,
+  newAction: string,
+  entityIds: string[]
+) {
+  const oldMetric = firebridgeMetric(oldNoun, oldAction)
+  const newMetric = firebridgeMetric(newNoun, newAction)
+  
+  for (const entityId of entityIds) {
+    // Get old data
+    const oldEntity = oldMetric.entity(entityId)
+    const summary = await oldEntity.get()
+    
+    if (summary) {
+      // Set new data
+      const newEntity = newMetric.entity(entityId)
+      await newEntity.set(summary)
+    }
+  }
+}
+```
+
+### Timeline Analysis
+
+Analyze timeline data for insights:
+
+```typescript
+async function analyzeTimeline(
+  noun: string,
+  action: string,
+  entityId: string,
+  unit: DateTimeUnit
+) {
+  const events = await fetchEventsFromDatabase(entityId)
+  const timeline = buildTimeline(events, { unit })
+  
+  // Find peak period
+  const peak = timeline.reduce((max, section) => 
+    section.count > max.count ? section : max
+  )
+  
+  // Calculate growth
+  const first = timeline[0]
+  const last = timeline[timeline.length - 1]
+  const growthRate = (last.totalValue - first.totalValue) / first.totalValue
+  
+  return {
+    peakPeriod: peak.startTime.toDate(),
+    peakCount: peak.count,
+    totalGrowth: `${(growthRate * 100).toFixed(2)}%`
+  }
+}
+```
+
+### Batch Processing
+
+Process metrics in batches for better performance:
+
+```typescript
+async function batchProcessMetrics(
+  events: Array<{ entityId: string; event: TrackableEvent }>
+) {
+  // Group events by entity
+  const eventsByEntity = events.reduce((acc, { entityId, event }) => {
+    if (!acc[entityId]) acc[entityId] = []
+    acc[entityId].push(event)
+    return acc
+  }, {} as Record<string, TrackableEvent[]>)
+  
+  // Process each entity's events
+  const promises = Object.entries(eventsByEntity).map(([entityId, events]) =>
+    updateMetric('product', 'view', entityId, events)
+  )
+  
+  await Promise.all(promises)
+}
+```
+
+## Timezone Examples
+
+### Configure Timezone for Account-Specific Metrics
+
+Set up metrics to aggregate based on local business hours:
+
+```typescript
+// Configure metrics for a New York-based account
+await firebridgeMetric('order', 'completed').set({
+  units: ['hour', 'day', 'month'],
+  timezone: 'America/New_York',
+  dateUpdated: firestore.Timestamp.now()
+})
+
+// Configure metrics for a London-based account
+await firebridgeMetric('order', 'completed').set({
+  units: ['hour', 'day', 'month'],
+  timezone: 'Europe/London',
+  dateUpdated: firestore.Timestamp.now()
+})
+```
+
+### Multi-Region Support
+
+Handle metrics for different regions with appropriate timezones:
+
+```typescript
+const regions = {
+  'us-east': 'America/New_York',
+  'us-west': 'America/Los_Angeles',
+  'eu-west': 'Europe/London',
+  'asia-pacific': 'Asia/Tokyo'
+}
+
+// Configure metrics per region
+for (const [region, timezone] of Object.entries(regions)) {
+  await firebridgeMetric(`sales-${region}`, 'transaction').set({
+    units: ['day', 'week', 'month'],
+    timezone,
+    dateUpdated: firestore.Timestamp.now()
+  })
+}
+```
+
+### Timezone-Aware Event Tracking
+
+When events cross day boundaries, they're correctly assigned:
+
+```typescript
+// Event at 11 PM Pacific Time
+const event = {
+  time: firestore.Timestamp.fromDate(new Date('2024-01-15T23:00:00-08:00')),
+  value: 100
+}
+
+// With Pacific timezone, this goes to Jan 15
+await incrementMetric('sales', 'revenue', 'store-123', event)
+
+// With UTC, this would go to Jan 16 (since 11 PM PST = 7 AM UTC next day)
+```
+
+## Performance Tips
+
+1. **Use appropriate time units**: Don't track by second if you only need daily data
+2. **Batch updates**: Use `updateMetric` for multiple events instead of individual `incrementMetric` calls
+3. **Clean old data**: Periodically remove old timeline data you no longer need
+4. **Index considerations**: Firestore automatically indexes the metric paths
+5. **Timezone performance**: Timezone calculations add minimal overhead and are cached by Luxon
+
+## See Also
+
+- [Overview](/cloud/metrics/overview) - Introduction to metrics
+- [incrementMetric](/cloud/metrics/increment) - Real-time tracking
+- [updateMetric](/cloud/metrics/update) - Batch updates
+- [Types Reference](/cloud/metrics/types) - Type definitions

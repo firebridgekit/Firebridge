@@ -31,7 +31,7 @@ export const updateMetric = async (
   // the metric config for "product" "purchase" would define how we should store
   // purchase events for our products.
   const actionConfig = await metric.get()
-  const { units = [] } = actionConfig ?? {}
+  const { units = [], timezone = 'UTC' } = actionConfig ?? {}
 
   const updates: FirestoreOperation[] = []
 
@@ -42,6 +42,7 @@ export const updateMetric = async (
   for (const unit of units) {
     const timeline = buildTimeline(events, {
       unit,
+      timezone,
       startingCount,
       startingValue,
     })
@@ -60,7 +61,7 @@ export const updateMetric = async (
 
   await metricEntity.set({
     lastUpdated: firestore.Timestamp.now(),
-    count: updates[updates.length - 1].data.totalCount,
-    value: updates[updates.length - 1].data.totalValue,
+    count: updates.length > 0 ? updates[updates.length - 1].data.totalCount : undefined,
+    value: updates.length > 0 ? updates[updates.length - 1].data.totalValue : undefined,
   })
 }
