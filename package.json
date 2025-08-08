@@ -10,13 +10,19 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
+    "test": "turbo run test",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "publish-packages": "turbo run build && changeset version && changeset publish"
   },
   "devDependencies": {
     "eslint-config-custom": "*",
     "prettier": "latest",
-    "turbo": "latest"
+    "turbo": "latest",
+    "jest": "^29.5.0",
+    "@types/jest": "^29.5.0",
+    "ts-jest": "^29.1.0",
+    "jest-environment-jsdom": "^29.5.0",
+    "identity-obj-proxy": "^3.0.0"
   },
   "engines": {
     "node": ">=14.0.0"

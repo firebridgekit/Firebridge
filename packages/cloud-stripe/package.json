@@ -15,7 +15,8 @@
   ],
   "scripts": {
     "lint": "TIMING=1 eslint \"**/*.ts*\"",
-    "build": "tsup ./index.ts --dts --format esm,cjs --minify --out-dir dist"
+    "build": "tsup ./index.ts --dts --format esm,cjs --minify --out-dir dist",
+    "test": "jest --passWithNoTests"
   },
   "dependencies": {
     "lodash": "^4.17.21",
