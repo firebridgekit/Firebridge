@@ -2,7 +2,7 @@ import { Timestamp } from 'firebase-admin/firestore'
 import { DateTime, DateTimeUnit } from 'luxon'
 
 import { MetricTimelineSection, TrackableEvent } from '../types'
-import { sumBy } from '../../utils/sum'
+import { sumBy } from '../../utils'
 import { getEventsInRange } from './getEventsInRange'
 
 export const buildTimeline = (
@@ -40,7 +40,9 @@ export const buildTimeline = (
   const lastEvent = sortedEvents[sortedEvents.length - 1]
   const lastEventDate = lastEvent.time.toDate()
 
-  const start = DateTime.fromJSDate(firstEventDate).setZone(timezone).startOf(unit)
+  const start = DateTime.fromJSDate(firstEventDate)
+    .setZone(timezone)
+    .startOf(unit)
   const end = DateTime.fromJSDate(lastEventDate).setZone(timezone).endOf(unit)
 
   let cursor = start
