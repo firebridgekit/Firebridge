@@ -1,5 +1,11 @@
 # @firebridge/web
 
+## 0.13.1
+
+### Patch Changes
+
+- Adds unit testing
+
 ## 0.13.0
 
 ### Minor Changes
