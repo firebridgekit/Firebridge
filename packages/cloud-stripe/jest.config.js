@@ -2,11 +2,13 @@ export default {
   preset: 'ts-jest',
   testEnvironment: 'node',
   roots: ['<rootDir>/src'],
-  testMatch: ['**/__tests__/**/*.ts', '**/?(*.)+(spec|test).ts'],
+  testMatch: ['**/__tests__/**/*.test.ts', '**/?(*.)+(spec|test).ts'],
+  testPathIgnorePatterns: ['/node_modules/', 'test-setup.ts', 'types.d.ts'],
   collectCoverageFrom: [
     'src/**/*.ts',
     '!src/**/*.d.ts',
-    '!src/**/index.ts'
+    '!src/**/index.ts',
+    '!src/__tests__/**'
   ],
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html'],
@@ -18,5 +20,6 @@ export default {
     '^.+\\.tsx?$': ['ts-jest', {
       useESM: true
     }]
-  }
+  },
+  setupFilesAfterEnv: ['<rootDir>/src/__tests__/test-setup.ts']
 };
