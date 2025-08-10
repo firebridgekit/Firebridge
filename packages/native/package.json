@@ -27,6 +27,7 @@
     "@react-native-firebase/auth": "^17.0.0",
     "@react-native-firebase/firestore": "^17.0.0",
     "@react-native-firebase/functions": "^17.0.0",
+    "@testing-library/react": "^13.4.0",
     "@testing-library/react-native": "^11.5.0",
     "@types/jest": "^29.5.0",
     "@types/react": "~18.0.24",
