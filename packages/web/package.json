@@ -1,6 +1,6 @@
 {
   "name": "@firebridge/web",
-  "version": "0.13.0",
+  "version": "0.13.1",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "module": "dist/index.mjs",
@@ -25,10 +25,10 @@
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "^13.4.0",
+    "@testing-library/react": "^14.0.0",
     "@types/jest": "^29.5.0",
-    "@types/react": "^17.0.37",
-    "@types/react-dom": "^17.0.11",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
     "eslint": "^7.32.0",
     "@configs/eslint-config-custom": "workspace:*",
     "firebase": "^9.17.0",
