@@ -32,13 +32,10 @@
       "parameters": {
         "required_status_checks": [
           {
-            "context": "test"
+            "context": "Test"
           },
           {
-            "context": "lint"
-          },
-          {
-            "context": "build"
+            "context": "Changeset"
           }
         ],
         "strict_required_status_checks_policy": true
