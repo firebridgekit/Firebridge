@@ -45,5 +45,10 @@
       "type": "required_linear_history"
     }
   ],
-  "bypass_actors": []
+  "bypass_actors": [
+    {
+      "actor_id": 1,
+      "actor_type": "OrganizationAdmin"
+    }
+  ]
 }
