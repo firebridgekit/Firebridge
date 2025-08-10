@@ -1,5 +1,11 @@
 # @firebridge/cloud
 
+## 1.3.1
+
+### Patch Changes
+
+- [#5](https://github.com/firebridgekit/Firebridge/pull/5) [`558761a`](https://github.com/firebridgekit/Firebridge/commit/558761a06612347a9330141a18898faaccbbbdfc) Thanks [@mitchellbutler](https://github.com/mitchellbutler)! - feat: full test coverage on cloud
+
 ## 1.3.0
 
 ### Minor Changes
