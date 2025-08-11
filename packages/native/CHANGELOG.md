@@ -1,5 +1,11 @@
 # @firebridge/native
 
+## 0.5.1
+
+### Patch Changes
+
+- [#10](https://github.com/firebridgekit/Firebridge/pull/10) [`4a2a7fb`](https://github.com/firebridgekit/Firebridge/commit/4a2a7fb54b98fad110efc6d995e247779143d911) Thanks [@mitchellbutler](https://github.com/mitchellbutler)! - feat: adds tests for native package
+
 ## 0.5.0
 
 ### Minor Changes
