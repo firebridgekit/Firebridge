@@ -1,5 +1,16 @@
 # @firebridge/cloud-stripe
 
+## 15.0.0
+
+### Major Changes
+
+- [#14](https://github.com/firebridgekit/Firebridge/pull/14) [`20c77f3`](https://github.com/firebridgekit/Firebridge/commit/20c77f3c01514b7bd2cd9ab1b57d28dc7bdfeb5e) Thanks [@mitchellbutler](https://github.com/mitchellbutler)! - feat: move from yup to zod
+
+### Patch Changes
+
+- Updated dependencies [[`20c77f3`](https://github.com/firebridgekit/Firebridge/commit/20c77f3c01514b7bd2cd9ab1b57d28dc7bdfeb5e)]:
+  - @firebridge/cloud@2.0.0
+
 ## 14.0.1
 
 ### Patch Changes
