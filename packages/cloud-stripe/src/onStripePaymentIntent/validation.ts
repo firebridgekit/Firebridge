@@ -1,12 +1,12 @@
-import { object, array, string, number } from 'yup'
+import { z } from 'zod'
 
-const validation = object({
-  cart: array(
-    object({
-      id: string().required(),
-      quantity: number().integer().required(),
+const validation = z.object({
+  cart: z.array(
+    z.object({
+      id: z.string(),
+      quantity: z.number().int(),
     }),
-  ),
+  ).optional(),
 })
 
 export default validation

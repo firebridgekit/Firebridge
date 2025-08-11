@@ -1,5 +1,5 @@
 import { Response } from 'express'
-import { AnyObjectSchema } from 'yup'
+import { z } from 'zod'
 import { Request } from 'firebase-functions/v2/https'
 
 export type AuthenticatedBody<Body, T = {}> = T & {
@@ -27,7 +27,7 @@ export type InvokableAction<Body, Response> = (
  * @typedef BodyValidationSchema
  * @description Represents a validation schema for a request body.
  */
-export type BodyValidationSchema = AnyObjectSchema
+export type BodyValidationSchema = z.ZodObject<any>
 
 /**
  * @typedef OnRequestHandler

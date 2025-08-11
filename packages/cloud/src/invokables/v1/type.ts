@@ -1,5 +1,5 @@
 import { https, RuntimeOptions } from 'firebase-functions'
-import * as Yup from 'yup'
+import { z } from 'zod'
 import * as express from 'express'
 
 /**
@@ -16,7 +16,7 @@ export type AuthenticatedContext = {
 }
 
 /**
- * @typedef InvokableAction
+ * @typedef InvokableActionV1
  * @description Represents an action that can be invoked with a body and context.
  * @template Body - The type of the body to pass to the action.
  * @template Response - The type of the response from the action.
@@ -24,7 +24,7 @@ export type AuthenticatedContext = {
  * @param {AuthenticatedContext} context - The context to pass to the action.
  * @returns {Response | Promise<Response>} - The response from the action, or a Promise that resolves with the response.
  */
-export type InvokableAction<Body, Response> = (
+export type InvokableActionV1<Body, Response> = (
   body: Body,
   context: AuthenticatedContext,
 ) => Response | Promise<Response>
@@ -33,7 +33,7 @@ export type InvokableAction<Body, Response> = (
  * @typedef BodyValidationSchema
  * @description Represents a validation schema for a request body.
  */
-export type BodyValidationSchema = Yup.AnyObjectSchema
+export type BodyValidationSchema = z.ZodObject<any>
 
 /**
  * @typedef InvokableRuntimeModes
@@ -60,13 +60,13 @@ export type OnCallHandler<Body = any, Response = void> = (
 ) => Response
 
 /**
- * @typedef OnRequestHandler
+ * @typedef OnRequestHandlerV1
  * @description Represents a handler for a request to a Firebase function.
  * @param {https.Request} req - The request object.
  * @param {express.Response} res - The response object.
  * @returns {Promise<Response>} - A Promise that resolves with the response from the function.
  */
-export type OnRequestHandler<Response = void> = (
+export type OnRequestHandlerV1<Response = void> = (
   req: https.Request,
   res: express.Response,
 ) => Promise<Response>

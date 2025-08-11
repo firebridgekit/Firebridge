@@ -1,4 +1,5 @@
 import { https } from 'firebase-functions'
+import { z } from 'zod'
 
 import { BodyValidationSchema } from '../type'
 
@@ -16,12 +17,23 @@ const validate = async <Data = any>(
 ) => {
   try {
     if (validationSchema) {
-      await validationSchema.validate(body)
+      await validationSchema.parseAsync(body)
     }
   } catch (error) {
+    let message = ''
+    if (error instanceof z.ZodError && error.issues && error.issues.length > 0) {
+      const firstError = error.issues[0]
+      if (firstError.message) {
+        message = firstError.message
+      } else if (firstError.path && firstError.path.length > 0) {
+        message = `${firstError.path.join('.')}: ${firstError.code}`
+      }
+    } else if ((error as any)?.message) {
+      message = (error as any).message
+    }
     throw new https.HttpsError(
       'failed-precondition',
-      (error as any)?.message || '',
+      message,
     )
   }
 }
