@@ -1,6 +1,6 @@
 import { https } from 'firebase-functions'
 import invoke from '../invoke'
-import { AuthenticatedContext, InvokableAction } from '../../type'
+import { AuthenticatedContext, InvokableActionV1 } from '../../type'
 
 describe('invoke', () => {
   const mockContext: AuthenticatedContext = {
@@ -9,7 +9,7 @@ describe('invoke', () => {
   }
 
   it('should successfully invoke an action and return the response', async () => {
-    const mockAction: InvokableAction<{ name: string }, { success: boolean }> = jest.fn(
+    const mockAction: InvokableActionV1<{ name: string }, { success: boolean }> = jest.fn(
       async (body, context) => ({ success: true })
     )
     
@@ -20,7 +20,7 @@ describe('invoke', () => {
   })
 
   it('should handle synchronous actions', async () => {
-    const mockAction: InvokableAction<number, number> = jest.fn((body) => body * 2)
+    const mockAction: InvokableActionV1<number, number> = jest.fn((body) => body * 2)
     
     const result = await invoke(mockAction, 5, mockContext)
     
@@ -29,7 +29,7 @@ describe('invoke', () => {
   })
 
   it('should handle void return types', async () => {
-    const mockAction: InvokableAction<string, void> = jest.fn()
+    const mockAction: InvokableActionV1<string, void> = jest.fn()
     
     const result = await invoke(mockAction, 'test', mockContext)
     
@@ -39,7 +39,7 @@ describe('invoke', () => {
 
   it('should throw HttpsError when action throws an error with message', async () => {
     const errorMessage = 'Action failed'
-    const mockAction: InvokableAction<any, any> = jest.fn().mockRejectedValue(
+    const mockAction: InvokableActionV1<any, any> = jest.fn().mockRejectedValue(
       new Error(errorMessage)
     )
     
@@ -49,7 +49,7 @@ describe('invoke', () => {
   })
 
   it('should throw HttpsError with empty message when error has no message', async () => {
-    const mockAction: InvokableAction<any, any> = jest.fn().mockRejectedValue({})
+    const mockAction: InvokableActionV1<any, any> = jest.fn().mockRejectedValue({})
     
     await expect(invoke(mockAction, {}, mockContext)).rejects.toThrow(
       new https.HttpsError('unknown', '')
@@ -57,7 +57,7 @@ describe('invoke', () => {
   })
 
   it('should throw HttpsError when action throws null', async () => {
-    const mockAction: InvokableAction<any, any> = jest.fn().mockRejectedValue(null)
+    const mockAction: InvokableActionV1<any, any> = jest.fn().mockRejectedValue(null)
     
     await expect(invoke(mockAction, {}, mockContext)).rejects.toThrow(
       new https.HttpsError('unknown', '')
@@ -77,7 +77,7 @@ describe('invoke', () => {
       claims: { permissions: ['read', 'write'], level: 5 },
     }
     
-    const mockAction: InvokableAction<typeof complexBody, string> = jest.fn(
+    const mockAction: InvokableActionV1<typeof complexBody, string> = jest.fn(
       () => 'processed'
     )
     

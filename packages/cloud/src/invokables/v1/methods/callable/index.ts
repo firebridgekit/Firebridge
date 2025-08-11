@@ -2,7 +2,7 @@ import { https, runWith } from 'firebase-functions'
 
 import {
   AuthenticatedContext,
-  InvokableAction,
+  InvokableActionV1,
   BodyValidationSchema,
   InvokableRuntimeModes,
   OnCallHandler,
@@ -23,7 +23,7 @@ import validate from '../../utils/validate'
  * @template Body - The type of the body to pass to the action.
  * @template Response - The type of the response from the action. Defaults to void if not provided.
  * @param {Object} options - The options for the function.
- * @param {InvokableAction<Body, Response>} options.action - The action to invoke.
+ * @param {InvokableActionV1<Body, Response>} options.action - The action to invoke.
  * @param {BodyValidationSchema} [options.validation] - The validation schema to use. If not provided, the function will not perform any validation.
  * @param {string | ((args: Body) => string[])} [options.scope] - The scope of permissions required to invoke the action. If a string is provided, it is used as the permission scope. If a function is provided, it is called with the body as an argument and should return an array of permission scopes. If not provided, no permission check is performed.
  * @param {<T extends UserPermissions>(permissions: T, data: Body) => boolean} [options.checkHasPermission] - A custom function to check if the user has the required permissions. The function is called with the user's permissions and the body as arguments and should return a boolean indicating whether the user has the required permissions. If not provided, the default permission check is used.
@@ -31,7 +31,7 @@ import validate from '../../utils/validate'
  */
 export const callable =
   <Body, Response = void>(options: {
-    action: InvokableAction<Body, Response>
+    action: InvokableActionV1<Body, Response>
     validation?: BodyValidationSchema
     scope?: string | ((args: Body) => string[])
     checkHasPermission?: <T extends UserPermissions>(

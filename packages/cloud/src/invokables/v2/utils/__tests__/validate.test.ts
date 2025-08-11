@@ -1,5 +1,5 @@
 import { HttpsError } from 'firebase-functions/v2/https'
-import * as Yup from 'yup'
+import { z } from 'zod'
 import validate from '../validate'
 
 describe('validate (v2)', () => {
@@ -8,9 +8,9 @@ describe('validate (v2)', () => {
   })
 
   it('should pass validation when schema validates successfully', async () => {
-    const schema = Yup.object({
-      name: Yup.string().required(),
-      age: Yup.number().min(0).required(),
+    const schema = z.object({
+      name: z.string(),
+      age: z.number().min(0),
     })
     
     await expect(
@@ -19,8 +19,8 @@ describe('validate (v2)', () => {
   })
 
   it('should throw HttpsError when validation fails with message', async () => {
-    const schema = Yup.object({
-      email: Yup.string().email().required(),
+    const schema = z.object({
+      email: z.string().email(),
     })
     
     await expect(
@@ -37,7 +37,7 @@ describe('validate (v2)', () => {
 
   it('should throw HttpsError with default message when validation error has no message', async () => {
     const schema = {
-      validate: jest.fn().mockRejectedValue({}),
+      parseAsync: jest.fn().mockRejectedValue({}),
     } as any
     
     await expect(validate({ test: 'data' }, schema)).rejects.toThrow(
@@ -46,18 +46,18 @@ describe('validate (v2)', () => {
   })
 
   it('should handle complex validation schemas', async () => {
-    const schema = Yup.object({
-      user: Yup.object({
-        firstName: Yup.string().required(),
-        lastName: Yup.string().required(),
-        email: Yup.string().email().required(),
+    const schema = z.object({
+      user: z.object({
+        firstName: z.string(),
+        lastName: z.string(),
+        email: z.string().email(),
       }),
-      items: Yup.array().of(
-        Yup.object({
-          id: Yup.number().required(),
-          quantity: Yup.number().min(1).required(),
+      items: z.array(
+        z.object({
+          id: z.number(),
+          quantity: z.number().min(1),
         })
-      ),
+      ).optional(),
     })
     
     const validData = {
@@ -87,10 +87,9 @@ describe('validate (v2)', () => {
   })
 
   it('should handle validation with custom error messages', async () => {
-    const schema = Yup.object({
-      password: Yup.string()
-        .min(8, 'Password must be at least 8 characters')
-        .required('Password is required'),
+    const schema = z.object({
+      password: z.string()
+        .min(8, 'Password must be at least 8 characters'),
     })
     
     try {
@@ -102,9 +101,9 @@ describe('validate (v2)', () => {
   })
 
   it('should handle null and undefined values', async () => {
-    const schema = Yup.object({
-      required: Yup.string().required(),
-      optional: Yup.string().nullable(),
+    const schema = z.object({
+      required: z.string(),
+      optional: z.string().nullable().optional(),
     })
     
     await expect(
@@ -122,7 +121,7 @@ describe('validate (v2)', () => {
 
   it('should handle validation errors with null', async () => {
     const schema = {
-      validate: jest.fn().mockRejectedValue(null),
+      parseAsync: jest.fn().mockRejectedValue(null),
     } as any
     
     await expect(validate({ test: 'data' }, schema)).rejects.toThrow(

@@ -3,9 +3,9 @@ import * as express from 'express'
 
 import {
   BodyValidationSchema,
-  InvokableAction,
+  InvokableActionV1,
   InvokableRuntimeModes,
-  OnRequestHandler,
+  OnRequestHandlerV1,
 } from '../../type'
 import { getKey } from '../../../../permissions'
 
@@ -19,17 +19,17 @@ import getRunOptions from '../../utils/getRunOptions'
  * @template Body - The type of the body to pass to the action.
  * @template Response - The type of the response from the action. Defaults to void if not provided.
  * @param {Object} options - The options for the function.
- * @param {InvokableAction<Body, Response>} options.action - The action to invoke.
+ * @param {InvokableActionV1<Body, Response>} options.action - The action to invoke.
  * @param {BodyValidationSchema} [options.validation] - The validation schema to use. If not provided, the function will not perform any validation.
  * @param {(args: Body) => string[]} [options.scope] - A function that takes the body as an argument and returns an array of permission scopes. If not provided, no permission check is performed.
- * @returns {OnRequestHandler} - A function that can be provided to https.onRequest. This function takes a request and response object and returns a Promise that resolves with the response from the action.
+ * @returns {OnRequestHandlerV1} - A function that can be provided to https.onRequest. This function takes a request and response object and returns a Promise that resolves with the response from the action.
  */
 export const requestable =
   <Body, Response = void>(options: {
-    action: InvokableAction<Body, Response>
+    action: InvokableActionV1<Body, Response>
     validation?: BodyValidationSchema
     scope?: (args: Body) => string[]
-  }): OnRequestHandler =>
+  }): OnRequestHandlerV1 =>
   async (req: https.Request, res: express.Response) => {
     // Checking for the presence of an 'x-api-key' in the request header.
     const keyHash = req.header('x-api-key')
@@ -62,6 +62,6 @@ export const requestable =
 
 // Helper function to create a Firebase HTTPS trigger with runtime options.
 export const onRequest = (
-  onRequestHandler: OnRequestHandler,
+  onRequestHandler: OnRequestHandlerV1,
   modes: InvokableRuntimeModes,
 ) => runWith(getRunOptions(modes)).https.onRequest(onRequestHandler)
