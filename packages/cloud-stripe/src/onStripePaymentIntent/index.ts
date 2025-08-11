@@ -1,12 +1,11 @@
-import { sumBy } from 'lodash'
-import Stripe from 'stripe'
 import { callableV2 } from '@firebridge/cloud'
 import { CollectionReference } from 'firebase-admin/firestore'
 
 import { Quanitifed, Sellable } from '../types'
 import { setCheckout } from '../checkoutOperations'
-import validation from './validation'
 import { getStripe } from '../client'
+import validation from './validation'
+import { sumBy } from '../utils'
 
 type Body = {
   cart: {
