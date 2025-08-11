@@ -1,11 +1,11 @@
 import { customAlphabet } from 'nanoid'
 import { CollectionReference } from 'firebase-admin/firestore'
 import { getAuth } from 'firebase-admin/auth'
-import { chunk } from 'lodash'
 import { callableV2 } from '@firebridge/cloud'
 
 import { Quanitifed, Sellable } from '../types'
 import { setCheckout } from '../checkoutOperations'
+import { chunk } from '../utils'
 import { getStripe } from '../client'
 import validation from './validation'
 
