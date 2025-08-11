@@ -1,5 +1,11 @@
 # @firebridge/cloud-stripe
 
+## 14.0.1
+
+### Patch Changes
+
+- [#12](https://github.com/firebridgekit/Firebridge/pull/12) [`d68be04`](https://github.com/firebridgekit/Firebridge/commit/d68be0496a59c76452dcd894ae827e92c48e16e8) Thanks [@mitchellbutler](https://github.com/mitchellbutler)! - feat: adds tests to cloud-stripe
+
 ## 14.0.0
 
 ### Patch Changes
