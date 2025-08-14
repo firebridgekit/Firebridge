@@ -39,7 +39,7 @@ export const useCallable = <Body = undefined, Response = void>(
       const result = await callable({ ...(body as Body) })
 
       // Return the data from the response
-      return result?.data
+      return result?.data as Response
     },
     [name, log],
   )
