@@ -1,5 +1,11 @@
 # @firebridge/web
 
+## 0.14.0
+
+### Minor Changes
+
+- [#16](https://github.com/firebridgekit/Firebridge/pull/16) [`a901a6a`](https://github.com/firebridgekit/Firebridge/commit/a901a6aad327b360788e96362edd1020d0abfffc) Thanks [@mitchellbutler](https://github.com/mitchellbutler)! - feat: dependency version cleanup
+
 ## 0.13.1
 
 ### Patch Changes
