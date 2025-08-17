@@ -191,12 +191,12 @@ export const getUserAnalytics = callableV2<{ userId: string }, {
 export const processUserData = callableV2<{ userData: any }, { processed: boolean }>({
   action: async ({ data }) => {
     // Hydrate timestamps from serialized data
-    const createdAt = hydrateTimestamp(data.userData.createdAt);
-    const lastLogin = hydrateTimestamp(data.userData.lastLogin);
+    const timeCreated = hydrateTimestamp(data.userData.timeCreated);
+    const timeLastLogin = hydrateTimestamp(data.userData.timeLastLogin);
     
-    // Convert to regular Date objects
-    const createdDate = timestampToDate(createdAt);
-    const loginDate = timestampToDate(lastLogin);
+    // Convert to regular Date objects for display
+    const createdDate = timestampToDate(timeCreated);
+    const loginDate = timestampToDate(timeLastLogin);
     
     console.log('User created:', createdDate);
     console.log('Last login:', loginDate);
