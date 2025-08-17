@@ -22,14 +22,14 @@ const app = initializeApp();
 const db = getFirestore(app);
 
 // Define types for your data
-interface UserProfile {
+type UserProfile = {
   name: string;
   email: string;
   createdAt: any;
   lastLogin?: any;
 }
 
-interface Post {
+type Post = {
   title: string;
   content: string;
   authorId: string;
@@ -37,12 +37,12 @@ interface Post {
   publishedAt?: any;
 }
 
-interface UpdateProfileRequest {
+type UpdateProfileRequest = {
   name?: string;
   email?: string;
 }
 
-interface CreatePostRequest {
+type CreatePostRequest = {
   title: string;
   content: string;
 }

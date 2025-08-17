@@ -16,7 +16,7 @@ const app = initializeApp();
 const db = getFirestore(app);
 
 // Define your product data structure
-interface Product extends Sellable {
+type Product = Sellable & {
   category: string;
   stockQuantity: number;
   isActive: boolean;

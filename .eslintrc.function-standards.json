@@ -6,6 +6,8 @@
     "prefer-const": "error",
     "arrow-spacing": ["error", { "before": true, "after": true }],
     "arrow-parens": ["error", "as-needed"],
-    "no-confusing-arrow": ["error", { "allowParens": true }]
+    "no-confusing-arrow": ["error", { "allowParens": true }],
+    "@typescript-eslint/consistent-type-definitions": ["error", "type"],
+    "@typescript-eslint/prefer-union-types": "error"
   }
 }

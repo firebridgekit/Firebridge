@@ -146,6 +146,8 @@ These examples are designed to be starting points for your own implementations. 
 
 All examples follow the Firebridge coding standards:
 
+- **Type Definitions**: Use `type` instead of `interface` for all data structures
+- **Type Composition**: Use intersection types (`&`) over interface extension
 - **Function Declarations**: Use `const` arrow function exports instead of `function` declarations
 - **Single Returns**: Omit curly braces and return keyword for functions with only a return statement
 - **Object Returns**: Use parentheses for multi-line object returns instead of explicit return statements
@@ -155,6 +157,19 @@ See [CODING_STANDARDS.md](../CODING_STANDARDS.md) for complete details.
 
 ### Examples
 ```typescript
+// ✅ Correct type definition
+export type UserProfile = {
+  id: string;
+  name: string;
+  email: string;
+};
+
+// ✅ Correct intersection type
+export type UserWithMetadata = User & {
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 // ✅ Correct function declaration
 export const getUserData = async (userId: string) => {
   // complex logic here

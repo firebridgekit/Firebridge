@@ -7,7 +7,7 @@
 
 export type WithId<T> = T & { id: string };
 
-export interface UserPermissions {
+export type UserPermissions = {
   role?: string | null;
   roles?: Record<string, string>;
   scopes?: { [scope: string]: boolean };
@@ -65,7 +65,7 @@ export type WithEditorialMetadata<T, TS = FirestoreTimestamp> = T & {
 };
 
 // Example 1: Using WithId type for Firestore documents
-interface User {
+type User = {
   name: string;
   email: string;
   age: number;
@@ -279,7 +279,7 @@ console.log(processOptionalData(nullData));      // "No data available"
 console.log(processOptionalData(undefinedData)); // "No data available"
 
 // Example 6: Using EditorialMetadata for document tracking
-interface Article {
+type Article = {
   title: string;
   content: string;
   authorId: string;

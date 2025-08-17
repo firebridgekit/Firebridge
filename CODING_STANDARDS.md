@@ -2,6 +2,73 @@
 
 This document outlines the coding standards and conventions used throughout the Firebridge project.
 
+## 🎯 Type Definition Standards
+
+### ✅ Preferred: Type Aliases Over Interfaces
+
+Always use `type` instead of `interface` for defining data structures:
+
+```typescript
+// ✅ Correct - type alias
+export type UserProfile = {
+  id: string;
+  name: string;
+  email: string;
+  createdAt: Date;
+};
+
+export type ApiResponse<T> = {
+  data: T;
+  status: number;
+  message: string;
+};
+
+// ❌ Avoid - interface
+export interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  createdAt: Date;
+}
+```
+
+### ✅ Intersection Types for Composition
+
+Use intersection types (`&`) for combining types:
+
+```typescript
+// ✅ Correct - intersection types
+export type UserWithMetadata = User & {
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type Product = Sellable & {
+  category: string;
+  stockQuantity: number;
+};
+
+// ❌ Avoid - interface extension
+export interface UserWithMetadata extends User {
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
+
+### ✅ Union Types for Variants
+
+Use union types for defining variants and discriminated unions:
+
+```typescript
+// ✅ Correct - union types
+export type Status = 'pending' | 'completed' | 'failed';
+
+export type ApiError = 
+  | { type: 'network'; message: string }
+  | { type: 'validation'; errors: string[] }
+  | { type: 'auth'; reason: string };
+```
+
 ## 🔧 Function Declaration Standards
 
 ### ✅ Preferred: Const Arrow Function Exports
@@ -116,24 +183,18 @@ export async function fetchUserData(userId: string) {
 
 ## 🎯 Reasoning Behind These Standards
 
-### Consistency
-- Uniform function declaration style across the entire codebase
-- Easier to read and maintain when all functions follow the same pattern
+### Type vs Interface
+- **Consistency**: Using `type` for all definitions creates uniform patterns
+- **Flexibility**: Types support union types, intersection types, and computed types more naturally
+- **Composition**: Intersection types (`&`) are more explicit than interface extension
+- **Immutability**: Types feel more like immutable definitions vs extendable interfaces
+- **Modern TypeScript**: Aligns with current TypeScript best practices and community standards
 
-### Readability
-- Arrow functions clearly indicate function expressions
-- Reduced visual noise with omitted unnecessary syntax
-- More concise code for simple operations
-
-### Modern JavaScript/TypeScript
-- Aligns with modern ES6+ conventions
-- Better lexical `this` binding (though less relevant with TypeScript)
-- Consistent with popular style guides (Airbnb, Prettier defaults)
-
-### Developer Experience
-- IDE autocomplete and refactoring tools work better with consistent patterns
-- Easier to grep/search for function exports
-- Less cognitive overhead when reading code
+### Function Standards
+- **Consistency**: Uniform function declaration style across the entire codebase
+- **Readability**: Arrow functions clearly indicate function expressions with reduced visual noise
+- **Modern JavaScript/TypeScript**: Aligns with modern ES6+ conventions and popular style guides
+- **Developer Experience**: Better IDE support and easier code searching/refactoring
 
 ## 🔍 Enforcement
 
@@ -146,13 +207,17 @@ Consider adding these ESLint rules to enforce these standards:
     "prefer-arrow-callback": "error",
     "func-style": ["error", "expression"],
     "arrow-body-style": ["error", "as-needed"],
-    "prefer-const": "error"
+    "prefer-const": "error",
+    "@typescript-eslint/consistent-type-definitions": ["error", "type"],
+    "@typescript-eslint/prefer-union-types": "error"
   }
 }
 ```
 
 ### Code Reviews
 During code reviews, ensure:
+- All data structures use `type` instead of `interface`
+- Type composition uses intersection types (`&`) over interface extension
 - All exported functions use `const` arrow function syntax
 - Single-return functions omit unnecessary brackets
 - Complex object returns use parentheses instead of explicit return

@@ -30,13 +30,13 @@ const db = getFirestore(app);
 const functions = getFunctions(app);
 
 // Define types for your data
-interface UserProfile {
+type UserProfile = {
   name: string;
   email: string;
   createdAt: any;
 }
 
-interface Post {
+type Post = {
   title: string;
   content: string;
   userId: string;
@@ -44,12 +44,12 @@ interface Post {
   published: boolean;
 }
 
-interface UpdateProfileResponse {
+type UpdateProfileResponse = {
   success: boolean;
   message: string;
 }
 
-interface AnalyticsData {
+type AnalyticsData = {
   pageViews: number;
   postsCount: number;
   lastActive: any;

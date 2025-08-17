@@ -11,31 +11,31 @@ import {
 } from '@firebridge/native';
 
 // Define types for your data
-interface UserProfile {
+type UserProfile = {
   name: string;
   email: string;
   createdAt: any;
   lastLogin?: any;
 }
 
-interface Message {
+type Message = {
   content: string;
   senderId: string;
   timestamp: any;
   read: boolean;
 }
 
-interface UpdateProfileRequest {
+type UpdateProfileRequest = {
   name?: string;
   email?: string;
 }
 
-interface SendMessageRequest {
+type SendMessageRequest = {
   content: string;
   recipientId: string;
 }
 
-interface UpdateProfileResponse {
+type UpdateProfileResponse = {
   success: boolean;
   message: string;
 }
