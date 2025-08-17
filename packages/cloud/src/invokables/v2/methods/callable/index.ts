@@ -9,7 +9,7 @@ import {
   InvokableAction,
   BodyValidationSchema,
   AuthenticatedBody,
-} from '../../type'
+} from '../../types'
 import { UserPermissions } from '../../../../types'
 import { getUserPermissions, userHasPermission } from '../../../../permissions'
 

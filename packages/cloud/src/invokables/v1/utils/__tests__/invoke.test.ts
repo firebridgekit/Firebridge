@@ -1,6 +1,6 @@
 import { https } from 'firebase-functions'
 import invoke from '../invoke'
-import { AuthenticatedContext, InvokableActionV1 } from '../../type'
+import { AuthenticatedContext, InvokableActionV1 } from '../../types'
 
 describe('invoke', () => {
   const mockContext: AuthenticatedContext = {

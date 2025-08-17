@@ -1,6 +1,6 @@
 import { HttpsError } from 'firebase-functions/v2/https'
 
-import { AuthenticatedBody, InvokableAction } from '../type'
+import { AuthenticatedBody, InvokableAction } from '../types'
 
 /**
  * @function invoke

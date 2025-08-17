@@ -6,7 +6,7 @@ import {
   BodyValidationSchema,
   InvokableRuntimeModes,
   OnCallHandler,
-} from '../../type'
+} from '../../types'
 import { UserPermissions } from '../../../../types'
 import { getUserPermissions, userHasPermission } from '../../../../permissions'
 

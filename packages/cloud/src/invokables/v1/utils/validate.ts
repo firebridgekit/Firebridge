@@ -1,7 +1,7 @@
 import { https } from 'firebase-functions'
 import { z } from 'zod'
 
-import { BodyValidationSchema } from '../type'
+import { BodyValidationSchema } from '../types'
 
 /**
  * @function validate

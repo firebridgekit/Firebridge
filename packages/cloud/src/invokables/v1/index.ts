@@ -5,4 +5,4 @@ export type {
   InvokableRuntimeModes,
   OnCallHandler,
   OnRequestHandlerV1,
-} from './type'
+} from './types'

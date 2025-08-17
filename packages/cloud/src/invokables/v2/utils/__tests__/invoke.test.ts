@@ -1,6 +1,6 @@
 import { HttpsError } from 'firebase-functions/v2/https'
 import invoke from '../invoke'
-import { AuthenticatedBody, InvokableAction } from '../../type'
+import { AuthenticatedBody, InvokableAction } from '../../types'
 
 describe('invoke (v2)', () => {
   const mockBody: AuthenticatedBody<{ name: string }> = {

@@ -1,6 +1,6 @@
 import { https } from 'firebase-functions'
 
-import { AuthenticatedContext, InvokableActionV1 } from '../type'
+import { AuthenticatedContext, InvokableActionV1 } from '../types'
 
 /**
  * @function invoke
