@@ -1,5 +1,15 @@
 # @firebridge/cloud
 
+## 2.1.0
+
+### Minor Changes
+
+- [#16](https://github.com/firebridgekit/Firebridge/pull/16) [`a901a6a`](https://github.com/firebridgekit/Firebridge/commit/a901a6aad327b360788e96362edd1020d0abfffc) Thanks [@mitchellbutler](https://github.com/mitchellbutler)! - feat: dependency version cleanup
+
+### Patch Changes
+
+- [#18](https://github.com/firebridgekit/Firebridge/pull/18) [`67202ee`](https://github.com/firebridgekit/Firebridge/commit/67202ee8f048c851b161dbd6e3eb89e73c61d18d) Thanks [@mitchellbutler](https://github.com/mitchellbutler)! - feat: adds more utilities and types to cloud
+
 ## 2.0.0
 
 ### Major Changes
