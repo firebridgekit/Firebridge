@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
+import { getFirestore, Timestamp } from 'firebase-admin/firestore';
 import { 
   onStripeCheckout,
   onStripePaymentIntent,
@@ -75,7 +75,7 @@ export const createPaymentIntent = onStripePaymentIntent({
         price: item.price
       })),
       status: 'created',
-      createdAt: new Date()
+      timeCreated: Timestamp.now()
     });
   }
 });
@@ -155,7 +155,7 @@ const handleSuccessfulCheckout = async (session: any) => {
     // Update checkout status
     await checkoutDoc.ref.update({
       status: 'completed' as CheckoutStatus,
-      dateUpdated: new Date(),
+      timeUpdated: Timestamp.now(),
       stripeCustomerId: session.customer,
       customerEmail: session.customer_details?.email
     });
@@ -170,7 +170,7 @@ const handleSuccessfulCheckout = async (session: any) => {
       status: 'confirmed',
       customerEmail: session.customer_details?.email,
       shippingAddress: session.shipping_details?.address,
-      createdAt: new Date()
+      timeCreated: Timestamp.now()
     });
     
     // Update inventory
@@ -204,7 +204,7 @@ const handleExpiredCheckout = async (session: any) => {
       const checkoutDoc = checkoutsSnapshot.docs[0];
       await checkoutDoc.ref.update({
         status: 'expired' as CheckoutStatus,
-        dateUpdated: new Date()
+        timeUpdated: Timestamp.now()
       });
     }
     
@@ -221,7 +221,7 @@ const fulfillOrder = async (paymentIntentId: string) => {
     // Update payment intent record
     await db.collection('payment_intents').doc(paymentIntentId).update({
       status: 'succeeded',
-      updatedAt: new Date()
+      timeUpdated: Timestamp.now()
     });
     
     // Get payment intent details from Stripe
@@ -234,7 +234,7 @@ const fulfillOrder = async (paymentIntentId: string) => {
       amount: paymentIntent.amount / 100,
       currency: paymentIntent.currency,
       status: 'pending',
-      createdAt: new Date()
+      timeCreated: Timestamp.now()
     });
     
   } catch (error) {
@@ -246,7 +246,7 @@ const handlePaymentFailure = async (paymentIntentId: string) => {
   try {
     await db.collection('payment_intents').doc(paymentIntentId).update({
       status: 'failed',
-      updatedAt: new Date()
+      timeUpdated: Timestamp.now()
     });
     
     // Optional: Send payment failure notification

@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
+import { getFirestore, Timestamp } from 'firebase-admin/firestore';
 import { 
   callableV2,
   firestoreGet,
@@ -25,17 +25,16 @@ const db = getFirestore(app);
 type UserProfile = {
   name: string;
   email: string;
-  createdAt: any;
-  lastLogin?: any;
-}
+  timeLastLoggedIn?: Timestamp;
+};
 
 type Post = {
   title: string;
   content: string;
   authorId: string;
   published: boolean;
-  publishedAt?: any;
-}
+  timePublished?: Timestamp;
+};
 
 type UpdateProfileRequest = {
   name?: string;
@@ -61,14 +60,14 @@ const manageUserProfile = async (userId: string) => {
 
   // Update user profile
   await updateUserProfile(userId, {
-    lastLogin: new Date()
+    timeLastLoggedIn: Timestamp.now()
   });
 
-  // Set a new user profile
+  // Set a new user profile (timeCreated/timeUpdated handled by metadata)
   await setUserProfile(userId, {
     name: 'John Doe',
     email: 'john@example.com',
-    createdAt: new Date()
+    timeLastLoggedIn: Timestamp.now()
   });
 }
 
@@ -116,7 +115,7 @@ export const createPost = callableV2<CreatePostRequest, { postId: string }>({
       ...data,
       authorId: auth.uid,
       published: false,
-      publishedAt: null
+      timePublished: null
     };
     
     // Use Firestore action to create the post
@@ -142,7 +141,7 @@ export const publishMultiplePosts = callableV2<{ postIds: string[] }, { publishe
       ref: db.collection('posts').doc(postId),
       data: {
         published: true,
-        publishedAt: new Date()
+        timePublished: Timestamp.now()
       }
     }));
     

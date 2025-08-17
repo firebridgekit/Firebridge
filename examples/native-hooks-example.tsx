@@ -14,16 +14,15 @@ import {
 type UserProfile = {
   name: string;
   email: string;
-  createdAt: any;
-  lastLogin?: any;
-}
+  timeLastLoggedIn?: any;
+};
 
 type Message = {
   content: string;
   senderId: string;
-  timestamp: any;
+  timeCreated: any;
   read: boolean;
-}
+};
 
 type UpdateProfileRequest = {
   name?: string;
@@ -53,7 +52,7 @@ const UserProfile = () => {
   const messages = useCollection<Message>(
     (uid) => firestore()
       .collection(`users/${uid}/messages`)
-      .orderBy('timestamp', 'desc')
+      .orderBy('timeCreated', 'desc')
       .limit(20)
   );
 
@@ -63,7 +62,7 @@ const UserProfile = () => {
     {
       name: '',
       email: '',
-      createdAt: firestore.Timestamp.now()
+      timeLastLoggedIn: firestore.Timestamp.now()
     }
   );
 
@@ -115,7 +114,7 @@ const UserProfile = () => {
     setProfileState({
       ...profileState,
       name: 'Updated Local Name',
-      lastLogin: firestore.Timestamp.now()
+      timeLastLoggedIn: firestore.Timestamp.now()
     });
   };
 
@@ -156,7 +155,7 @@ const UserProfile = () => {
       </Text>
       
       <Text style={{ fontSize: 16, marginBottom: 16 }}>
-        Member since: {userProfile.createdAt?.toDate?.()?.toLocaleDateString()}
+        Last login: {userProfile.timeLastLoggedIn?.toDate?.()?.toLocaleDateString()}
       </Text>
 
       <TouchableOpacity
@@ -228,7 +227,7 @@ const UserProfile = () => {
             <Text style={{ fontWeight: 'bold' }}>From: {message.senderId}</Text>
             <Text style={{ marginTop: 4 }}>{message.content}</Text>
             <Text style={{ fontSize: 12, color: '#666', marginTop: 4 }}>
-              {message.timestamp?.toDate?.()?.toLocaleString()}
+              {message.timeCreated?.toDate?.()?.toLocaleString()}
             </Text>
             <Text style={{ fontSize: 12, color: message.read ? '#34C759' : '#FF3B30' }}>
               {message.read ? 'Read' : 'Unread'}
@@ -262,7 +261,7 @@ const ChatRoom = ({ roomId }: { roomId?: string }) => {
   const chatMessages = useCollection<Message>(
     (_uid, roomId) => firestore()
       .collection(`chatRooms/${roomId}/messages`)
-      .orderBy('timestamp', 'desc')
+      .orderBy('timeCreated', 'desc')
       .limit(50),
     [roomId] // This will prevent fetching if roomId is undefined
   );
@@ -314,7 +313,7 @@ const ChatRoom = ({ roomId }: { roomId?: string }) => {
               color: message.senderId === user?.uid ? '#E5E5EA' : '#666',
               marginTop: 4
             }}>
-              {message.timestamp?.toDate?.()?.toLocaleTimeString()}
+              {message.timeCreated?.toDate?.()?.toLocaleTimeString()}
             </Text>
           </View>
         ))

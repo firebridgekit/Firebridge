@@ -1,7 +1,7 @@
 import React from 'react';
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getFirestore, doc, collection, query, where, orderBy } from 'firebase/firestore';
+import { getFirestore, doc, collection, query, where, orderBy, Timestamp } from 'firebase/firestore';
 import { getFunctions } from 'firebase/functions';
 import {
   FirebridgeProvider,
@@ -33,16 +33,16 @@ const functions = getFunctions(app);
 type UserProfile = {
   name: string;
   email: string;
-  createdAt: any;
-}
+  timeLastLoggedIn?: Timestamp;
+};
 
 type Post = {
   title: string;
   content: string;
   userId: string;
-  publishedAt: any;
+  timePublished: Timestamp;
   published: boolean;
-}
+};
 
 type UpdateProfileResponse = {
   success: boolean;
@@ -52,8 +52,8 @@ type UpdateProfileResponse = {
 type AnalyticsData = {
   pageViews: number;
   postsCount: number;
-  lastActive: any;
-}
+  timeLastActive: Timestamp;
+};
 
 // Example component using Firebridge hooks
 const UserProfile = ({ userId }: { userId: string }) => {
@@ -75,7 +75,7 @@ const UserProfile = ({ userId }: { userId: string }) => {
       collection(db, 'posts'),
       where('userId', '==', uid),
       where('published', '==', true),
-      orderBy('publishedAt', 'desc')
+      orderBy('timePublished', 'desc')
     ),
     [], // No additional path parts needed
     {
@@ -122,7 +122,7 @@ const UserProfile = ({ userId }: { userId: string }) => {
     <div>
       <h1>Welcome, {userProfile.name}</h1>
       <p>Email: {userProfile.email}</p>
-      <p>Member since: {userProfile.createdAt?.toDate?.()?.toLocaleDateString()}</p>
+      <p>Last login: {userProfile.timeLastLoggedIn?.toDate()?.toLocaleDateString()}</p>
       
       <button onClick={handleUpdateProfile}>
         Update Profile
@@ -133,7 +133,7 @@ const UserProfile = ({ userId }: { userId: string }) => {
           <h3>Your Analytics</h3>
           <p>Page Views: {userAnalytics.pageViews}</p>
           <p>Posts Count: {userAnalytics.postsCount}</p>
-          <p>Last Active: {userAnalytics.lastActive?.toDate?.()?.toLocaleDateString()}</p>
+          <p>Last Active: {userAnalytics.timeLastActive?.toDate()?.toLocaleDateString()}</p>
         </div>
       )}
       
@@ -148,7 +148,7 @@ const UserProfile = ({ userId }: { userId: string }) => {
             <li key={post.id}>
               <h3>{post.title}</h3>
               <p>{post.content}</p>
-              <small>Published: {post.publishedAt?.toDate?.()?.toLocaleDateString()}</small>
+              <small>Published: {post.timePublished?.toDate()?.toLocaleDateString()}</small>
             </li>
           ))}
         </ul>
@@ -166,7 +166,7 @@ const TopicPosts = ({ topicId }: { topicId?: string }) => {
     (_uid, topicId) => query(
       collection(db, 'topics', topicId, 'posts'),
       where('published', '==', true),
-      orderBy('publishedAt', 'desc')
+      orderBy('timePublished', 'desc')
     ),
     [topicId], // This will prevent fetching if topicId is undefined
     {

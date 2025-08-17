@@ -148,6 +148,8 @@ All examples follow the Firebridge coding standards:
 
 - **Type Definitions**: Use `type` instead of `interface` for all data structures
 - **Type Composition**: Use intersection types (`&`) over interface extension
+- **Timestamps**: Always use Firebase `Timestamp` with `time` prefix naming (e.g., `timeCreated`, `timePublished`)
+- **Metadata Pattern**: Use `WithEditorialMetadata` for standard `timeCreated`/`timeUpdated` fields
 - **Function Declarations**: Use `const` arrow function exports instead of `function` declarations
 - **Single Returns**: Omit curly braces and return keyword for functions with only a return statement
 - **Object Returns**: Use parentheses for multi-line object returns instead of explicit return statements
@@ -162,13 +164,18 @@ export type UserProfile = {
   id: string;
   name: string;
   email: string;
+  timeLastLoggedIn?: Timestamp;
 };
 
-// ✅ Correct intersection type
-export type UserWithMetadata = User & {
-  createdAt: Date;
-  updatedAt: Date;
-};
+// ✅ Correct intersection type with metadata
+export type UserWithMetadata = User & WithEditorialMetadata<{
+  timeLastLoggedIn?: Timestamp;
+}>;
+
+// ✅ Correct timestamp usage
+await updateUser(userId, {
+  timeLastLoggedIn: Timestamp.now()
+});
 
 // ✅ Correct function declaration
 export const getUserData = async (userId: string) => {

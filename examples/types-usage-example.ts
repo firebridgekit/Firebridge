@@ -362,7 +362,7 @@ type CompleteUser = WithId<WithEditorialMetadata<User & {
     notifications: boolean;
     language: string;
   };
-  lastLogin: PossiblyMissing<FirestoreTimestamp>;
+  timeLastLoggedIn: PossiblyMissing<FirestoreTimestamp>;
 }>>;
 
 const processCompleteUser = (user: CompleteUser) => {
@@ -372,8 +372,8 @@ const processCompleteUser = (user: CompleteUser) => {
   console.log(`Is admin: ${user.permissions.isAdmin}`);
   console.log(`Theme preference: ${user.preferences.theme}`);
   
-  if (user.lastLogin) {
-    console.log(`Last login: ${processTimestamp(user.lastLogin)}`);
+  if (user.timeLastLoggedIn) {
+    console.log(`Last login: ${processTimestamp(user.timeLastLoggedIn)}`);
   } else {
     console.log('Never logged in');
   }
@@ -391,7 +391,7 @@ const completeUser: CompleteUser = {
     notifications: true,
     language: 'en'
   },
-  lastLogin: firestoreTimestamp,
+  timeLastLoggedIn: firestoreTimestamp,
   metadata: {
     timeCreated: firestoreTimestamp,
     timeUpdated: {
