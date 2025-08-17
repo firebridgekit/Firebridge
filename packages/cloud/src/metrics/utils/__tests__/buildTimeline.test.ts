@@ -1,7 +1,7 @@
 import { Timestamp } from 'firebase-admin/firestore'
 import { buildTimeline } from '../buildTimeline'
 import { getEventsInRange } from '../getEventsInRange'
-import { TrackableEvent } from '../../typess'
+import { TrackableEvent } from '../../types'
 
 // Mock getEventsInRange
 jest.mock('../getEventsInRange')

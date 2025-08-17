@@ -1,4 +1,4 @@
-import { TrackableEvent } from '../typess'
+import { TrackableEvent } from '../types'
 
 export const getEventsInRange = (
   events: TrackableEvent[],

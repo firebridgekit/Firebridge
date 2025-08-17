@@ -26,5 +26,4 @@ export const userHasPermission = async (
 
 // Export all actions and types from the current module.
 export * from './actions'
-export * from './types'
 export * from './keys'

@@ -13,7 +13,7 @@ import {
   MetricEntitySummary,
   MetricTimelineSectionUpdates,
   MetricEntitySummaryUpdates,
-} from '../typess'
+} from '../types'
 
 // Generate a Firestore Timestamp from a Luxon DateTime.
 const timestampFromDateTime = (dt: DateTime) =>

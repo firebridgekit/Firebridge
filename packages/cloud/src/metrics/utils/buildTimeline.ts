@@ -1,7 +1,7 @@
 import { Timestamp } from 'firebase-admin/firestore'
 import { DateTime, DateTimeUnit } from 'luxon'
 
-import { MetricTimelineSection, TrackableEvent } from '../typess'
+import { MetricTimelineSection, TrackableEvent } from '../types'
 import { sumBy } from '../../utils'
 import { getEventsInRange } from './getEventsInRange'
 

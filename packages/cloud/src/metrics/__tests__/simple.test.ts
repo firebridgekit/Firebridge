@@ -1,6 +1,6 @@
 import { Timestamp } from 'firebase-admin/firestore'
 import { buildTimeline } from '../utils/buildTimeline'
-import { TrackableEvent } from '../typess'
+import { TrackableEvent } from '../types'
 
 // Helper functions
 const createMockEvent = (

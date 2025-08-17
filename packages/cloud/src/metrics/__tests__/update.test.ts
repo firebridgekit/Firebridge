@@ -2,7 +2,7 @@ import { Timestamp } from 'firebase-admin/firestore'
 import { updateMetric } from '../update'
 import { firebridgeMetric, buildTimeline } from '../utils'
 import { executeFirestoreBatch } from '../../execution'
-import { TrackableEvent } from '../typess'
+import { TrackableEvent } from '../types'
 
 // Mock dependencies
 jest.mock('../utils/metric')
