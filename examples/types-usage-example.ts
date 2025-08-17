@@ -336,7 +336,8 @@ const updatedArticle = updateArticle(articleWithMetadata, {
 });
 console.log('Updated article:', updatedArticle);
 
-// Example 7: Using metadata with Date objects instead of Firestore timestamps
+// Example 7: Using metadata with custom timestamp type (for non-Firestore contexts)
+// Note: For Firestore storage, always use Timestamp from firebase-admin/firestore
 type ArticleWithDateMetadata = WithEditorialMetadata<Article, Date>;
 
 const createArticleWithDates = (article: Article): ArticleWithDateMetadata => {
@@ -352,7 +353,7 @@ const createArticleWithDates = (article: Article): ArticleWithDateMetadata => {
 }
 
 const articleWithDates = createArticleWithDates(newArticle);
-console.log('Article with Date metadata:', articleWithDates);
+console.log('Article with Date metadata (for non-Firestore use):', articleWithDates);
 
 // Example 8: Complex type composition
 type CompleteUser = WithId<WithEditorialMetadata<User & {

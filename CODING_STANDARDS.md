@@ -14,7 +14,7 @@ export type UserProfile = {
   id: string;
   name: string;
   email: string;
-  createdAt: Date;
+  timeLastLoggedIn: Timestamp;
 };
 
 export type ApiResponse<T> = {
@@ -23,12 +23,12 @@ export type ApiResponse<T> = {
   message: string;
 };
 
-// ❌ Avoid - interface
+// ❌ Avoid - interface (also shows incorrect Date usage)
 export interface UserProfile {
   id: string;
   name: string;
   email: string;
-  createdAt: Date;
+  createdAt: Date; // Should use Timestamp and proper naming
 }
 ```
 
@@ -38,20 +38,17 @@ Use intersection types (`&`) for combining types:
 
 ```typescript
 // ✅ Correct - intersection types
-export type UserWithMetadata = User & {
-  createdAt: Date;
-  updatedAt: Date;
-};
+export type UserWithMetadata = User & WithEditorialMetadata;
 
 export type Product = Sellable & {
   category: string;
   stockQuantity: number;
 };
 
-// ❌ Avoid - interface extension
+// ❌ Avoid - interface extension (also shows incorrect Date usage)
 export interface UserWithMetadata extends User {
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: Date; // Should use metadata pattern instead
+  updatedAt: Date; // Should use metadata pattern instead
 }
 ```
 
@@ -228,8 +225,7 @@ export const createUser = (data: UserInput) => ({
   id: generateId(),
   name: data.name,
   email: data.email,
-  createdAt: new Date(),
-  updatedAt: new Date()
+  timeLastLoggedIn: Timestamp.now()
 });
 
 // ❌ Avoid - explicit return statement
@@ -238,8 +234,7 @@ export const createUser = (data: UserInput) => {
     id: generateId(),
     name: data.name,
     email: data.email,
-    createdAt: new Date(),
-    updatedAt: new Date()
+    timeLastLoggedIn: new Date() // Should use Timestamp.now()
   };
 };
 ```
