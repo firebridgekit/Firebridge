@@ -1,7 +1,7 @@
 import { getFirestore } from 'firebase-admin/firestore'
 
 import { chunk } from '../../utils/chunk'
-import { FirestoreOperation } from '../type'
+import { FirestoreOperation } from '../types'
 
 /**
  * @function executeFirestoreBatch

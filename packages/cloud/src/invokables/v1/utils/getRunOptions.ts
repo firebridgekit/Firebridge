@@ -1,7 +1,7 @@
 import { RuntimeOptions } from 'firebase-functions'
 import { defineString } from 'firebase-functions/params'
 
-import { InvokableRuntimeModes } from '../type'
+import { InvokableRuntimeModes } from '../types'
 
 const invokableMode = defineString('INVOKABLE_MODE')
 

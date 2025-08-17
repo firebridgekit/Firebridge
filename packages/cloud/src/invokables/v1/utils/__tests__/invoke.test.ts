@@ -1,6 +1,6 @@
 import { https } from 'firebase-functions'
 import invoke from '../invoke'
-import { AuthenticatedContext, InvokableActionV1 } from '../../type'
+import { AuthenticatedContext, InvokableActionV1 } from '../../types'
 
 describe('invoke', () => {
   const mockContext: AuthenticatedContext = {
@@ -9,58 +9,65 @@ describe('invoke', () => {
   }
 
   it('should successfully invoke an action and return the response', async () => {
-    const mockAction: InvokableActionV1<{ name: string }, { success: boolean }> = jest.fn(
-      async (body, context) => ({ success: true })
-    )
-    
+    const mockAction: InvokableActionV1<
+      { name: string },
+      { success: boolean }
+    > = jest.fn(async (body, context) => ({ success: true }))
+
     const result = await invoke(mockAction, { name: 'test' }, mockContext)
-    
+
     expect(mockAction).toHaveBeenCalledWith({ name: 'test' }, mockContext)
     expect(result).toEqual({ success: true })
   })
 
   it('should handle synchronous actions', async () => {
-    const mockAction: InvokableActionV1<number, number> = jest.fn((body) => body * 2)
-    
+    const mockAction: InvokableActionV1<number, number> = jest.fn(
+      body => body * 2,
+    )
+
     const result = await invoke(mockAction, 5, mockContext)
-    
+
     expect(mockAction).toHaveBeenCalledWith(5, mockContext)
     expect(result).toBe(10)
   })
 
   it('should handle void return types', async () => {
     const mockAction: InvokableActionV1<string, void> = jest.fn()
-    
+
     const result = await invoke(mockAction, 'test', mockContext)
-    
+
     expect(mockAction).toHaveBeenCalledWith('test', mockContext)
     expect(result).toBeUndefined()
   })
 
   it('should throw HttpsError when action throws an error with message', async () => {
     const errorMessage = 'Action failed'
-    const mockAction: InvokableActionV1<any, any> = jest.fn().mockRejectedValue(
-      new Error(errorMessage)
-    )
-    
+    const mockAction: InvokableActionV1<any, any> = jest
+      .fn()
+      .mockRejectedValue(new Error(errorMessage))
+
     await expect(invoke(mockAction, {}, mockContext)).rejects.toThrow(
-      new https.HttpsError('unknown', errorMessage)
+      new https.HttpsError('unknown', errorMessage),
     )
   })
 
   it('should throw HttpsError with empty message when error has no message', async () => {
-    const mockAction: InvokableActionV1<any, any> = jest.fn().mockRejectedValue({})
-    
+    const mockAction: InvokableActionV1<any, any> = jest
+      .fn()
+      .mockRejectedValue({})
+
     await expect(invoke(mockAction, {}, mockContext)).rejects.toThrow(
-      new https.HttpsError('unknown', '')
+      new https.HttpsError('unknown', ''),
     )
   })
 
   it('should throw HttpsError when action throws null', async () => {
-    const mockAction: InvokableActionV1<any, any> = jest.fn().mockRejectedValue(null)
-    
+    const mockAction: InvokableActionV1<any, any> = jest
+      .fn()
+      .mockRejectedValue(null)
+
     await expect(invoke(mockAction, {}, mockContext)).rejects.toThrow(
-      new https.HttpsError('unknown', '')
+      new https.HttpsError('unknown', ''),
     )
   })
 
@@ -76,13 +83,13 @@ describe('invoke', () => {
       auth: { uid: 'complex-user' },
       claims: { permissions: ['read', 'write'], level: 5 },
     }
-    
+
     const mockAction: InvokableActionV1<typeof complexBody, string> = jest.fn(
-      () => 'processed'
+      () => 'processed',
     )
-    
+
     const result = await invoke(mockAction, complexBody, complexContext)
-    
+
     expect(mockAction).toHaveBeenCalledWith(complexBody, complexContext)
     expect(result).toBe('processed')
   })

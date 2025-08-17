@@ -1,6 +1,6 @@
 import { Timestamp } from 'firebase-admin/firestore'
 
-import { SerializedFirestoreTimestamp } from '../../type'
+import { SerializedFirestoreTimestamp } from '../../types'
 
 /**
  * @function hydrateTimestamp

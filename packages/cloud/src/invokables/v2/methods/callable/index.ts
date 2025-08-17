@@ -9,12 +9,9 @@ import {
   InvokableAction,
   BodyValidationSchema,
   AuthenticatedBody,
-} from '../../type'
-import {
-  UserPermissions,
-  getUserPermissions,
-  userHasPermission,
-} from '../../../../permissions'
+} from '../../types'
+import { UserPermissions } from '../../../../types'
+import { getUserPermissions, userHasPermission } from '../../../../permissions'
 
 import invoke from '../../utils/invoke'
 import validate from '../../utils/validate'

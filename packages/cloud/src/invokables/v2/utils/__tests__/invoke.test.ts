@@ -1,6 +1,6 @@
 import { HttpsError } from 'firebase-functions/v2/https'
 import invoke from '../invoke'
-import { AuthenticatedBody, InvokableAction } from '../../type'
+import { AuthenticatedBody, InvokableAction } from '../../types'
 
 describe('invoke (v2)', () => {
   const mockBody: AuthenticatedBody<{ name: string }> = {
@@ -10,12 +10,11 @@ describe('invoke (v2)', () => {
   }
 
   it('should successfully invoke an action and return the response', async () => {
-    const mockAction: InvokableAction<{ name: string }, { success: boolean }> = jest.fn(
-      async (body) => ({ success: true })
-    )
-    
+    const mockAction: InvokableAction<{ name: string }, { success: boolean }> =
+      jest.fn(async body => ({ success: true }))
+
     const result = await invoke(mockAction, mockBody)
-    
+
     expect(mockAction).toHaveBeenCalledWith(mockBody)
     expect(result).toEqual({ success: true })
   })
@@ -25,10 +24,12 @@ describe('invoke (v2)', () => {
       data: 5,
       auth: { uid: 'test-user' },
     }
-    const mockAction: InvokableAction<number, number> = jest.fn((body) => body.data * 2)
-    
+    const mockAction: InvokableAction<number, number> = jest.fn(
+      body => body.data * 2,
+    )
+
     const result = await invoke(mockAction, numberBody)
-    
+
     expect(mockAction).toHaveBeenCalledWith(numberBody)
     expect(result).toBe(10)
   })
@@ -39,37 +40,41 @@ describe('invoke (v2)', () => {
       data: 'test',
       auth: { uid: 'test-user' },
     }
-    
+
     const result = await invoke(mockAction, stringBody)
-    
+
     expect(mockAction).toHaveBeenCalledWith(stringBody)
     expect(result).toBeUndefined()
   })
 
   it('should throw HttpsError when action throws an error with message', async () => {
     const errorMessage = 'Action failed'
-    const mockAction: InvokableAction<any, any> = jest.fn().mockRejectedValue(
-      new Error(errorMessage)
-    )
-    
+    const mockAction: InvokableAction<any, any> = jest
+      .fn()
+      .mockRejectedValue(new Error(errorMessage))
+
     await expect(invoke(mockAction, mockBody)).rejects.toThrow(
-      new HttpsError('unknown', errorMessage)
+      new HttpsError('unknown', errorMessage),
     )
   })
 
   it('should throw HttpsError with empty message when error has no message', async () => {
-    const mockAction: InvokableAction<any, any> = jest.fn().mockRejectedValue({})
-    
+    const mockAction: InvokableAction<any, any> = jest
+      .fn()
+      .mockRejectedValue({})
+
     await expect(invoke(mockAction, mockBody)).rejects.toThrow(
-      new HttpsError('unknown', '')
+      new HttpsError('unknown', ''),
     )
   })
 
   it('should throw HttpsError when action throws null', async () => {
-    const mockAction: InvokableAction<any, any> = jest.fn().mockRejectedValue(null)
-    
+    const mockAction: InvokableAction<any, any> = jest
+      .fn()
+      .mockRejectedValue(null)
+
     await expect(invoke(mockAction, mockBody)).rejects.toThrow(
-      new HttpsError('unknown', '')
+      new HttpsError('unknown', ''),
     )
   })
 
@@ -88,13 +93,12 @@ describe('invoke (v2)', () => {
       auth: { uid: 'complex-user' },
       claims: { permissions: ['read', 'write'], level: 5 },
     }
-    
-    const mockAction: InvokableAction<typeof complexBody.data, string> = jest.fn(
-      () => 'processed'
-    )
-    
+
+    const mockAction: InvokableAction<typeof complexBody.data, string> =
+      jest.fn(() => 'processed')
+
     const result = await invoke(mockAction, complexBody)
-    
+
     expect(mockAction).toHaveBeenCalledWith(complexBody)
     expect(result).toBe('processed')
   })
@@ -104,13 +108,13 @@ describe('invoke (v2)', () => {
       data: 'test',
       auth: { uid: 'simple-user' },
     }
-    
+
     const mockAction: InvokableAction<string, string> = jest.fn(
-      (body) => `User ${body.auth.uid} processed`
+      body => `User ${body.auth.uid} processed`,
     )
-    
+
     const result = await invoke(mockAction, bodyWithoutClaims)
-    
+
     expect(result).toBe('User simple-user processed')
   })
 })

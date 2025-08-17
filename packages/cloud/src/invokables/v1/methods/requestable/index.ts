@@ -6,7 +6,7 @@ import {
   InvokableActionV1,
   InvokableRuntimeModes,
   OnRequestHandlerV1,
-} from '../../type'
+} from '../../types'
 import { getKey } from '../../../../permissions'
 
 import validate from '../../utils/validate'

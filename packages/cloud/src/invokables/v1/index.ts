@@ -1,8 +1,8 @@
 export * from './methods'
-export type { 
-  AuthenticatedContext, 
-  InvokableActionV1, 
-  InvokableRuntimeModes, 
-  OnCallHandler, 
-  OnRequestHandlerV1 
-} from './type'
+export type {
+  AuthenticatedContext,
+  InvokableActionV1,
+  InvokableRuntimeModes,
+  OnCallHandler,
+  OnRequestHandlerV1,
+} from './types'

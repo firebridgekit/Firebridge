@@ -8,8 +8,12 @@ jest.mock('../../actions', () => ({
   firestoreMerge: jest.fn(() => mockMergeFunction),
 }))
 
-import { getUserPermissions, setUserPermissions, mergeUserPermissions } from '../actions'
-import { UserPermissions } from '../type'
+import {
+  getUserPermissions,
+  setUserPermissions,
+  mergeUserPermissions,
+} from '../actions'
+import { UserPermissions } from '../types'
 
 describe('permissions/actions', () => {
   beforeEach(() => {
@@ -30,7 +34,7 @@ describe('permissions/actions', () => {
       mockGetFunction.mockResolvedValue(mockPermissions)
 
       const result = await getUserPermissions('user-123')
-      
+
       expect(mockGetFunction).toHaveBeenCalledWith('user-123')
       expect(result).toEqual(mockPermissions)
     })
@@ -49,7 +53,7 @@ describe('permissions/actions', () => {
       mockSetFunction.mockResolvedValue({ id: 'user-456' })
 
       const result = await setUserPermissions('user-456', newPermissions)
-      
+
       expect(mockSetFunction).toHaveBeenCalledWith('user-456', newPermissions)
       expect(result).toEqual({ id: 'user-456' })
     })
@@ -67,8 +71,11 @@ describe('permissions/actions', () => {
       mockMergeFunction.mockResolvedValue({ id: 'user-789' })
 
       const result = await mergeUserPermissions('user-789', updatedPermissions)
-      
-      expect(mockMergeFunction).toHaveBeenCalledWith('user-789', updatedPermissions)
+
+      expect(mockMergeFunction).toHaveBeenCalledWith(
+        'user-789',
+        updatedPermissions,
+      )
       expect(result).toEqual({ id: 'user-789' })
     })
   })

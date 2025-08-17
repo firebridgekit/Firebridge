@@ -6,7 +6,7 @@ import {
 } from 'firebase-functions/v2/https'
 import { Response } from 'express'
 
-import { BodyValidationSchema, InvokableAction } from '../../type'
+import { BodyValidationSchema, InvokableAction } from '../../types'
 import { getKey } from '../../../../permissions'
 
 import validate from '../../utils/validate'

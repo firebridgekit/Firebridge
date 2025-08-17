@@ -1,5 +1,5 @@
 import { firestoreGet, firestoreSet, firestoreMerge } from '../actions'
-import { UserPermissions } from './type'
+import { UserPermissions } from '../types'
 
 /**
  * @function getUserPermissions
