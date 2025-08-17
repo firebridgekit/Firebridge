@@ -1,6 +1,10 @@
-// Function to chunk an array into smaller arrays of a given size
+/**
+ * Chunks an array into smaller arrays of a given size.
+ * @param array - The array to chunk.
+ * @param size - The size of the chunks.
+ * @returns The array of chunks.
+ */
 export const chunk = <Item>(array: Item[], size: number) => {
-  // Initialize an empty array to hold the chunks
   const chunks = []
 
   // Loop over the array, incrementing by the chunk size each time
