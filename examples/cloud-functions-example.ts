@@ -37,11 +37,6 @@ type Post = {
   timePublished?: Timestamp;
 };
 
-type UpdateProfileRequest = {
-  name?: string;
-  email?: string;
-}
-
 type CreatePostRequest = {
   title: string;
   content: string;
@@ -72,28 +67,54 @@ const manageUserProfile = async (userId: string) => {
   });
 }
 
-// Example 2: Using Callable Functions with validation and permissions
-const updateProfileSchema = z.object({
-  name: z.string().optional(),
-  email: z.string().email().optional()
+// Example 2: Checkout function demonstrating metric count and value
+const checkoutSchema = z.object({
+  items: z.array(z.object({
+    productId: z.string(),
+    quantity: z.number().positive(),
+    price: z.number().positive()
+  }))
 });
 
-export const updateProfile = callableV2<UpdateProfileRequest, { success: boolean }>({
-  validation: updateProfileSchema,
-  scope: 'profile:update', // Required permission
+type CheckoutRequest = z.infer<typeof checkoutSchema>;
+
+export const processCheckout = callableV2<CheckoutRequest, { 
+  orderId: string;
+  totalItems: number;
+  totalAmount: number;
+}>({
+  validation: checkoutSchema,
+  scope: 'orders:create',
   action: async ({ data, auth }) => {
     const userId = auth.uid;
+    const orderId = db.collection('orders').doc().id;
     
-    // Update the user profile
-    await updateUserProfile(userId, data);
+    // Calculate totals
+    const totalItems = data.items.reduce((sum, item) => sum + item.quantity, 0);
+    const totalAmount = data.items.reduce((sum, item) => sum + (item.quantity * item.price), 0);
     
-    // Track the metric
-    await incrementMetric('user', 'profile_update', userId, {
-      count: 1,
-      value: 1
+    // Create the order
+    await firestoreSet<any>('orders')(orderId, {
+      userId,
+      items: data.items,
+      totalItems,
+      totalAmount,
+      timeOrdered: Timestamp.now(),
+      status: 'pending'
     });
     
-    return { success: true };
+    // Track the checkout metric with meaningful count and value
+    // count = number of items purchased, value = total dollar amount
+    await incrementMetric('user', 'checkout', userId, {
+      count: totalItems,
+      value: totalAmount
+    });
+    
+    return { 
+      orderId,
+      totalItems,
+      totalAmount
+    };
   }
 });
 
