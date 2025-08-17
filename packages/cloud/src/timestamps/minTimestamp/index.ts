@@ -1,6 +1,6 @@
 import { Timestamp } from 'firebase-admin/firestore'
 
-import { PossiblyMissing } from '../../type'
+import { PossiblyMissing } from '../../types'
 import { sortTimestamps } from '../sortTimestamps'
 
 /**

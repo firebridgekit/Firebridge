@@ -1,4 +1,4 @@
-import { SerializedFirestoreTimestamp } from '../../type'
+import { SerializedFirestoreTimestamp } from '../../types'
 
 /**
  * @function timestampToDate

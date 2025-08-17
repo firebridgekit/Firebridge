@@ -1,0 +1,22 @@
+{
+  "name": "@repo/types",
+  "version": "0.0.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "check-types": "yarn tsc --noEmit",
+    "lint": "TIMING=1 eslint \"**/*.ts*\"",
+    "build": "tsup ./src/index.ts --format cjs --minify --dts --clean",
+    "dev": "tsup ./src/index.ts --format cjs --dts --watch"
+  },
+  "devDependencies": {
+    "@configs/eslint-config-custom": "workspace:*",
+    "@configs/tsconfig": "workspace:*",
+    "eslint": "^9.4.0",
+    "tsup": "^8.1.0",
+    "typescript": "^5.4.5"
+  }
+}

@@ -13,7 +13,7 @@ import {
   MetricEntitySummary,
   MetricTimelineSectionUpdates,
   MetricEntitySummaryUpdates,
-} from '../types'
+} from '../typess'
 
 // Generate a Firestore Timestamp from a Luxon DateTime.
 const timestampFromDateTime = (dt: DateTime) =>
@@ -85,7 +85,10 @@ export const firebridgeMetric = (noun: string, verb: string) => {
 
           const makeCursorId = (time: Timestamp) => {
             const date = time.toDate()
-            const id = DateTime.fromJSDate(date).setZone(timezone).startOf(unit).toJSON()
+            const id = DateTime.fromJSDate(date)
+              .setZone(timezone)
+              .startOf(unit)
+              .toJSON()
             if (!id) throw new Error('Invalid cursor ID')
             return id
           }
@@ -110,8 +113,12 @@ export const firebridgeMetric = (noun: string, verb: string) => {
                 }: { count?: number; value?: number } = {},
               ) => {
                 const date = time.toDate()
-                const start = DateTime.fromJSDate(date).setZone(timezone).startOf(unit)
-                const end = DateTime.fromJSDate(date).setZone(timezone).endOf(unit)
+                const start = DateTime.fromJSDate(date)
+                  .setZone(timezone)
+                  .startOf(unit)
+                const end = DateTime.fromJSDate(date)
+                  .setZone(timezone)
+                  .endOf(unit)
 
                 await entityUtils.increment({ count, value })
 

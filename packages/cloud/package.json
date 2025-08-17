@@ -29,6 +29,7 @@
     "zod": "^3.22.0"
   },
   "devDependencies": {
+    "@repo/typess": "workspace:*",
     "@configs/eslint-config-custom": "workspace:*",
     "@configs/tsconfig": "workspace:*",
     "@types/express": "^5.0.3",

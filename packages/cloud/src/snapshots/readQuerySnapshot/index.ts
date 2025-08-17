@@ -1,6 +1,6 @@
 import { QuerySnapshot } from 'firebase-admin/firestore'
 
-import { WithId } from '../../type'
+import { WithId } from '../../types'
 import { readSnapshot } from '../readSnapshot'
 
 /**
