@@ -10,6 +10,7 @@ import {
   executeFirestoreParallel,
   incrementMetric,
   updateMetric,
+  metric,
   hydrateTimestamp,
   timestampToDate,
   readSnapshot,
@@ -163,26 +164,42 @@ export const publishMultiplePosts = callableV2<{ postIds: string[] }, { publishe
   }
 });
 
-// Example 5: Working with metrics
+// Example 5: Reading user analytics metrics from entity summaries
 export const getUserAnalytics = callableV2<{ userId: string }, {
   postsCreated: number;
   postsPublished: number;
   profileUpdates: number;
+  lastActivity: string | null;
 }>({
   scope: 'analytics:read',
   action: async ({ data }) => {
-    // Update aggregated metrics
-    await updateMetric('user', 'activity', data.userId, {
-      hourly: { count: 1, value: 1 },
-      daily: { count: 1, value: 1 }
-    });
+    // Read metric entity summaries for the user
+    // Each metric tracks a different user action
+    const [postsCreatedSummary, postsPublishedSummary, profileUpdatesSummary] = await Promise.all([
+      metric('user', 'posts_created').entity(data.userId).get(),
+      metric('user', 'posts_published').entity(data.userId).get(),
+      metric('user', 'profile_updates').entity(data.userId).get()
+    ]);
     
-    // Here you would typically query your metrics collections
-    // This is a simplified example
+    // Extract totals from the summaries (null if metric doesn't exist for user)
+    const postsCreated = postsCreatedSummary?.count || 0;
+    const postsPublished = postsPublishedSummary?.count || 0;
+    const profileUpdates = profileUpdatesSummary?.count || 0;
+    
+    // Find the most recent activity
+    const lastActivityTimestamp = [
+      postsCreatedSummary?.lastUpdated,
+      postsPublishedSummary?.lastUpdated,
+      profileUpdatesSummary?.lastUpdated
+    ]
+      .filter(Boolean)
+      .sort((a, b) => b.seconds - a.seconds)[0];
+    
     return {
-      postsCreated: 10,
-      postsPublished: 8,
-      profileUpdates: 3
+      postsCreated,
+      postsPublished,
+      profileUpdates,
+      lastActivity: lastActivityTimestamp ? lastActivityTimestamp.toDate().toISOString() : null
     };
   }
 });
