@@ -216,8 +216,8 @@ const TopicPosts = ({ topicId }: { topicId?: string }) => {
 const App = () => {
   return (
     <FirebridgeProvider
+      allowAnonymousSignIn
       auth={auth}
-      allowAnonymousSignIn={true}
       log={{
         error: console.error,
         warn: console.warn,
