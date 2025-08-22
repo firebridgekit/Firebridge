@@ -1,6 +1,7 @@
 export * from './add'
 export * from './delete'
 export * from './get'
+export * from './getDocs'
 export * from './merge'
 export * from './set'
 export * from './update'

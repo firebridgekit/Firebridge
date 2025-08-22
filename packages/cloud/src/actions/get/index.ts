@@ -1,6 +1,5 @@
 import { getFirestore } from 'firebase-admin/firestore'
 
-import { WithId } from '../../types'
 import { readSnapshot } from '../../snapshots'
 
 /**
@@ -30,5 +29,5 @@ export const firestoreGet =
       .doc(id)
       .get()
 
-    return doc.exists ? readSnapshot<WithId<Data>>(doc) : undefined
+    return doc.exists ? readSnapshot<Data>(doc) : undefined
   }

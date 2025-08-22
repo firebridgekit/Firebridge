@@ -1,0 +1,13 @@
+{
+  "rules": {
+    "prefer-arrow-callback": "error",
+    "func-style": ["error", "expression", { "allowArrowFunctions": true }],
+    "arrow-body-style": ["error", "as-needed", { "requireReturnForObjectLiteral": false }],
+    "prefer-const": "error",
+    "arrow-spacing": ["error", { "before": true, "after": true }],
+    "arrow-parens": ["error", "as-needed"],
+    "no-confusing-arrow": ["error", { "allowParens": true }],
+    "@typescript-eslint/consistent-type-definitions": ["error", "type"],
+    "@typescript-eslint/prefer-union-types": "error"
+  }
+}
