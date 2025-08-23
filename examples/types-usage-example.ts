@@ -1,6 +1,5 @@
-// Note: @repo/types is an internal workspace package and not published to npm
-// In your own project, you would typically define these types yourself
-// or they may be exported from other @firebridge packages
+// Note: @firebridge/types provides shared type definitions used across Firebridge packages
+// You can import these types directly from @firebridge/types in your project
 
 // These types are commonly used across Firebridge packages
 // You can copy these type definitions into your own project

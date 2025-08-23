@@ -1,16 +1,22 @@
 {
-  "name": "@repo/types",
-  "version": "0.0.0",
+  "name": "@firebridge/types",
+  "version": "0.1.0",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "module": "./dist/index.mjs",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "files": [
     "dist"
   ],
   "scripts": {
     "check-types": "yarn tsc --noEmit",
     "lint": "TIMING=1 eslint \"**/*.ts*\"",
-    "build": "tsup ./src/index.ts --format cjs --minify --dts --clean",
-    "dev": "tsup ./src/index.ts --format cjs --dts --watch"
+    "build": "tsup ./src/index.ts --format esm,cjs --minify --dts --clean",
+    "dev": "tsup ./src/index.ts --format esm,cjs --dts --watch"
   },
   "devDependencies": {
     "@configs/eslint-config-custom": "workspace:*",

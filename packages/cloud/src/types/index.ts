@@ -6,7 +6,7 @@ import {
   PossiblyMissing,
   SerializedFirestoreTimestamp,
   UserPermissions,
-} from '@repo/types'
+} from '@firebridge/types'
 import { Timestamp } from 'firebase-admin/firestore'
 
 export type EditorialMetadata = PlatformEditorialMetadata<Timestamp>

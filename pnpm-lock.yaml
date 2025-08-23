@@ -88,7 +88,7 @@ importers:
       '@configs/tsconfig':
         specifier: workspace:*
         version: link:../../configs/tsconfig
-      '@repo/types':
+      '@firebridge/types':
         specifier: workspace:*
         version: link:../types
       '@types/express':
