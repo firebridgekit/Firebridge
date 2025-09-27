@@ -1,5 +1,11 @@
 # @firebridge/cloud
 
+## 2.1.2
+
+### Patch Changes
+
+- [#21](https://github.com/firebridgekit/Firebridge/pull/21) [`1ef9c04`](https://github.com/firebridgekit/Firebridge/commit/1ef9c04f1dc75bc8e92a763c9d2447896c56f699) Thanks [@mitchellbutler](https://github.com/mitchellbutler)! - feat: specify custom app in operations
+
 ## 2.1.1
 
 ### Patch Changes
