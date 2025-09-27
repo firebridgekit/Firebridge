@@ -1,12 +1,15 @@
+import { App } from 'firebase-admin/app'
 import { getFirestore, Timestamp } from 'firebase-admin/firestore'
 
 /**
  * Options for creating a Firestore document.
  * @typedef {Object} FirestoreCreateOptions
  * @property {boolean} [addMetadata=false] - If true, automatically adds metadata to the document.
+ * @property {App} [app] - The Firebase app to use for the Firestore instance.
  */
 type FirestoreCreateOptions = {
   addMetadata?: boolean
+  app?: App
 }
 
 /**
@@ -21,7 +24,7 @@ type FirestoreCreateOptions = {
 export const firestoreAdd =
   <Data, Args = Record<string, any>>(
     collectionPath: string | ((args: Args & { data: Data }) => string),
-    { addMetadata }: FirestoreCreateOptions = {},
+    { addMetadata, app }: FirestoreCreateOptions = {},
   ) =>
   /**
    * @param {Data} item - The document data.
@@ -37,7 +40,11 @@ export const firestoreAdd =
       }),
     }
 
-    const ref = await getFirestore()
+    // Get the Firestore instance for the given app, or the default instance
+    // if no app is provided.
+    const firestore = app ? getFirestore(app) : getFirestore()
+
+    const ref = await firestore
       .collection(
         typeof collectionPath === 'string'
           ? collectionPath

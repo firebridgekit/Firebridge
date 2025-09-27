@@ -1,3 +1,4 @@
+import { App } from 'firebase-admin/app'
 import { getFirestore, Timestamp } from 'firebase-admin/firestore'
 
 /**
@@ -7,6 +8,7 @@ import { getFirestore, Timestamp } from 'firebase-admin/firestore'
  */
 type FirestoreMergeOptions = {
   addMetadata?: boolean
+  app?: App
 }
 
 /**
@@ -21,7 +23,7 @@ type FirestoreMergeOptions = {
 export const firestoreMerge =
   <Data, Args = Record<string, any>>(
     collectionPath: string | ((args: Args & { data: Partial<Data> }) => string),
-    { addMetadata }: FirestoreMergeOptions = {},
+    { addMetadata, app }: FirestoreMergeOptions = {},
   ) =>
   /**
    * @param {string} id - The ID of the document to merge.
@@ -37,7 +39,11 @@ export const firestoreMerge =
       }),
     }
 
-    const ref = await getFirestore()
+    // Get the Firestore instance for the given app, or the default instance
+    // if no app is provided.
+    const firestore = app ? getFirestore(app) : getFirestore()
+
+    const ref = await firestore
       .collection(
         typeof collectionPath === 'string'
           ? collectionPath

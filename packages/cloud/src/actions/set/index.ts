@@ -1,3 +1,4 @@
+import { App } from 'firebase-admin/app'
 import { getFirestore, Timestamp } from 'firebase-admin/firestore'
 /**
  * Options for setting a Firestore document.
@@ -6,6 +7,7 @@ import { getFirestore, Timestamp } from 'firebase-admin/firestore'
  */
 type FirestoreSetOptions = {
   addMetadata?: boolean
+  app?: App
 }
 
 /**
@@ -20,7 +22,7 @@ type FirestoreSetOptions = {
 export const firestoreSet =
   <Data, Args = Record<string, any>>(
     collectionPath: string | ((args: Args & { data: Data }) => string),
-    { addMetadata }: FirestoreSetOptions = {},
+    { addMetadata, app }: FirestoreSetOptions = {},
   ) =>
   /**
    * @param {string} id - The ID of the document to set.
@@ -37,7 +39,11 @@ export const firestoreSet =
       }),
     }
 
-    const ref = await getFirestore()
+    // Get the Firestore instance for the given app, or the default instance
+    // if no app is provided.
+    const firestore = app ? getFirestore(app) : getFirestore()
+
+    const ref = await firestore
       .collection(
         typeof collectionPath === 'string'
           ? collectionPath

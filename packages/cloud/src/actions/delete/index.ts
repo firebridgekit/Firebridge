@@ -1,12 +1,15 @@
+import { App } from 'firebase-admin/app'
 import { getFirestore } from 'firebase-admin/firestore'
 
 /**
  * Options for deleting a Firestore document.
  * @typedef {Object} FirestoreDeleteOptions
  * @property {boolean} [recursive=false] - If true, recursively deletes all documents and subcollections at and under the specified level.
+ * @property {App} [app] - The Firebase app to use for the Firestore instance.
  */
 type FirestoreDeleteOptions = {
   recursive?: boolean
+  app?: App
 }
 
 /**
@@ -20,7 +23,7 @@ type FirestoreDeleteOptions = {
 export const firestoreDelete =
   <Args = Record<string, any>>(
     collectionPath: string | ((args: Args) => string),
-    { recursive = false }: FirestoreDeleteOptions = {},
+    { recursive = false, app }: FirestoreDeleteOptions = {},
   ) =>
   /**
    * @param {string} id - The ID of the document to delete.
@@ -28,7 +31,11 @@ export const firestoreDelete =
    * @returns {Promise<DocumentReference>} - A Promise that resolves with a DocumentReference to the deleted document.
    */
   async (id: string, args?: Args) => {
-    const ref = await getFirestore()
+    // Get the Firestore instance for the given app, or the default instance
+    // if no app is provided.
+    const firestore = app ? getFirestore(app) : getFirestore()
+
+    const ref = await firestore
       .collection(
         typeof collectionPath === 'string'
           ? collectionPath
@@ -37,7 +44,7 @@ export const firestoreDelete =
       .doc(id)
 
     if (recursive) {
-      await getFirestore().recursiveDelete(ref)
+      await firestore.recursiveDelete(ref)
     } else {
       await ref.delete()
     }
