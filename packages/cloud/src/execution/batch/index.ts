@@ -33,6 +33,9 @@ export const executeFirestoreBatch = async (
         case 'update':
           // Perform an 'update' operation.
           return batch.update(ref, data)
+        case 'delete':
+          // Perform a 'delete' operation.
+          return batch.delete(ref, data)
         default:
           // Handle unknown operation types.
           throw new Error(`Unknown batch operation type: ${type}`)
