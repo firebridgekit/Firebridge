@@ -1,5 +1,12 @@
 # @firebridge/cloud-stripe
 
+## 15.1.2
+
+### Patch Changes
+
+- Updated dependencies [[`1ef9c04`](https://github.com/firebridgekit/Firebridge/commit/1ef9c04f1dc75bc8e92a763c9d2447896c56f699)]:
+  - @firebridge/cloud@2.1.2
+
 ## 15.1.1
 
 ### Patch Changes
