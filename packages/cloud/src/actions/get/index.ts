@@ -1,6 +1,16 @@
+import { App } from 'firebase-admin/app'
 import { getFirestore } from 'firebase-admin/firestore'
 
 import { readSnapshot } from '../../snapshots'
+
+/**
+ * Options for getting a Firestore document.
+ * @typedef {Object} FirestoreGetOptions
+ * @property {App} [app] - The Firebase app to use for the Firestore instance.
+ */
+type FirestoreGetOptions = {
+  app?: App
+}
 
 /**
  * @function firestoreGet
@@ -13,6 +23,7 @@ import { readSnapshot } from '../../snapshots'
 export const firestoreGet =
   <Data, Args = Record<string, any>>(
     collectionPath: string | ((args: Args) => string),
+    { app }: FirestoreGetOptions = {},
   ) =>
   /**
    * @param {string} id - The ID of the document to get.
@@ -20,7 +31,11 @@ export const firestoreGet =
    * @returns {Promise<WithId<Data> | undefined>} - A Promise that resolves with the document data or undefined if the document does not exist.
    */
   async (id: string, args?: Args) => {
-    const doc = await getFirestore()
+    // Get the Firestore instance for the given app, or the default instance
+    // if no app is provided.
+    const firestore = app ? getFirestore(app) : getFirestore()
+
+    const doc = await firestore
       .collection(
         typeof collectionPath === 'string'
           ? collectionPath
