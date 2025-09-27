@@ -1,5 +1,11 @@
 # @firebridge/cloud
 
+## 2.1.3
+
+### Patch Changes
+
+- [#23](https://github.com/firebridgekit/Firebridge/pull/23) [`dc3884f`](https://github.com/firebridgekit/Firebridge/commit/dc3884feef008458b1359cf55c7211e99b7da2f5) Thanks [@mitchellbutler](https://github.com/mitchellbutler)! - feat: adds support for batch delete operations
+
 ## 2.1.2
 
 ### Patch Changes
