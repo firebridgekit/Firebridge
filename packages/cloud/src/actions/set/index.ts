@@ -49,7 +49,7 @@ export const firestoreSet =
       .collection(
         typeof collectionPath === 'string'
           ? collectionPath
-          : collectionPath({ ...(args as Args), data }),
+          : collectionPath({ ...(args as Args), data: data as Data }),
       )
       .doc(id)
       .set(data)
