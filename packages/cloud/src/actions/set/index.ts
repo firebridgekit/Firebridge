@@ -1,5 +1,7 @@
 import { App } from 'firebase-admin/app'
 import { getFirestore, Timestamp } from 'firebase-admin/firestore'
+import { WithFieldValues } from '../../types'
+
 /**
  * Options for setting a Firestore document.
  * @typedef {Object} FirestoreSetOptions
@@ -30,7 +32,7 @@ export const firestoreSet =
    * @param {Args} [args] - The arguments object.
    * @returns {Promise<DocumentReference>} - A Promise that resolves with a DocumentReference to the set document.
    */
-  async (id: string, item: Data, args?: Args) => {
+  async (id: string, item: WithFieldValues<Data>, args?: Args) => {
     const data = {
       ...item,
       ...(addMetadata && {
