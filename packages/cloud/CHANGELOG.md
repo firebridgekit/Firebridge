@@ -1,5 +1,11 @@
 # @firebridge/cloud
 
+## 2.1.4
+
+### Patch Changes
+
+- [#25](https://github.com/firebridgekit/Firebridge/pull/25) [`4cd03d8`](https://github.com/firebridgekit/Firebridge/commit/4cd03d82f44593edec499f6becad1fd5ae142522) Thanks [@mitchellbutler](https://github.com/mitchellbutler)! - feat: allow field values in set
+
 ## 2.1.3
 
 ### Patch Changes
