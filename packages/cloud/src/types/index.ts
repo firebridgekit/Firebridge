@@ -16,7 +16,7 @@ export type WithEditorialMetadata<T> = PlatformWithEditorialMetadata<
 >
 
 // Allow for any field to be a Firebase FieldValue
-export type WithFieldValues<T> = T & {
+export type WithFieldValues<T> = {
   [K in keyof T]: T[K] | FieldValue
 }
 
