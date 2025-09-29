@@ -1,5 +1,11 @@
 # @firebridge/cloud
 
+## 2.1.6
+
+### Patch Changes
+
+- [#29](https://github.com/firebridgekit/Firebridge/pull/29) [`9f5d455`](https://github.com/firebridgekit/Firebridge/commit/9f5d45582bebd41e2a7c1ee0d1c8f85115a6ee32) Thanks [@mitchellbutler](https://github.com/mitchellbutler)! - fix: remove union from field value
+
 ## 2.1.5
 
 ### Patch Changes
