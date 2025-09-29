@@ -1,5 +1,11 @@
 # @firebridge/cloud
 
+## 2.1.8
+
+### Patch Changes
+
+- [#33](https://github.com/firebridgekit/Firebridge/pull/33) [`f94c113`](https://github.com/firebridgekit/Firebridge/commit/f94c113d4980e6f95c364a76fdc20eb22f616382) Thanks [@mitchellbutler](https://github.com/mitchellbutler)! - fix: supports zod 4
+
 ## 2.1.7
 
 ### Patch Changes
