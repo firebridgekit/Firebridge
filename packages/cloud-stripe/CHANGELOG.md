@@ -1,5 +1,14 @@
 # @firebridge/cloud-stripe
 
+## 15.1.9
+
+### Patch Changes
+
+- version bump
+
+- Updated dependencies []:
+  - @firebridge/cloud@2.1.9
+
 ## 15.1.8
 
 ### Patch Changes

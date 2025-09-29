@@ -1,5 +1,11 @@
 # @firebridge/native
 
+## 0.6.1
+
+### Patch Changes
+
+- version bump
+
 ## 0.6.0
 
 ### Minor Changes

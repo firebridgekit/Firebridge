@@ -1,5 +1,11 @@
 # @firebridge/cloud
 
+## 2.1.9
+
+### Patch Changes
+
+- version bump
+
 ## 2.1.8
 
 ### Patch Changes
